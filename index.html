@@ -63,6 +63,8 @@
     </select>
     <button onclick="filtrarPorPosicao()">Buscar</button>
     <div id="filtered-heroes"></div>
+    <pre id="debug-json" style="background:#222;color:#fff;padding:10px;max-width:700px;overflow:auto;display:none"></pre>
+    <button id="toggle-debug" style="margin-top:10px;">Mostrar/Esconder Debug JSON</button>
   </div>
   <script>
     function carregarTierList() {
@@ -122,6 +124,10 @@
       fetch(url)
         .then(res => res.json())
         .then(json => {
+          // DEBUG: mostra o JSON bruto retornado
+          document.getElementById('debug-json').textContent = JSON.stringify(json, null, 2);
+          document.getElementById('debug-json').style.display = 'none';
+
           const records = json.data.records || [];
           if (records.length === 0) {
             document.getElementById('filtered-heroes').innerText = 'Nenhum herói encontrado.';
@@ -129,10 +135,12 @@
           }
 
           records.forEach(entry => {
-            // Novo acesso correto aos dados, conforme formato da API
+            // Corrigido: acesso via entry.data.hero.data
             const hero = entry.data && entry.data.hero && entry.data.hero.data ? entry.data.hero.data : null;
             if (!hero) return;
-            // Pode haver múltiplas posições (roadsort); mostrar todas
+            // Mostra o id para debug
+            let idHtml = hero.id ? `<div class="hero-id">ID: ${hero.id}</div>` : '<div class="hero-id" style="color:red;">ID não encontrado</div>';
+            // Mostra as posições (rotas)
             let roadsortHtml = '';
             if (Array.isArray(hero.roadsort)) {
               roadsortHtml = hero.roadsort.map(rs => {
@@ -149,15 +157,23 @@
             el.className = 'card';
             el.innerHTML = `
               <div class="hero-name">${hero.name}</div>
+              ${idHtml}
               ${roadsortHtml}
             `;
             document.getElementById('filtered-heroes').appendChild(el);
           });
         })
         .catch(err => {
+          document.getElementById('filtered-heroes').innerText = 'Erro ao buscar dados.';
           console.error("Erro ao filtrar heróis:", err);
         });
     }
+
+    // Botão para mostrar/esconder debug JSON
+    document.getElementById('toggle-debug').onclick = function() {
+      const dbg = document.getElementById('debug-json');
+      dbg.style.display = dbg.style.display === 'none' ? 'block' : 'none';
+    };
 
     carregarTierList();
   </script>
