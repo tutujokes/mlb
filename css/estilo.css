@@ -154,8 +154,8 @@ select:focus {
   justify-content: center;
 }
 .hero-route img {
-  width: 21px !important;
-  height: 21px !important;
+  width: 60px !important;
+  height: 60px !important;
   border-radius: 50%;
   object-fit: cover;
   border: none !important;
