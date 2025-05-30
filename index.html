@@ -49,6 +49,12 @@
       <option value="roam">Roam</option>
     </select>
   </div>
+  <div id="loading">
+    <span>Carregando</span>
+    <span class="lds-ellipsis">
+      <div></div><div></div><div></div><div></div>
+    </span>
+  </div>
   <div class="tier-box tier-ss">
     <div class="tier-label ss">SS</div>
     <div id="tier-ss" class="tier-container"></div>
@@ -62,46 +68,78 @@
     <div id="tier-a" class="tier-container"></div>
   </div>
   <script>
-    // Mapeamento ID <-> Nome dos heróis (pegue do seu endpoint real!)
-    let heroIdToName = {};
-    let heroNameToId = {};
-    // Armazenamento de info extra por id (role/rotas)
-    let heroExtraInfo = {};
-    // Tierlist original para filtro/reset
+    // ====== Cache local (sessão) =======
+    const HERO_MAP_CACHE_KEY = 'mlbb_hero_map';
+    const HERO_POSITION_CACHE_KEY = 'mlbb_hero_positions';
+
+    let heroIdToName = null;
+    let heroNameToId = null;
+    let heroExtraInfo = null;
     let tierCards = [];
     let tierRecords = [];
 
-    // Carrega o dicionário de id para nome
-    function fetchHeroMap() {
-      return fetch('https://mlbb-proxy.vercel.app/api/hero-list')
+    // Cache fetch helper
+    function fetchWithCache(url, key, expireMinutes = 120) {
+      const now = Date.now();
+      const cached = sessionStorage.getItem(key);
+      if (cached) {
+        try {
+          const obj = JSON.parse(cached);
+          if (now - obj.time < expireMinutes * 60 * 1000) {
+            return Promise.resolve(obj.data);
+          }
+        } catch (e) {}
+      }
+      return fetch(url)
         .then(res => res.json())
-        .then(map => {
-          heroIdToName = map;
-          heroNameToId = {};
-          Object.entries(map).forEach(([id, name]) => {
-            heroNameToId[name] = id;
-          });
+        .then(json => {
+          sessionStorage.setItem(key, JSON.stringify({time: now, data: json}));
+          return json;
         });
     }
 
-    // Carrega info de posição (rotas/função) para todos os heróis
-    function fetchAllHeroPositions() {
-      return fetch('https://mlbb-proxy.vercel.app/api/hero-position?role=all&lane=all&size=127&index=1')
-        .then(res => res.json())
-        .then(json => {
-          heroExtraInfo = {};
-          (json.data.records || []).forEach(entry => {
-            const heroData = entry.data;
-            heroExtraInfo[String(heroData.hero_id)] = {
-              role: (heroData.hero && heroData.hero.data && heroData.hero.data.sortid && heroData.hero.data.sortid.length && heroData.hero.data.sortid[0] && heroData.hero.data.sortid[0].data && heroData.hero.data.sortid[0].data.sort_title) ? heroData.hero.data.sortid[0].data.sort_title.toLowerCase() : "",
-              roadsort: (heroData.hero && heroData.hero.data && heroData.hero.data.roadsort) ? heroData.hero.data.roadsort : []
-            };
-          });
+    // Carrega o dicionário de id para nome UMA VEZ (cache sessão)
+    function fetchHeroMap() {
+      if (heroIdToName && heroNameToId) return Promise.resolve();
+      return fetchWithCache(
+        'https://mlbb-proxy.vercel.app/api/hero-list',
+        HERO_MAP_CACHE_KEY
+      ).then(map => {
+        heroIdToName = map;
+        heroNameToId = {};
+        Object.entries(map).forEach(([id, name]) => {
+          heroNameToId[name] = id;
         });
+      });
+    }
+
+    // Carrega info de posição UMA VEZ (cache sessão)
+    function fetchAllHeroPositions() {
+      if (heroExtraInfo) return Promise.resolve();
+      return fetchWithCache(
+        'https://mlbb-proxy.vercel.app/api/hero-position?role=all&lane=all&size=127&index=1',
+        HERO_POSITION_CACHE_KEY
+      ).then(json => {
+        heroExtraInfo = {};
+        (json.data.records || []).forEach(entry => {
+          const heroData = entry.data;
+          heroExtraInfo[String(heroData.hero_id)] = {
+            role: (heroData.hero && heroData.hero.data && heroData.hero.data.sortid && heroData.hero.data.sortid.length && heroData.hero.data.sortid[0] && heroData.hero.data.sortid[0].data && heroData.hero.data.sortid[0].data.sort_title) ? heroData.hero.data.sortid[0].data.sort_title.toLowerCase() : "",
+            roadsort: (heroData.hero && heroData.hero.data && heroData.hero.data.roadsort) ? heroData.hero.data.roadsort : []
+          };
+        });
+      });
+    }
+
+    // Mostra/oculta animação de loading
+    function showLoading(show=true) {
+      document.getElementById('loading').style.display = show ? '' : 'none';
     }
 
     // Monta a tierlist
     function carregarTierList() {
+      showLoading(true);
+
       const rank = document.getElementById('rank').value;
       const days = document.getElementById('days').value;
       const url = `https://mlbb-proxy.vercel.app/api/hero-rank?source=rank&days=${days}&rank=${rank}&size=130&sort_field=win_rate&sort_order=desc`;
@@ -112,88 +150,90 @@
       tierCards = [];
       tierRecords = [];
 
-      // Carrega tudo em paralelo, só monta quando tiver tudo pronto
-      Promise.all([fetchHeroMap(), fetchAllHeroPositions(), fetch(url).then(res => res.json())])
-        .then(([_, __, json]) => {
-          const records = json.data.records || [];
-          tierRecords = records;
+      Promise.all([
+        fetchHeroMap(),
+        fetchAllHeroPositions(),
+        fetch(url).then(res => res.json())
+      ])
+      .then(([_, __, json]) => {
+        const records = json.data.records || [];
+        tierRecords = records;
 
-          records.forEach(entry => {
-            const hero = entry.data.main_hero.data;
-            const winRate = (entry.data.main_hero_win_rate * 100).toFixed(1);
+        records.forEach(entry => {
+          const hero = entry.data.main_hero.data;
+          const winRate = (entry.data.main_hero_win_rate * 100).toFixed(1);
 
-            // Descobre o id do herói pelo nome
-            const heroId = heroNameToId[hero.name];
-            // Pega info extra
-            const info = heroExtraInfo[heroId] || {};
-            const role = info.role || '';
-            let roadsortTitles = [];
-            let iconCount = 0;
-            let roadsortHtml = '';
+          // Descobre o id do herói pelo nome
+          const heroId = heroNameToId[hero.name];
+          const info = heroExtraInfo[heroId] || {};
+          const role = info.role || '';
+          let roadsortTitles = [];
+          let iconCount = 0;
+          let roadsortHtml = '';
 
-            // Corrige Miya sem rota
-            let isMiya = (hero.name === "Miya");
-            if (Array.isArray(info.roadsort) && info.roadsort.length > 0) {
-              roadsortTitles = info.roadsort.map(rs => (rs.data && rs.data.road_sort_title) ? rs.data.road_sort_title : '').filter(Boolean);
-              iconCount = info.roadsort.length;
-              roadsortHtml = info.roadsort.map(rs => {
-                const data = rs.data || {};
-                return data.road_sort_icon
-                  ? `<span class="hero-route"><img src="${data.road_sort_icon}" alt="" title="${data.road_sort_title}"></span>`
-                  : '';
-              }).join('');
-            } else if (isMiya) {
-              // Nenhuma rota para Miya, mostra bloco vazio para manter alinhamento
-              iconCount = 0;
-              roadsortHtml = '';
-            }
+          if (Array.isArray(info.roadsort) && info.roadsort.length > 0) {
+            roadsortTitles = info.roadsort.map(rs => (rs.data && rs.data.road_sort_title) ? rs.data.road_sort_title : '').filter(Boolean);
+            iconCount = info.roadsort.length;
+            roadsortHtml = info.roadsort.map(rs => {
+              const data = rs.data || {};
+              return data.road_sort_icon
+                ? `<span class="hero-route"><img src="${data.road_sort_icon}" alt="" title="${data.road_sort_title}"></span>`
+                : '';
+            }).join('');
+          } else {
+            // Se não tem rota (ex: Miya), mostra div vazia para alinhamento
+            iconCount = 0;
+            roadsortHtml = '';
+          }
 
-            const el = document.createElement('div');
-            el.className = 'card';
-            el.setAttribute('data-role', role);
-            el.setAttribute('data-routes', roadsortTitles.join('|').toLowerCase());
-            el.setAttribute('data-id', heroId || '');
-            el.setAttribute('data-name', hero.name);
+          const el = document.createElement('div');
+          el.className = 'card';
+          el.setAttribute('data-role', role);
+          el.setAttribute('data-routes', roadsortTitles.join('|').toLowerCase());
+          el.setAttribute('data-id', heroId || '');
+          el.setAttribute('data-name', hero.name);
 
-            // Adiciona a classe single quando só tem 1 rota
-            if (iconCount === 1) {
-              el.innerHTML = `
-                <img src="${hero.head}" alt="${hero.name}">
-                <div class="hero-name">${hero.name}</div>
-                <div class="hero-meta">${winRate}% WR</div>
-                <div class="hero-routes single">${roadsortHtml}</div>
-              `;
-            } else if (iconCount > 1) {
-              el.innerHTML = `
-                <img src="${hero.head}" alt="${hero.name}">
-                <div class="hero-name">${hero.name}</div>
-                <div class="hero-meta">${winRate}% WR</div>
-                <div class="hero-routes">${roadsortHtml}</div>
-              `;
-            } else {
-              // Se não tem rota (ex: Miya), mostra div vazia para alinhamento
-              el.innerHTML = `
-                <img src="${hero.head}" alt="${hero.name}">
-                <div class="hero-name">${hero.name}</div>
-                <div class="hero-meta">${winRate}% WR</div>
-                <div class="hero-routes" style="height:21px"></div>
-              `;
-            }
+          // Adiciona a classe single quando só tem 1 rota
+          if (iconCount === 1) {
+            el.innerHTML = `
+              <img src="${hero.head}" alt="${hero.name}">
+              <div class="hero-name">${hero.name}</div>
+              <div class="hero-meta">${winRate}% WR</div>
+              <div class="hero-routes single">${roadsortHtml}</div>
+            `;
+          } else if (iconCount > 1) {
+            el.innerHTML = `
+              <img src="${hero.head}" alt="${hero.name}">
+              <div class="hero-name">${hero.name}</div>
+              <div class="hero-meta">${winRate}% WR</div>
+              <div class="hero-routes">${roadsortHtml}</div>
+            `;
+          } else {
+            // Se não tem rota, mostra div vazia para alinhamento
+            el.innerHTML = `
+              <img src="${hero.head}" alt="${hero.name}">
+              <div class="hero-name">${hero.name}</div>
+              <div class="hero-meta">${winRate}% WR</div>
+              <div class="hero-routes" style="height:21px"></div>
+            `;
+          }
 
-            tierCards.push(el);
+          tierCards.push(el);
 
-            if (winRate >= 54) {
-              document.getElementById('tier-ss').appendChild(el);
-            } else if (winRate >= 51) {
-              document.getElementById('tier-s').appendChild(el);
-            } else {
-              document.getElementById('tier-a').appendChild(el);
-            }
-          });
-        })
-        .catch(err => {
-          console.error("Erro ao carregar tier list:", err);
+          if (winRate >= 54) {
+            document.getElementById('tier-ss').appendChild(el);
+          } else if (winRate >= 51) {
+            document.getElementById('tier-s').appendChild(el);
+          } else {
+            document.getElementById('tier-a').appendChild(el);
+          }
         });
+        showLoading(false);
+      })
+      .catch(err => {
+        console.error("Erro ao carregar tier list:", err);
+        showLoading(false);
+      });
     }
 
     // Filtra os cards já existentes na tierlist
@@ -213,7 +253,6 @@
 
     // Eventos automáticos de filtro/update
     document.addEventListener('DOMContentLoaded', function () {
-      // Carrega tierlist ao iniciar
       carregarTierList();
 
       document.getElementById('rank').addEventListener('change', carregarTierList);
