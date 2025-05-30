@@ -8,18 +8,173 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
   <style>
     body { font-family: 'Inter', system-ui, sans-serif; }
+    /* Bloco cinza da tier list */
+    .tier-box {
+      background: #f3f4f6;
+      border-radius: 14px;
+      margin-bottom: 36px;
+      padding: 20px 16px 10px 56px;
+      position: relative;
+      min-height: 120px;
+      box-shadow: 0 1px 8px rgba(30,40,60,0.07);
+      max-width: 900px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .tier-label {
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: 44px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      font-size: 1.6rem;
+      color: #fff;
+      writing-mode: vertical-rl;
+      text-orientation: mixed;
+      border-radius: 14px 0 0 14px;
+      text-shadow: 0 1px 12px #23272f21;
+      letter-spacing: -1px;
+      z-index: 10;
+    }
+    .tier-label.ss { background: linear-gradient(135deg, #6366f1 60%, #7e22ce 100%); }
+    .tier-label.s { background: linear-gradient(135deg, #7e22ce 30%, #6366f1 90%); }
+    .tier-label.a { background: #ffb74d; color: #23272f; }
+    .tier-container {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 18px 24px;
+      padding: 8px 0 4px 0;
+    }
+    .card {
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(30,40,60,0.09);
+      text-align: center;
+      padding: 14px 10px 10px 10px;
+      min-width: 138px;
+      max-width: 138px;
+      min-height: 175px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      transition: box-shadow 0.17s, transform 0.13s;
+    }
+    .card:hover {
+      box-shadow: 0 8px 32px #6366f133;
+      transform: translateY(-4px) scale(1.035);
+    }
+    .card > img[alt] {
+      width: 62px;
+      height: 62px;
+      border-radius: 50%;
+      margin-bottom: 8px;
+      object-fit: cover;
+      background: #232323;
+      border: 2px solid #f3f4f6;
+      box-shadow: 0 1px 6px #6366f122;
+    }
+    .hero-name {
+      font-weight: 600;
+      margin-top: 4px;
+      color: #23272f;
+      font-size: 1.02rem;
+      letter-spacing: -0.5px;
+      line-height: 1.1;
+    }
+    .hero-meta {
+      font-size: 13px;
+      color: #6366f1;
+      font-weight: 600;
+      margin-bottom: 2px;
+    }
+    .hero-routes {
+      display: flex;
+      gap: 7px;
+      margin-top: 6px;
+      justify-content: center;
+      min-height: 21px;
+    }
+    .hero-routes.single {
+      justify-content: center;
+    }
+    .hero-route img {
+      width: 60px !important;
+      height: 60px !important;
+      border-radius: 50%;
+      object-fit: cover;
+      border: none !important;
+      background: transparent !important;
+      box-shadow: none !important;
+      margin: 0 auto;
+      display: block;
+    }
+    .hero-route span, .hero-route .route-name {
+      display: none !important;
+    }
+    .hidden {
+      display: none !important;
+    }
+    /* Footer estilizado */
+    .footer-moba {
+      background: #23272f;
+      color: #b1b6c9;
+      width: 100%;
+      font-size: 1rem;
+      min-height: 44px;
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      padding: 0 1.5rem;
+      position: relative;
+      font-family: 'Inter', system-ui, sans-serif;
+      letter-spacing: 0.2px;
+    }
+    .footer-moba .byarthur {
+      display: flex;
+      align-items: center;
+      gap: 3px;
+      font-weight: 500;
+      font-size: 1rem;
+      color: #6d28d9;
+      margin-left: 18px;
+      letter-spacing: 0.3px;
+    }
+    .footer-moba .byarthur svg {
+      margin-left: 4px;
+      width: 18px;
+      height: 18px;
+      color: #6366f1;
+      stroke-width: 1.7px;
+      opacity: 0.98;
+      transition: color 0.2s;
+    }
+    .footer-moba .byarthur:hover svg {
+      color: #a78bfa;
+    }
+    @media (max-width: 600px) {
+      .tier-box { padding-left: 24px; }
+      .tier-label { width: 28px; font-size: 1.1rem; padding-right: 1px;}
+      .tier-container { gap: 12px 10px; }
+      .card { min-width: 120px; max-width: 120px;}
+      .footer-moba { font-size: 0.93rem; padding: 0 0.7rem; }
+    }
   </style>
 </head>
 <body class="bg-white min-h-screen flex flex-col">
   <!-- Header -->
-  <header class="w-full bg-indigo-500 text-white py-4 shadow-md mb-8">
+  <header class="w-full bg-gradient-to-r from-indigo-500 to-purple-700 text-white py-4 shadow-md mb-8">
     <div class="container mx-auto flex justify-center">
       <span class="text-2xl font-bold tracking-tight">moba.gg</span>
     </div>
   </header>
 
   <!-- Main Content -->
-  <main class="flex-grow container mx-auto px-4">
+  <main class="flex-grow container mx-auto px-2">
     <h1 class="text-3xl font-bold text-indigo-700 mb-8 text-center">Tier List - Mobile Legends</h1>
     <div class="flex flex-wrap justify-center gap-4 mb-5">
       <label for="rank" class="font-medium text-gray-700">Rank:</label>
@@ -41,7 +196,7 @@
         <option value="30">30</option>
       </select>
     </div>
-    <div id="filter-section" class="mb-8 flex flex-wrap justify-center items-center gap-5 bg-gray-50 p-5 rounded-xl shadow">
+    <div id="filter-section" class="mb-8 flex flex-wrap justify-center items-center gap-5 bg-gray-50 p-4 rounded-xl shadow">
       <h2 class="font-semibold text-indigo-500 text-base mb-0">Filtrar por Função e Rota</h2>
       <label for="role" class="font-medium text-gray-700">Função:</label>
       <select id="role" class="rounded-lg border border-gray-300 px-3 py-2 focus:ring-2 focus:ring-indigo-400 focus:border-indigo-300 transition">
@@ -63,35 +218,32 @@
         <option value="roam">Roam</option>
       </select>
     </div>
+    <!-- TIER LIST BLOCKS -->
     <div class="tier-box tier-ss mb-8">
       <div class="tier-label ss">SS</div>
-      <div id="tier-ss" class="tier-container flex flex-wrap gap-4"></div>
+      <div id="tier-ss" class="tier-container"></div>
     </div>
     <div class="tier-box tier-s mb-8">
       <div class="tier-label s">S</div>
-      <div id="tier-s" class="tier-container flex flex-wrap gap-4"></div>
+      <div id="tier-s" class="tier-container"></div>
     </div>
     <div class="tier-box tier-a mb-8">
       <div class="tier-label a">A</div>
-      <div id="tier-a" class="tier-container flex flex-wrap gap-4"></div>
+      <div id="tier-a" class="tier-container"></div>
     </div>
   </main>
 
   <!-- Footer -->
-  <footer class="w-full bg-gray-800 text-gray-200 py-6 mt-12">
-    <div class="flex flex-col items-center justify-center space-y-2">
-      <div class="flex items-center space-x-2">
-        <span class="font-semibold text-lg tracking-tight">Arthur Henrique</span>
-        <a href="https://github.com/tutujokes" target="_blank" rel="noopener" aria-label="GitHub">
-          <svg class="w-6 h-6 text-gray-200 hover:text-indigo-400 transition-colors" fill="currentColor" viewBox="0 0 24 24">
-            <path d="M12 .5C5.7.5.5 5.7.5 12c0 5.1 3.3 9.4 7.8 10.9.6.1.8-.3.8-.6v-2.2c-3.2.7-3.9-1.5-3.9-1.5-.5-1.2-1.2-1.6-1.2-1.6-1-.7.1-.7.1-.7 1.1.1 1.7 1.1 1.7 1.1 1 .1 1.7-.7 2-1.1-.8-.1-1.7-.4-2.4-.9-.5-.5-.9-1.2-.9-2.1 0-.4.1-.7.3-1-.1-.3-.4-1.1.1-2.2 0 0 .8-.2 2.6 1 .8-.2 1.6-.3 2.4-.3.8 0 1.6.1 2.4.3 1.8-1.2 2.6-1 2.6-1 .5 1.1.3 1.9.2 2.2.2.3.3.6.3 1 0 .9-.3 1.6-.9 2.1-.7.5-1.6.8-2.4.9.3.2.6.7.6 1.4v2c0 .3.2.7.8.6C20.7 21.4 24 17.1 24 12c0-6.3-5.2-11.5-12-11.5z"/>
-          </svg>
-        </a>
-      </div>
-      <div class="text-sm text-gray-400">
-        moba.gg &reg; 2025
-      </div>
-    </div>
+  <footer class="footer-moba">
+    <span class="text-gray-400 mr-auto font-light text-sm">moba.gg &reg; 2025</span>
+    <span class="byarthur">
+      Arthur Henrique
+      <a href="https://github.com/tutujokes" target="_blank" rel="noopener" aria-label="GitHub">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" class="inline ml-1">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M12 2C6.48 2 2 6.48 2 12c0 4.41 2.87 8.14 6.84 9.49.5.09.66-.21.66-.47 0-.23-.01-.84-.01-1.65-2.78.6-3.37-1.34-3.37-1.34-.45-1.15-1.11-1.46-1.11-1.46-.91-.62.07-.6.07-.6 1 .07 1.53 1.03 1.53 1.03.89 1.52 2.34 1.08 2.91.82.09-.65.35-1.08.64-1.33-2.22-.25-4.56-1.11-4.56-4.95 0-1.09.39-1.99 1.03-2.69-.1-.25-.45-1.27.1-2.65 0 0 .84-.27 2.75 1.02a9.56 9.56 0 012.5-.34c.85 0 1.7.11 2.5.34 1.9-1.29 2.75-1.02 2.75-1.02.55 1.38.2 2.4.1 2.65.64.7 1.03 1.6 1.03 2.69 0 3.85-2.34 4.7-4.57 4.95.36.31.69.93.69 1.88 0 1.36-.01 2.46-.01 2.8 0 .26.16.57.67.47A10.004 10.004 0 0022 12c0-5.52-4.48-10-10-10z"/>
+        </svg>
+      </a>
+    </span>
   </footer>
 
   <script>
@@ -170,7 +322,7 @@
             }
 
             const el = document.createElement('div');
-            el.className = 'card bg-white rounded-xl shadow transition-transform duration-200 hover:-translate-y-1 hover:scale-105 hover:shadow-2xl p-3 flex flex-col items-center mb-3';
+            el.className = 'card';
             el.setAttribute('data-role', role);
             el.setAttribute('data-routes', roadsortTitles.join('|').toLowerCase());
             el.setAttribute('data-id', heroId || '');
@@ -178,24 +330,24 @@
 
             if (iconCount === 1) {
               el.innerHTML = `
-                <img src="${hero.head}" alt="${hero.name}" class="w-16 h-16 rounded-full mb-2 object-cover border-2 border-gray-100 shadow-sm">
-                <div class="hero-name text-indigo-900 font-semibold">${hero.name}</div>
-                <div class="hero-meta text-gray-600 text-sm">${winRate}% WR</div>
-                <div class="hero-routes single flex justify-center mt-2">${roadsortHtml}</div>
+                <img src="${hero.head}" alt="${hero.name}">
+                <div class="hero-name">${hero.name}</div>
+                <div class="hero-meta">${winRate}% WR</div>
+                <div class="hero-routes single">${roadsortHtml}</div>
               `;
             } else if (iconCount > 1) {
               el.innerHTML = `
-                <img src="${hero.head}" alt="${hero.name}" class="w-16 h-16 rounded-full mb-2 object-cover border-2 border-gray-100 shadow-sm">
-                <div class="hero-name text-indigo-900 font-semibold">${hero.name}</div>
-                <div class="hero-meta text-gray-600 text-sm">${winRate}% WR</div>
-                <div class="hero-routes flex justify-center mt-2 gap-2">${roadsortHtml}</div>
+                <img src="${hero.head}" alt="${hero.name}">
+                <div class="hero-name">${hero.name}</div>
+                <div class="hero-meta">${winRate}% WR</div>
+                <div class="hero-routes">${roadsortHtml}</div>
               `;
             } else {
               el.innerHTML = `
-                <img src="${hero.head}" alt="${hero.name}" class="w-16 h-16 rounded-full mb-2 object-cover border-2 border-gray-100 shadow-sm">
-                <div class="hero-name text-indigo-900 font-semibold">${hero.name}</div>
-                <div class="hero-meta text-gray-600 text-sm">${winRate}% WR</div>
-                <div class="hero-routes flex justify-center mt-2" style="height:21px"></div>
+                <img src="${hero.head}" alt="${hero.name}">
+                <div class="hero-name">${hero.name}</div>
+                <div class="hero-meta">${winRate}% WR</div>
+                <div class="hero-routes" style="height:21px"></div>
               `;
             }
 
