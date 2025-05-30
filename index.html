@@ -2,47 +2,35 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>moba.gg</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="Tier List Mobile Legends - Atualizado e filtrável por função, rota, rank e idioma.">
-  <meta name="keywords" content="Mobile Legends, Tier List, MOBA, Win Rate, MLBB, Heróis">
-  <meta property="og:title" content="moba.gg - Tier List Mobile Legends">
-  <meta property="og:description" content="Tier list de Mobile Legends, filtrável e multilíngue.">
-  <meta property="og:type" content="website">
-  <meta property="og:image" content="https://mlbb-proxy.vercel.app/api/favicon.png">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/estilo.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
 </head>
-<body class="bg-white min-h-screen flex flex-col" data-theme="light">
-  <!-- Header -->
-  <header class="w-full bg-gradient-to-r from-indigo-500 to-purple-700 text-white py-4 shadow-md mb-8">
-    <div class="container mx-auto flex justify-between items-center max-w-4xl">
-      <span class="text-2xl font-bold tracking-tight select-none">moba.gg</span>
-      <div class="flex items-center gap-2">
-        <!-- Theme Switch -->
-        <button class="theme-switch" id="themeSwitch" aria-label="Alternar modo claro/escuro" title="Modo claro/escuro">
-          <span id="themeIcon" aria-hidden="true">🌙</span>
+<body data-theme="light">
+  <!-- HEADER -->
+  <header class="header-moba">
+    <span class="logo-moba">moba.gg</span>
+    <div class="header-actions">
+      <button id="themeSwitch" class="theme-switch" title="Modo claro/escuro"><span id="themeIcon">🌙</span></button>
+      <div class="lang-switch-wrap">
+        <button id="langSwitch" class="lang-switch" title="Trocar idioma">
+          <span id="langFlag" class="flag" style="background-image:url('https://cdn.jsdelivr.net/gh/hjnilsson/country-flags/svg/br.svg');"></span>
         </button>
-        <!-- Language Switch -->
-        <div style="position:relative;">
-          <button class="lang-switch" id="langSwitch" aria-label="Trocar idioma" title="Trocar idioma">
-            <span id="langFlag" aria-hidden="true" style="display:inline-block;width:28px;height:20px;border-radius:4px;vertical-align:middle;background-image:url('https://cdn.jsdelivr.net/gh/hjnilsson/country-flags/svg/br.svg');background-size:cover;background-position:center;"></span>
-          </button>
-          <div id="flagDropdown" class="flag-dropdown hidden">
-            <span class="flag-option selected" id="flagBR" style="background-image:url('https://cdn.jsdelivr.net/gh/hjnilsson/country-flags/svg/br.svg');" title="Português (Brasil)" data-lang="pt-BR" tabindex="0" aria-label="Português (Brasil)"></span>
-            <span class="flag-option" id="flagUS" style="background-image:url('https://cdn.jsdelivr.net/gh/hjnilsson/country-flags/svg/us.svg');" title="English (US)" data-lang="en-US" tabindex="0" aria-label="English (US)"></span>
-          </div>
+        <div id="flagDropdown" class="flag-dropdown hidden">
+          <span class="flag-option selected" id="flagBR" style="background-image:url('https://cdn.jsdelivr.net/gh/hjnilsson/country-flags/svg/br.svg');" data-lang="pt-BR" tabindex="0" aria-label="Português (Brasil)"></span>
+          <span class="flag-option" id="flagUS" style="background-image:url('https://cdn.jsdelivr.net/gh/hjnilsson/country-flags/svg/us.svg');" data-lang="en-US" tabindex="0" aria-label="English (US)"></span>
         </div>
       </div>
     </div>
   </header>
 
-  <!-- Main Content -->
-  <main class="flex-grow container mx-auto px-2 max-w-4xl">
-    <h1 class="text-3xl font-bold text-indigo-700 mb-8 text-center" data-i18n="title">Tier List - Mobile Legends</h1>
-    <div class="flex flex-wrap justify-center gap-4 mb-5">
-      <label for="rank" class="font-medium text-gray-700 flex items-center" data-i18n="rank_label">Rank:</label>
-      <select id="rank" class="rounded-lg border border-gray-300 px-3 py-2 focus:ring-2 focus:ring-indigo-400 focus:border-indigo-300 transition select-highlight">
+  <main class="main-moba">
+    <h1 class="main-title" data-i18n="title">Tier List - Mobile Legends</h1>
+    <div class="filters-row">
+      <label for="rank" data-i18n="rank_label">Rank:</label>
+      <select id="rank">
         <option value="mythic" data-i18n="rank_mythic">Mítico</option>
         <option value="legend" data-i18n="rank_legend">Lenda</option>
         <option value="epic" data-i18n="rank_epic">Épico</option>
@@ -51,8 +39,8 @@
         <option value="elite" data-i18n="rank_elite">Elite</option>
         <option value="warrior" data-i18n="rank_warrior">Guerreiro</option>
       </select>
-      <label for="days" class="font-medium text-gray-700 flex items-center" data-i18n="days_label">Dias:</label>
-      <select id="days" class="rounded-lg border border-gray-300 px-3 py-2 focus:ring-2 focus:ring-indigo-400 focus:border-indigo-300 transition select-highlight">
+      <label for="days" data-i18n="days_label">Dias:</label>
+      <select id="days">
         <option value="1" data-i18n="days_1">1</option>
         <option value="3" data-i18n="days_3">3</option>
         <option value="7" selected data-i18n="days_7">7</option>
@@ -60,61 +48,60 @@
         <option value="30" data-i18n="days_30">30</option>
       </select>
     </div>
-    <!-- Filtrar section: labels ao lado dos selects -->
-    <div id="filter-section" class="mb-8 flex flex-wrap justify-center items-center gap-4 bg-gray-50 p-4 rounded-xl shadow">
-      <h2 class="font-semibold text-indigo-500 text-base mb-0 mr-3" data-i18n="filter_title">Filtrar por Função e Rota</h2>
-      <div class="flex items-center gap-2">
-        <label for="role" class="font-medium text-gray-700" data-i18n="role_label">Função:</label>
-        <select id="role" class="rounded-lg border border-gray-300 px-3 py-2 focus:ring-2 focus:ring-indigo-400 focus:border-indigo-300 transition select-highlight">
-          <option value="" data-i18n="all_roles">Todas</option>
-          <option value="mage" data-i18n="role_mage">Mago</option>
-          <option value="marksman" data-i18n="role_marksman">Atirador</option>
-          <option value="tank" data-i18n="role_tank">Tanque</option>
-          <option value="assassin" data-i18n="role_assassin">Assassino</option>
-          <option value="fighter" data-i18n="role_fighter">Lutador</option>
-          <option value="support" data-i18n="role_support">Suporte</option>
-        </select>
-      </div>
-      <div class="flex items-center gap-2">
-        <label for="lane" class="font-medium text-gray-700" data-i18n="lane_label">Rota:</label>
-        <select id="lane" class="rounded-lg border border-gray-300 px-3 py-2 focus:ring-2 focus:ring-indigo-400 focus:border-indigo-300 transition select-highlight">
-          <option value="" data-i18n="all_lanes">Todas</option>
-          <option value="mid" data-i18n="lane_mid">Meio</option>
-          <option value="gold" data-i18n="lane_gold">Ouro</option>
-          <option value="exp" data-i18n="lane_exp">EXP</option>
-          <option value="jungle" data-i18n="lane_jungle">Selva</option>
-          <option value="roam" data-i18n="lane_roam">Rotação</option>
-        </select>
-      </div>
+    <div class="filters-row bg-alt">
+      <span class="filter-title" data-i18n="filter_title">Filtrar por Função e Rota</span>
+      <label for="role" data-i18n="role_label">Função:</label>
+      <select id="role">
+        <option value="" data-i18n="all_roles">Todas</option>
+        <option value="mage" data-i18n="role_mage">Mago</option>
+        <option value="marksman" data-i18n="role_marksman">Atirador</option>
+        <option value="tank" data-i18n="role_tank">Tanque</option>
+        <option value="assassin" data-i18n="role_assassin">Assassino</option>
+        <option value="fighter" data-i18n="role_fighter">Lutador</option>
+        <option value="support" data-i18n="role_support">Suporte</option>
+      </select>
+      <label for="lane" data-i18n="lane_label">Rota:</label>
+      <select id="lane">
+        <option value="" data-i18n="all_lanes">Todas</option>
+        <option value="mid" data-i18n="lane_mid">Meio</option>
+        <option value="gold" data-i18n="lane_gold">Ouro</option>
+        <option value="exp" data-i18n="lane_exp">EXP</option>
+        <option value="jungle" data-i18n="lane_jungle">Selva</option>
+        <option value="roam" data-i18n="lane_roam">Rotação</option>
+      </select>
     </div>
-    <!-- TIER LIST BLOCKS -->
-    <div class="tier-box tier-ss mb-8">
+    <div class="tier-box tier-ss">
       <div class="tier-label ss">SS</div>
       <div id="tier-ss" class="tier-container"></div>
     </div>
-    <div class="tier-box tier-s mb-8">
+    <div class="tier-box tier-s">
       <div class="tier-label s">S</div>
       <div id="tier-s" class="tier-container"></div>
     </div>
-    <div class="tier-box tier-a mb-8">
+    <div class="tier-box tier-a">
       <div class="tier-label a">A</div>
       <div id="tier-a" class="tier-container"></div>
     </div>
     <div id="noResults" class="no-results hidden" data-i18n="no_heroes">Nenhum herói encontrado.</div>
   </main>
 
-  <!-- Footer -->
   <footer class="footer-moba">
-    <span class="text-gray-400 mr-auto font-light text-sm">moba.gg &reg; 2025</span>
+    <span class="footer-brand">moba.gg &reg; 2025</span>
     <a class="byarthur" href="https://github.com/tutujokes" target="_blank" rel="noopener" aria-label="GitHub">
       Arthur Henrique
       <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" class="inline ml-1">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-          d="M12 2C6.48 2 2 6.48 2 12c0 4.41 2.87 8.14 6.84 9.49.5.09.66-.21.66-.47 0-.23-.01-.84-.01-1.65-2.78.6-3.37-1.34-3.37-1.34-.45-1.15-1.11-1.46-1.11-1.46-.91-.62.07-.6.07-.6 1 .07 1.53 1.03 1.53 1.03.89 1.52 2.34 1.08 2.91.82.09-.65.35-1.08.64-1.33-2.22-.25-4.56-1.11-4.56-4.95 0-1.09.39-1.99 1.03-2.69-.1-.25-.45-1.27.1-2.65 0 0 .84-.27 2.75 1.02a9.56 9.56 0 012.5-.34c.85 0 1.7.11 2.5.34 1.9-1.29 2.75-1.02 2.75-1.02.55 1.38.2 2.4.1 2.65.64.7 1.03 1.6 1.03 2.69 0 3.85-2.34 4.7-4.57 4.95.36.31.69.93.69 1.88 0 1.36-.01 2.46-.01 2.8 0 .26.16.57.67.47A10.004 10.004 0 0022 12c0-5.52-4.48-10-10-10z"/>
+          d="M12 2C6.48 2 2 6.48 2 12c0 4.41 2.87 8.14 6.84 9.49.5.09.66-.21.66-.47
+          0-.23-.01-.84-.01-1.65-2.78.6-3.37-1.34-3.37-1.34-.45-1.15-1.11-1.46-1.11-1.46-.91-.62.07-.6.07-.6
+          1 .07 1.53 1.03 1.53 1.03.89 1.52 2.34 1.08 2.91.82.09-.65.35-1.08.64-1.33
+          -2.22-.25-4.56-1.11-4.56-4.95 0-1.09.39-1.99 1.03-2.69-.1-.25-.45-1.27.1-2.65
+          0 0 .84-.27 2.75 1.02a9.56 9.56 0 012.5-.34c.85 0 1.7.11 2.5.34
+          1.9-1.29 2.75-1.02 2.75-1.02.55 1.38.2 2.4.1 2.65.64.7 1.03 1.6 1.03 2.69
+          0 3.85-2.34 4.7-4.57 4.95.36.31.69.93.69 1.88 0 1.36-.01 2.46-.01 2.8
+          0 .26.16.57.67.47A10.004 10.004 0 0022 12c0-5.52-4.48-10-10-10z"/>
       </svg>
     </a>
   </footer>
-
   <script src="js/main.js"></script>
 </body>
-      </html>
+</html>
