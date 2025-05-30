@@ -1,4 +1,5 @@
-<!DOCTYPE html><html lang="pt-BR">
+<!DOCTYPE html>
+<html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -6,22 +7,40 @@
   <link rel="stylesheet" href="css/estilo.css">
 </head>
 <body>
-  <h1>Tier List - Mobile Legends</h1><label for="rank">Rank:</label> <select id="rank"> <option value="mythic">Mythic</option> <option value="legend">Legend</option> <option value="epic">Epic</option> <option value="glory">Glory</option> <option value="honor">Honor</option> <option value="all">Todos</option> </select>
-
-<label for="days">Dias:</label> <select id="days"> <option value="1">1</option> <option value="3">3</option> <option value="7" selected>7</option> <option value="15">15</option> <option value="30">30</option> </select>
-
-<button onclick="carregarTierList()">Atualizar</button>
+  <h1>Tier List - Mobile Legends</h1>
+  <label for="rank">Rank:</label>
+  <select id="rank">
+    <option value="mythic">Mythic</option>
+    <option value="legend">Legend</option>
+    <option value="epic">Epic</option>
+    <option value="grandmaster">Grandmaster</option>
+    <option value="master">Master</option>
+    <option value="elite">Elite</option>
+    <option value="warrior">Warrior</option>
+  </select>
+  <label for="days">Dias:</label>
+  <select id="days">
+    <option value="1">1</option>
+    <option value="3">3</option>
+    <option value="7" selected>7</option>
+    <option value="15">15</option>
+    <option value="30">30</option>
+  </select>
+  <button onclick="carregarTierList()">Atualizar</button>
 
   <div class="tier-box tier-ss">
     <div class="tier-label ss">SS</div>
     <div id="tier-ss" class="tier-container"></div>
-  </div>  <div class="tier-box tier-s">
+  </div>
+  <div class="tier-box tier-s">
     <div class="tier-label s">S</div>
     <div id="tier-s" class="tier-container"></div>
-  </div>  <div class="tier-box tier-a">
+  </div>
+  <div class="tier-box tier-a">
     <div class="tier-label a">A</div>
     <div id="tier-a" class="tier-container"></div>
-  </div>  <div id="filter-section">
+  </div>
+  <div id="filter-section">
     <h2>Filtrar por Função e Rota</h2>
     <label for="role">Função:</label>
     <select id="role">
@@ -32,21 +51,20 @@
       <option value="assassin">Assassin</option>
       <option value="fighter">Fighter</option>
       <option value="support">Support</option>
-    </select><label for="lane">Rota:</label>
-<select id="lane">
-  <option value="">Todas</option>
-  <option value="mid">Mid</option>
-  <option value="gold">Gold</option>
-  <option value="exp">EXP</option>
-  <option value="jungle">Jungle</option>
-  <option value="roam">Roam</option>
-</select>
-
-<button onclick="filtrarPorPosicao()">Buscar</button>
-
-<div id="filtered-heroes"></div>
-
-  </div>  <script>
+    </select>
+    <label for="lane">Rota:</label>
+    <select id="lane">
+      <option value="">Todas</option>
+      <option value="mid">Mid</option>
+      <option value="gold">Gold</option>
+      <option value="exp">EXP</option>
+      <option value="jungle">Jungle</option>
+      <option value="roam">Roam</option>
+    </select>
+    <button onclick="filtrarPorPosicao()">Buscar</button>
+    <div id="filtered-heroes"></div>
+  </div>
+  <script>
     function carregarTierList() {
       const rank = document.getElementById('rank').value;
       const days = document.getElementById('days').value;
@@ -111,14 +129,27 @@
           }
 
           records.forEach(entry => {
-            const hero = entry.hero.data;
+            // Novo acesso correto aos dados, conforme formato da API
+            const hero = entry.data && entry.data.hero && entry.data.hero.data ? entry.data.hero.data : null;
+            if (!hero) return;
+            // Pode haver múltiplas posições (roadsort); mostrar todas
+            let roadsortHtml = '';
+            if (Array.isArray(hero.roadsort)) {
+              roadsortHtml = hero.roadsort.map(rs => {
+                const data = rs.data || {};
+                return `
+                  <div class="hero-role">
+                    ${data.road_sort_icon ? `<img src="${data.road_sort_icon}" alt="${data.road_sort_title}" style="height: 24px;vertical-align:middle;">` : ''}
+                    ${data.road_sort_title || ''}
+                  </div>
+                `;
+              }).join('');
+            }
             const el = document.createElement('div');
             el.className = 'card';
             el.innerHTML = `
-              <img src="${hero.head}" alt="${hero.name}">
               <div class="hero-name">${hero.name}</div>
-              <div class="hero-meta">${hero.role}</div>
-              <div class="hero-role">${hero.lane || '—'}</div>
+              ${roadsortHtml}
             `;
             document.getElementById('filtered-heroes').appendChild(el);
           });
@@ -129,5 +160,6 @@
     }
 
     carregarTierList();
-  </script></body>
+  </script>
+</body>
 </html>
