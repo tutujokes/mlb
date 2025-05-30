@@ -48,7 +48,7 @@ body {
 }
 
 .card {
-  width: 130px; /* aumentada */
+  width: 130px;
   min-height: 210px;
   background: white;
   border-radius: 12px;
@@ -98,6 +98,7 @@ body {
   font-weight: bold;
 }
 
+/* ROTAS */
 .hero-routes {
   display: flex;
   justify-content: center;
@@ -105,14 +106,30 @@ body {
   margin-top: 6px;
 }
 
+.hero-routes.single {
+  justify-content: center;
+}
+
 .hero-route img {
-  width: 28px;
-  height: 28px;
+  width: 21px;    /* 28px - 25% = 21px */
+  height: 21px;
   border-radius: 50%;
-  background: #181818;
   object-fit: cover;
-  border: 2px solid #282828;
-  box-sizing: border-box;
+  border: none;
+  background: none;
+  display: block;
+  margin: 0 auto;
+}
+
+.hero-route {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Remover nome das rotas, caso seja adicionado por JS */
+.hero-route span, .hero-route .route-name {
+  display: none !important;
 }
 
 .hidden {
