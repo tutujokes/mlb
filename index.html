@@ -176,36 +176,51 @@
     document.getElementById('flagBR').addEventListener('keypress', function(e){ if(e.key==='Enter'){setLanguage('pt-BR');showFlagDropdown(false);} });
     document.getElementById('flagUS').addEventListener('keypress', function(e){ if(e.key==='Enter'){setLanguage('en-US');showFlagDropdown(false);} });
 
-    // HEROES MOCK DATA AND RENDER
-    // Você pode trocar isso por um fetch ou seus dados reais
+    // Dados dos heróis e rotas (exemplo, adapte para seu backend)
+    const ROUTE_ICONS = {
+      mid: "https://static.wikia.nocookie.net/mobile-legends/images/5/5e/Lane_Mid.png",
+      gold: "https://static.wikia.nocookie.net/mobile-legends/images/c/c0/Lane_Gold.png",
+      exp: "https://static.wikia.nocookie.net/mobile-legends/images/5/5e/Lane_EXP.png",
+      jungle: "https://static.wikia.nocookie.net/mobile-legends/images/7/7e/Lane_Jungle.png",
+      roam: "https://static.wikia.nocookie.net/mobile-legends/images/6/61/Lane_Roam.png"
+    };
+
+    // Exemplo de lista, substitua pelo seu cálculo real (mantendo o formato)
     const HEROES = [
       {
         name: "Lancelot",
         tier: "ss",
         img: "https://static.wikia.nocookie.net/mobile-legends/images/5/51/Lancelot-MLBB.png",
         role: "assassin",
-        lane: "jungle"
+        lanes: ["jungle"]
       },
       {
         name: "Valentina",
         tier: "ss",
         img: "https://static.wikia.nocookie.net/mobile-legends/images/7/7d/Valentina-MLBB.png",
         role: "mage",
-        lane: "mid"
+        lanes: ["mid"]
       },
       {
         name: "Fredrinn",
         tier: "s",
         img: "https://static.wikia.nocookie.net/mobile-legends/images/9/98/Fredrinn-MLBB.png",
         role: "fighter",
-        lane: "exp"
+        lanes: ["exp", "jungle"]
       },
       {
         name: "Claude",
         tier: "a",
         img: "https://static.wikia.nocookie.net/mobile-legends/images/e/ef/Claude-MLBB.png",
         role: "marksman",
-        lane: "gold"
+        lanes: ["gold"]
+      },
+      {
+        name: "Estes",
+        tier: "s",
+        img: "https://static.wikia.nocookie.net/mobile-legends/images/8/89/Estes-MLBB.png",
+        role: "support",
+        lanes: ["roam"]
       }
     ];
 
@@ -215,14 +230,33 @@
         document.getElementById(`tier-${tier}`).innerHTML = "";
       });
 
+      // Pega filtros
+      const rank = document.getElementById('rank').value;
+      const days = document.getElementById('days').value;
+      const role = document.getElementById('role').value;
+      const lane = document.getElementById('lane').value;
+
+      let filtered = HEROES.slice();
+
+      // Filtro por função
+      if (role) filtered = filtered.filter(h => h.role === role);
+      // Filtro por rota
+      if (lane) filtered = filtered.filter(h => h.lanes && h.lanes.includes(lane));
+      // NOTA: Filtros por rank e days dependeriam de dados reais, aqui é só para manter formato
+
       let any = false;
-      HEROES.forEach(hero => {
+      filtered.forEach(hero => {
         const card = document.createElement("div");
         card.className = "card";
         card.innerHTML = `
           <img src="${hero.img}" alt="${hero.name}">
           <div class="hero-name">${hero.name}</div>
-          <div class="hero-meta">${hero.role.charAt(0).toUpperCase() + hero.role.slice(1)} &ndash; ${hero.lane.charAt(0).toUpperCase() + hero.lane.slice(1)}</div>
+          <div class="hero-meta">${capitalize(hero.role)}</div>
+          <div class="hero-routes${hero.lanes.length === 1 ? ' single' : ''}">
+            ${hero.lanes.map(ln =>
+              `<span class="hero-route"><img src="${ROUTE_ICONS[ln]}" width="60" height="60" alt="${ln}"></span>`
+            ).join('')}
+          </div>
         `;
         const tierBox = document.getElementById(`tier-${hero.tier}`);
         if (tierBox) {
@@ -231,11 +265,19 @@
         }
       });
 
-      // Exibe 'Nenhum herói encontrado' caso não haja resultados
       document.getElementById('noResults').classList.toggle('hidden', any);
     }
 
-    // Chame renderHeroes ao carregar
+    function capitalize(str) {
+      return str.charAt(0).toUpperCase() + str.slice(1);
+    }
+
+    // Eventos dos filtros para atualizar a tier list
+    ["rank", "days", "role", "lane"].forEach(id => {
+      document.getElementById(id).addEventListener('change', renderHeroes);
+    });
+
+    // Inicializa a listagem
     renderHeroes();
   </script>
 </body>
