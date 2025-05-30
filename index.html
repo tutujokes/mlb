@@ -131,17 +131,16 @@
             const role = info.role || '';
             // Rotas
             let roadsortTitles = [];
+            let iconCount = 0;
             let roadsortHtml = '';
             if (Array.isArray(info.roadsort)) {
               roadsortTitles = info.roadsort.map(rs => (rs.data && rs.data.road_sort_title) ? rs.data.road_sort_title : '').filter(Boolean);
+              iconCount = info.roadsort.length;
               roadsortHtml = info.roadsort.map(rs => {
                 const data = rs.data || {};
-                return `
-                  <span class="hero-route">
-                    ${data.road_sort_icon ? `<img src="${data.road_sort_icon}" alt="${data.road_sort_title}" title="${data.road_sort_title}">` : ''}
-                    ${data.road_sort_title || ''}
-                  </span>
-                `;
+                return data.road_sort_icon
+                  ? `<span class="hero-route"><img src="${data.road_sort_icon}" alt="" title="${data.road_sort_title}"></span>`
+                  : '';
               }).join('');
             }
 
@@ -151,12 +150,23 @@
             el.setAttribute('data-routes', roadsortTitles.join('|').toLowerCase());
             el.setAttribute('data-id', heroId || '');
             el.setAttribute('data-name', hero.name);
-            el.innerHTML = `
-              <img src="${hero.head}" alt="${hero.name}">
-              <div class="hero-name">${hero.name}</div>
-              <div class="hero-meta">${winRate}% WR</div>
-              <div class="hero-routes">${roadsortHtml}</div>
-            `;
+
+            // Adiciona a classe single quando só tem 1 rota
+            if (iconCount === 1) {
+              el.innerHTML = `
+                <img src="${hero.head}" alt="${hero.name}">
+                <div class="hero-name">${hero.name}</div>
+                <div class="hero-meta">${winRate}% WR</div>
+                <div class="hero-routes single">${roadsortHtml}</div>
+              `;
+            } else {
+              el.innerHTML = `
+                <img src="${hero.head}" alt="${hero.name}">
+                <div class="hero-name">${hero.name}</div>
+                <div class="hero-meta">${winRate}% WR</div>
+                <div class="hero-routes">${roadsortHtml}</div>
+              `;
+            }
 
             tierCards.push(el);
 
