@@ -3,7 +3,6 @@ body {
   background-color: #f7f7f8;
   margin: 20px;
 }
-
 h1 {
   font-size: 2rem;
   font-weight: 700;
@@ -11,14 +10,11 @@ h1 {
   margin-bottom: 1.5rem;
   color: #23272f;
 }
-
-/* Minimalist/modern select styling */
 label {
   font-size: 1rem;
   color: #23272f;
   margin-right: 6px;
 }
-
 select {
   appearance: none;
   outline: none;
@@ -38,7 +34,6 @@ select:focus {
   border: 1.5px solid #7e5bef;
   box-shadow: 0 2px 8px #7e5bef22;
 }
-
 .tier-box {
   background-color: #f3f4f6;
   border-radius: 8px;
@@ -47,7 +42,6 @@ select:focus {
   position: relative;
   box-shadow: 0 1px 4px rgba(0,0,0,0.05);
 }
-
 .tier-label {
   position: absolute;
   left: 0;
@@ -64,7 +58,6 @@ select:focus {
   text-orientation: mixed;
   border-radius: 8px 0 0 8px;
 }
-
 .tier-label.ss {
   background-color: #e53935;
 }
@@ -75,13 +68,11 @@ select:focus {
   background-color: #ffb74d;
   color: #23272f;
 }
-
 .tier-container {
   display: flex;
   flex-wrap: wrap;
   gap: 10px;
 }
-
 .card {
   width: 130px;
   min-height: 150px;
@@ -99,7 +90,6 @@ select:focus {
 .card:hover {
   box-shadow: 0 4px 16px #7e5bef22;
 }
-
 .card > img[alt] {
   width: 62px;
   height: 62px;
@@ -109,7 +99,6 @@ select:focus {
   background: #232323;
   border: 2px solid #f3f4f6;
 }
-
 .hero-name {
   font-weight: 600;
   margin-top: 5px;
@@ -117,19 +106,16 @@ select:focus {
   font-size: 1rem;
   letter-spacing: -0.5px;
 }
-
 .hero-meta {
   font-size: 13px;
   color: #666;
   font-weight: 500;
 }
-
 .hero-role {
   font-size: 12px;
   color: #999;
   margin-top: 4px;
 }
-
 .hero-lane {
   position: absolute;
   top: 5px;
@@ -141,8 +127,6 @@ select:focus {
   border-radius: 4px;
   font-weight: bold;
 }
-
-/* ROTAS - Remove fundo preto, reduz tamanho, centraliza */
 .hero-routes {
   display: flex;
   gap: 6px;
@@ -154,8 +138,8 @@ select:focus {
   justify-content: center;
 }
 .hero-route img {
-  width: 60px !important;
-  height: 60px !important;
+  width: 21px !important;
+  height: 21px !important;
   border-radius: 50%;
   object-fit: cover;
   border: none !important;
@@ -167,12 +151,9 @@ select:focus {
 .hero-route span, .hero-route .route-name {
   display: none !important;
 }
-
 .hidden {
   display: none !important;
 }
-
-/* Filtro section minimalista */
 #filter-section {
   margin-bottom: 24px;
   margin-top: 18px;
@@ -184,8 +165,6 @@ select:focus {
   font-weight: 600;
   letter-spacing: -0.5px;
 }
-
-/* Loading animation - 3 dots */
 #loading {
   display: none;
   text-align: center;
@@ -195,7 +174,6 @@ select:focus {
   letter-spacing: 2px;
   height: 36px;
 }
-
 .lds-ellipsis {
   display: inline-block;
   position: relative;
