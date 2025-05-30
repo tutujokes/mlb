@@ -68,48 +68,71 @@
     <button onclick="filtrarTierList()">Buscar</button>
   </div>
   <script>
-    // Armazena info extra de cada herói para filtro
-    let allHeroesInfo = {};
+    // Mapeamento ID <-> Nome dos heróis (pegue do seu endpoint real!)
+    let heroIdToName = {};
+    let heroNameToId = {};
+    // Armazenamento de info extra por id (role/rotas)
+    let heroExtraInfo = {};
+    // Tierlist original para filtro/reset
+    let tierCards = [];
 
+    // Carrega o dicionário de id para nome
+    function fetchHeroMap() {
+      return fetch('https://mlbb-proxy.vercel.app/api/hero-list')
+        .then(res => res.json())
+        .then(map => {
+          heroIdToName = map;
+          heroNameToId = {};
+          Object.entries(map).forEach(([id, name]) => {
+            heroNameToId[name] = id;
+          });
+        });
+    }
+
+    // Carrega info de posição (rotas/função) para todos os heróis
+    function fetchAllHeroPositions() {
+      // Pega todos (role=all, lane=all, size=127, index=1)
+      return fetch('https://mlbb-proxy.vercel.app/api/hero-position?role=all&lane=all&size=127&index=1')
+        .then(res => res.json())
+        .then(json => {
+          heroExtraInfo = {};
+          (json.data.records || []).forEach(entry => {
+            const heroData = entry.data;
+            heroExtraInfo[String(heroData.hero_id)] = {
+              // role principal (primeiro sortid)
+              role: (heroData.hero && heroData.hero.data && heroData.hero.data.sortid && heroData.hero.data.sortid.length && heroData.hero.data.sortid[0] && heroData.hero.data.sortid[0].data && heroData.hero.data.sortid[0].data.sort_title) ? heroData.hero.data.sortid[0].data.sort_title.toLowerCase() : "",
+              // rotas
+              roadsort: (heroData.hero && heroData.hero.data && heroData.hero.data.roadsort) ? heroData.hero.data.roadsort : []
+            };
+          });
+        });
+    }
+
+    // Monta a tierlist
     function carregarTierList() {
       const rank = document.getElementById('rank').value;
       const days = document.getElementById('days').value;
       const url = `https://mlbb-proxy.vercel.app/api/hero-rank?source=rank&days=${days}&rank=${rank}&size=130&sort_field=win_rate&sort_order=desc`;
 
-      // Limpa containers
       document.getElementById('tier-ss').innerHTML = '';
       document.getElementById('tier-s').innerHTML = '';
       document.getElementById('tier-a').innerHTML = '';
-      allHeroesInfo = {};
+      tierCards = [];
 
-      fetch(url)
-        .then(res => res.json())
-        .then(json => {
+      // Carrega tudo em paralelo, só monta quando tiver tudo pronto
+      Promise.all([fetchHeroMap(), fetchAllHeroPositions(), fetch(url).then(res => res.json())])
+        .then(([_, __, json]) => {
           const records = json.data.records || [];
-          // Salva uma lista de promessas para buscar as rotas/função
-          const heroNameList = records.map(entry => entry.data.main_hero.data.name);
-          // Busca lista completa de heróis para mapear função/rotas
-          return fetch('https://mlbb-proxy.vercel.app/api/hero-list')
-            .then(res => res.json())
-            .then(listJson => ({ tierRecords: records, heroList: listJson.data }));
-        })
-        .then(({ tierRecords, heroList }) => {
-          // Mapeia nome para info extra (rotas, função)
-          heroList.forEach(h => {
-            allHeroesInfo[h.name] = {
-              role: h.role || "",
-              roadsort: h.roadsort || []
-            };
-          });
 
-          tierRecords.forEach(entry => {
+          records.forEach(entry => {
             const hero = entry.data.main_hero.data;
             const winRate = (entry.data.main_hero_win_rate * 100).toFixed(1);
 
-            // Rotas e função do herói
-            const info = allHeroesInfo[hero.name] || {};
-            // Função (role)
-            const role = (info.role || "").toLowerCase();
+            // Descobre o id do herói pelo nome
+            const heroId = heroNameToId[hero.name];
+            // Pega info extra
+            const info = heroExtraInfo[heroId] || {};
+            const role = info.role || '';
             // Rotas
             let roadsortTitles = [];
             let roadsortHtml = '';
@@ -130,12 +153,16 @@
             el.className = 'card';
             el.setAttribute('data-role', role);
             el.setAttribute('data-routes', roadsortTitles.join('|').toLowerCase());
+            el.setAttribute('data-id', heroId || '');
+            el.setAttribute('data-name', hero.name);
             el.innerHTML = `
               <img src="${hero.head}" alt="${hero.name}">
               <div class="hero-name">${hero.name}</div>
               <div class="hero-meta">${winRate}% WR</div>
               <div class="hero-routes">${roadsortHtml}</div>
             `;
+
+            tierCards.push(el);
 
             if (winRate >= 54) {
               document.getElementById('tier-ss').appendChild(el);
@@ -157,8 +184,8 @@
       const lane = document.getElementById('lane').value.toLowerCase();
 
       document.querySelectorAll('.tier-container .card').forEach(card => {
-        const heroRole = card.getAttribute('data-role') || '';
-        const heroRoutes = card.getAttribute('data-routes') || '';
+        const heroRole = (card.getAttribute('data-role') || '').toLowerCase();
+        const heroRoutes = (card.getAttribute('data-routes') || '').toLowerCase();
         let mostra = true;
         if (role && !heroRole.includes(role)) mostra = false;
         if (lane && !heroRoutes.includes(lane)) mostra = false;
