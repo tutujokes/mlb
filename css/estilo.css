@@ -156,16 +156,18 @@ body[data-theme="dark"] .flag-dropdown {
   background: var(--bg-alt);
   box-sizing: border-box;
 }
-.filters-row.bg-alt {
-  background: var(--bg-alt);
-}
+.filters-row.bg-alt { background: var(--bg-alt); }
 .filter-group {
   display: flex;
   align-items: center;
   gap: 9px;
 }
-.label-inline {
-  margin-left: 10px;
+.label-inline { margin-left: 10px; }
+.filter-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #6366f1;
+  margin-right: 14px;
 }
 .filters-row label, .filters-row .filter-title { font-size: 1.1rem; font-weight: 500; color: #6366f1; margin: 0 3px;}
 .filter-title { font-weight: 600; margin-right: 6px;}
@@ -368,4 +370,4 @@ body[data-theme="dark"] .filters-row select {
   .filters-row { flex-direction: column; gap: 14px 0; padding: 10px 4px;}
   .filter-group { width: 100%; justify-content: flex-start;}
   .main-title { font-size: 1.7rem; }
-    }
+  }
