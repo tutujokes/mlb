@@ -26,7 +26,6 @@
     <option value="15">15</option>
     <option value="30">30</option>
   </select>
-
   <div id="filter-section">
     <h2>Filtrar por Função e Rota</h2>
     <label for="role">Função:</label>
@@ -68,17 +67,13 @@
     <div id="tier-a" class="tier-container"></div>
   </div>
   <script>
-    // ====== Cache local (sessão) =======
     const HERO_MAP_CACHE_KEY = 'mlbb_hero_map';
     const HERO_POSITION_CACHE_KEY = 'mlbb_hero_positions';
-
     let heroIdToName = null;
     let heroNameToId = null;
     let heroExtraInfo = null;
     let tierCards = [];
     let tierRecords = [];
-
-    // Cache fetch helper
     function fetchWithCache(url, key, expireMinutes = 120) {
       const now = Date.now();
       const cached = sessionStorage.getItem(key);
@@ -97,8 +92,6 @@
           return json;
         });
     }
-
-    // Carrega o dicionário de id para nome UMA VEZ (cache sessão)
     function fetchHeroMap() {
       if (heroIdToName && heroNameToId) return Promise.resolve();
       return fetchWithCache(
@@ -112,8 +105,6 @@
         });
       });
     }
-
-    // Carrega info de posição UMA VEZ (cache sessão)
     function fetchAllHeroPositions() {
       if (heroExtraInfo) return Promise.resolve();
       return fetchWithCache(
@@ -130,26 +121,21 @@
         });
       });
     }
-
-    // Mostra/oculta animação de loading
     function showLoading(show=true) {
       document.getElementById('loading').style.display = show ? '' : 'none';
     }
-
-    // Monta a tierlist
     function carregarTierList() {
+      const loadingEl = document.getElementById('loading');
+      loadingEl.dataset.started = Date.now();
       showLoading(true);
-
       const rank = document.getElementById('rank').value;
       const days = document.getElementById('days').value;
       const url = `https://mlbb-proxy.vercel.app/api/hero-rank?source=rank&days=${days}&rank=${rank}&size=130&sort_field=win_rate&sort_order=desc`;
-
       document.getElementById('tier-ss').innerHTML = '';
       document.getElementById('tier-s').innerHTML = '';
       document.getElementById('tier-a').innerHTML = '';
       tierCards = [];
       tierRecords = [];
-
       Promise.all([
         fetchHeroMap(),
         fetchAllHeroPositions(),
@@ -158,19 +144,15 @@
       .then(([_, __, json]) => {
         const records = json.data.records || [];
         tierRecords = records;
-
         records.forEach(entry => {
           const hero = entry.data.main_hero.data;
           const winRate = (entry.data.main_hero_win_rate * 100).toFixed(1);
-
-          // Descobre o id do herói pelo nome
           const heroId = heroNameToId[hero.name];
           const info = heroExtraInfo[heroId] || {};
           const role = info.role || '';
           let roadsortTitles = [];
           let iconCount = 0;
           let roadsortHtml = '';
-
           if (Array.isArray(info.roadsort) && info.roadsort.length > 0) {
             roadsortTitles = info.roadsort.map(rs => (rs.data && rs.data.road_sort_title) ? rs.data.road_sort_title : '').filter(Boolean);
             iconCount = info.roadsort.length;
@@ -181,19 +163,15 @@
                 : '';
             }).join('');
           } else {
-            // Se não tem rota (ex: Miya), mostra div vazia para alinhamento
             iconCount = 0;
             roadsortHtml = '';
           }
-
           const el = document.createElement('div');
           el.className = 'card';
           el.setAttribute('data-role', role);
           el.setAttribute('data-routes', roadsortTitles.join('|').toLowerCase());
           el.setAttribute('data-id', heroId || '');
           el.setAttribute('data-name', hero.name);
-
-          // Adiciona a classe single quando só tem 1 rota
           if (iconCount === 1) {
             el.innerHTML = `
               <img src="${hero.head}" alt="${hero.name}">
@@ -209,7 +187,6 @@
               <div class="hero-routes">${roadsortHtml}</div>
             `;
           } else {
-            // Se não tem rota, mostra div vazia para alinhamento
             el.innerHTML = `
               <img src="${hero.head}" alt="${hero.name}">
               <div class="hero-name">${hero.name}</div>
@@ -217,9 +194,7 @@
               <div class="hero-routes" style="height:21px"></div>
             `;
           }
-
           tierCards.push(el);
-
           if (winRate >= 54) {
             document.getElementById('tier-ss').appendChild(el);
           } else if (winRate >= 51) {
@@ -228,19 +203,23 @@
             document.getElementById('tier-a').appendChild(el);
           }
         });
-        setTimeout(() => { showLoading(false); }, 1200); // 1.2 segundos de delay
+        const minLoading = 1000;
+        const started = loadingEl.dataset.started ? parseInt(loadingEl.dataset.started) : Date.now();
+        const elapsed = Date.now() - started;
+        const delay = Math.max(0, minLoading - elapsed);
+        setTimeout(() => {
+          showLoading(false);
+          loadingEl.dataset.started = "";
+        }, delay);
       })
       .catch(err => {
         console.error("Erro ao carregar tier list:", err);
         showLoading(false);
       });
     }
-
-    // Filtra os cards já existentes na tierlist
     function filtrarTierList() {
       const role = document.getElementById('role').value.toLowerCase();
       const lane = document.getElementById('lane').value.toLowerCase();
-
       document.querySelectorAll('.tier-container .card').forEach(card => {
         const heroRole = (card.getAttribute('data-role') || '').toLowerCase();
         const heroRoutes = (card.getAttribute('data-routes') || '').toLowerCase();
@@ -250,11 +229,8 @@
         card.classList.toggle('hidden', !mostra);
       });
     }
-
-    // Eventos automáticos de filtro/update
     document.addEventListener('DOMContentLoaded', function () {
       carregarTierList();
-
       document.getElementById('rank').addEventListener('change', carregarTierList);
       document.getElementById('days').addEventListener('change', carregarTierList);
       document.getElementById('role').addEventListener('change', filtrarTierList);
