@@ -155,12 +155,14 @@ body[data-theme="dark"] .flag-dropdown {
   border-radius: 10px;
   background: var(--bg-alt);
   box-sizing: border-box;
+  flex-wrap: wrap;
 }
 .filters-row.bg-alt { background: var(--bg-alt); }
 .filter-group {
   display: flex;
   align-items: center;
   gap: 9px;
+  /* ficam lado a lado */
 }
 .label-inline { margin-left: 10px; }
 .filter-title {
@@ -233,7 +235,7 @@ body[data-theme="dark"] .filters-row select {
   flex-wrap: wrap;
   justify-content: center;
   gap: 18px 24px;
-  padding: 8px 0 4px 0;
+  padding: 24px 0 4px 0; /* aumentou padding-top para afastar dos labels */
   min-height: 40px;
   position: relative;
 }
@@ -364,7 +366,7 @@ body[data-theme="dark"] .filters-row select {
   .header-moba { padding: 12px 8px 10px 8px; font-size: 1rem;}
   .tier-box { padding-left: 18px; }
   .tier-label { width: 28px; font-size: 1.1rem; }
-  .tier-container { gap: 12px 10px; }
+  .tier-container { padding: 10px 0 4px 0; }
   .card { min-width: 110px; max-width: 110px;}
   .footer-moba { font-size: 0.9rem; padding: 0 0.7rem; }
   .filters-row { flex-direction: column; gap: 14px 0; padding: 10px 4px;}
