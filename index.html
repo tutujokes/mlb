@@ -228,7 +228,7 @@
             document.getElementById('tier-a').appendChild(el);
           }
         });
-        showLoading(false);
+        setTimeout(() => { showLoading(false); }, 1200); // 1.2 segundos de delay
       })
       .catch(err => {
         console.error("Erro ao carregar tier list:", err);
