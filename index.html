@@ -7,11 +7,9 @@
   <meta name="description" content="Tier List Mobile Legends - Atualizado e filtrável por função, rota, rank e idioma.">
   <link rel="stylesheet" href="css/estilo.css">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
-  <!-- IMPORTANTE: FontAwesome -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
 </head>
 <body data-theme="light">
-  <!-- HEADER -->
   <header class="header-moba">
     <span class="logo-moba">moba.gg</span>
     <div class="header-actions">
@@ -32,47 +30,55 @@
 
   <main class="main-moba">
     <h1 class="main-title" data-i18n="title">Tier List - Mobile Legends</h1>
+    <!-- Filtros em duas linhas, cada linha com dois filtros lado a lado -->
     <div class="filters-row">
-      <label for="rank" data-i18n="rank_label">Rank:</label>
-      <select id="rank">
-        <option value="mythic" data-i18n="rank_mythic">Mítico</option>
-        <option value="legend" data-i18n="rank_legend">Lenda</option>
-        <option value="epic" data-i18n="rank_epic">Épico</option>
-        <option value="grandmaster" data-i18n="rank_grandmaster">Grão-mestre</option>
-        <option value="master" data-i18n="rank_master">Mestre</option>
-        <option value="elite" data-i18n="rank_elite">Elite</option>
-        <option value="warrior" data-i18n="rank_warrior">Guerreiro</option>
-      </select>
-      <label for="days" data-i18n="days_label">Dias:</label>
-      <select id="days">
-        <option value="1" data-i18n="days_1">1</option>
-        <option value="3" data-i18n="days_3">3</option>
-        <option value="7" selected data-i18n="days_7">7</option>
-        <option value="15" data-i18n="days_15">15</option>
-        <option value="30" data-i18n="days_30">30</option>
-      </select>
+      <div class="filter-group">
+        <label for="rank" data-i18n="rank_label">Rank:</label>
+        <select id="rank">
+          <option value="mythic" data-i18n="rank_mythic">Mítico</option>
+          <option value="legend" data-i18n="rank_legend">Lenda</option>
+          <option value="epic" data-i18n="rank_epic">Épico</option>
+          <option value="grandmaster" data-i18n="rank_grandmaster">Grão-mestre</option>
+          <option value="master" data-i18n="rank_master">Mestre</option>
+          <option value="elite" data-i18n="rank_elite">Elite</option>
+          <option value="warrior" data-i18n="rank_warrior">Guerreiro</option>
+        </select>
+      </div>
+      <div class="filter-group">
+        <label for="days" data-i18n="days_label">Dias:</label>
+        <select id="days">
+          <option value="1" data-i18n="days_1">1</option>
+          <option value="3" data-i18n="days_3">3</option>
+          <option value="7" selected data-i18n="days_7">7</option>
+          <option value="15" data-i18n="days_15">15</option>
+          <option value="30" data-i18n="days_30">30</option>
+        </select>
+      </div>
     </div>
     <div class="filters-row bg-alt">
-      <span class="filter-title" data-i18n="filter_title">Filtrar por Função e Rota</span>
-      <label for="role" data-i18n="role_label">Função:</label>
-      <select id="role">
-        <option value="" data-i18n="all_roles">Todas</option>
-        <option value="mage" data-i18n="role_mage">Mago</option>
-        <option value="marksman" data-i18n="role_marksman">Atirador</option>
-        <option value="tank" data-i18n="role_tank">Tanque</option>
-        <option value="assassin" data-i18n="role_assassin">Assassino</option>
-        <option value="fighter" data-i18n="role_fighter">Lutador</option>
-        <option value="support" data-i18n="role_support">Suporte</option>
-      </select>
-      <label for="lane" data-i18n="lane_label">Rota:</label>
-      <select id="lane">
-        <option value="" data-i18n="all_lanes">Todas</option>
-        <option value="mid" data-i18n="lane_mid">Meio</option>
-        <option value="gold" data-i18n="lane_gold">Ouro</option>
-        <option value="exp" data-i18n="lane_exp">EXP</option>
-        <option value="jungle" data-i18n="lane_jungle">Selva</option>
-        <option value="roam" data-i18n="lane_roam">Rotação</option>
-      </select>
+      <div class="filter-group">
+        <label for="role" data-i18n="role_label">Função:</label>
+        <select id="role">
+          <option value="" data-i18n="all_roles">Todas</option>
+          <option value="mage" data-i18n="role_mage">Mago</option>
+          <option value="marksman" data-i18n="role_marksman">Atirador</option>
+          <option value="tank" data-i18n="role_tank">Tanque</option>
+          <option value="assassin" data-i18n="role_assassin">Assassino</option>
+          <option value="fighter" data-i18n="role_fighter">Lutador</option>
+          <option value="support" data-i18n="role_support">Suporte</option>
+        </select>
+      </div>
+      <div class="filter-group">
+        <label for="lane" data-i18n="lane_label">Rota:</label>
+        <select id="lane">
+          <option value="" data-i18n="all_lanes">Todas</option>
+          <option value="mid" data-i18n="lane_mid">Meio</option>
+          <option value="gold" data-i18n="lane_gold">Ouro</option>
+          <option value="exp" data-i18n="lane_exp">EXP</option>
+          <option value="jungle" data-i18n="lane_jungle">Selva</option>
+          <option value="roam" data-i18n="lane_roam">Rotação</option>
+        </select>
+      </div>
     </div>
     <div class="tier-box tier-ss">
       <div class="tier-label ss">SS</div>
@@ -406,4 +412,4 @@
     });
   </script>
 </body>
-  </html>
+            </html>
