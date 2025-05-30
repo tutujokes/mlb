@@ -1,0 +1,133 @@
+<!DOCTYPE html><html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tier List MLBB</title>
+  <link rel="stylesheet" href="css/estilo.css">
+</head>
+<body>
+  <h1>Tier List - Mobile Legends</h1><label for="rank">Rank:</label> <select id="rank"> <option value="mythic">Mythic</option> <option value="legend">Legend</option> <option value="epic">Epic</option> <option value="glory">Glory</option> <option value="honor">Honor</option> <option value="all">Todos</option> </select>
+
+<label for="days">Dias:</label> <select id="days"> <option value="1">1</option> <option value="3">3</option> <option value="7" selected>7</option> <option value="15">15</option> <option value="30">30</option> </select>
+
+<button onclick="carregarTierList()">Atualizar</button>
+
+  <div class="tier-box tier-ss">
+    <div class="tier-label ss">SS</div>
+    <div id="tier-ss" class="tier-container"></div>
+  </div>  <div class="tier-box tier-s">
+    <div class="tier-label s">S</div>
+    <div id="tier-s" class="tier-container"></div>
+  </div>  <div class="tier-box tier-a">
+    <div class="tier-label a">A</div>
+    <div id="tier-a" class="tier-container"></div>
+  </div>  <div id="filter-section">
+    <h2>Filtrar por Função e Rota</h2>
+    <label for="role">Função:</label>
+    <select id="role">
+      <option value="">Todas</option>
+      <option value="mage">Mage</option>
+      <option value="marksman">Marksman</option>
+      <option value="tank">Tank</option>
+      <option value="assassin">Assassin</option>
+      <option value="fighter">Fighter</option>
+      <option value="support">Support</option>
+    </select><label for="lane">Rota:</label>
+<select id="lane">
+  <option value="">Todas</option>
+  <option value="mid">Mid</option>
+  <option value="gold">Gold</option>
+  <option value="exp">EXP</option>
+  <option value="jungle">Jungle</option>
+  <option value="roam">Roam</option>
+</select>
+
+<button onclick="filtrarPorPosicao()">Buscar</button>
+
+<div id="filtered-heroes"></div>
+
+  </div>  <script>
+    function carregarTierList() {
+      const rank = document.getElementById('rank').value;
+      const days = document.getElementById('days').value;
+      const url = `https://mlbb-proxy.vercel.app/api/heroes?source=rank&days=${days}&rank=${rank}&size=130&sort_field=win_rate&sort_order=desc`;
+
+      document.getElementById('tier-ss').innerHTML = '';
+      document.getElementById('tier-s').innerHTML = '';
+      document.getElementById('tier-a').innerHTML = '';
+
+      fetch(url)
+        .then(res => res.json())
+        .then(json => {
+          const records = json.data.records || [];
+
+          records.forEach(entry => {
+            const hero = entry.data.main_hero.data;
+            const winRate = (entry.data.main_hero_win_rate * 100).toFixed(1);
+
+            const el = document.createElement('div');
+            el.className = 'card';
+            el.innerHTML = `
+              <img src="${hero.head}" alt="${hero.name}">
+              <div class="hero-name">${hero.name}</div>
+              <div class="hero-meta">${winRate}% WR</div>
+              <div class="hero-role">${hero.lane || '—'}</div>
+            `;
+
+            if (winRate >= 54) {
+              document.getElementById('tier-ss').appendChild(el);
+            } else if (winRate >= 51) {
+              document.getElementById('tier-s').appendChild(el);
+            } else {
+              document.getElementById('tier-a').appendChild(el);
+            }
+          });
+        })
+        .catch(err => {
+          console.error("Erro ao carregar tier list:", err);
+        });
+    }
+
+    function filtrarPorPosicao() {
+      const role = document.getElementById('role').value;
+      const lane = document.getElementById('lane').value;
+      const params = new URLSearchParams();
+      if (role) params.append('role', role);
+      if (lane) params.append('lane', lane);
+      params.append('size', 30);
+      params.append('index', 1);
+
+      const url = `https://mlbb-proxy.vercel.app/api/hero-position?${params.toString()}`;
+
+      document.getElementById('filtered-heroes').innerHTML = '';
+
+      fetch(url)
+        .then(res => res.json())
+        .then(json => {
+          const records = json.data.records || [];
+          if (records.length === 0) {
+            document.getElementById('filtered-heroes').innerText = 'Nenhum herói encontrado.';
+            return;
+          }
+
+          records.forEach(entry => {
+            const hero = entry.hero.data;
+            const el = document.createElement('div');
+            el.className = 'card';
+            el.innerHTML = `
+              <img src="${hero.head}" alt="${hero.name}">
+              <div class="hero-name">${hero.name}</div>
+              <div class="hero-meta">${hero.role}</div>
+              <div class="hero-role">${hero.lane || '—'}</div>
+            `;
+            document.getElementById('filtered-heroes').appendChild(el);
+          });
+        })
+        .catch(err => {
+          console.error("Erro ao filtrar heróis:", err);
+        });
+    }
+
+    carregarTierList();
+  </script></body>
+</html>
