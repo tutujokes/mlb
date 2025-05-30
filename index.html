@@ -135,11 +135,11 @@
           }
 
           records.forEach(entry => {
-            // Corrigido: acesso via entry.data.hero.data
-            const hero = entry.data && entry.data.hero && entry.data.hero.data ? entry.data.hero.data : null;
+            // Use hero_id diretamente da resposta!
+            const heroData = entry.data;
+            const hero = heroData && heroData.hero && heroData.hero.data ? heroData.hero.data : null;
             if (!hero) return;
-            // Mostra o id para debug
-            let idHtml = hero.id ? `<div class="hero-id">ID: ${hero.id}</div>` : '<div class="hero-id" style="color:red;">ID não encontrado</div>';
+            let idHtml = heroData.hero_id !== undefined ? `<div class="hero-id">ID: ${heroData.hero_id}</div>` : '<div class="hero-id" style="color:red;">ID não encontrado</div>';
             // Mostra as posições (rotas)
             let roadsortHtml = '';
             if (Array.isArray(hero.roadsort)) {
