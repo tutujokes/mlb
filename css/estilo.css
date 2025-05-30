@@ -184,3 +184,59 @@ select:focus {
   font-weight: 600;
   letter-spacing: -0.5px;
 }
+
+/* Loading animation - 3 dots */
+#loading {
+  display: none;
+  text-align: center;
+  margin: 2em 0 2.5em 0;
+  font-size: 1.2em;
+  color: #7e5bef;
+  letter-spacing: 2px;
+  height: 36px;
+}
+
+.lds-ellipsis {
+  display: inline-block;
+  position: relative;
+  width: 62px;
+  height: 24px;
+  top: 7px;
+}
+.lds-ellipsis div {
+  position: absolute;
+  top: 10px;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #7e5bef;
+  animation-timing-function: cubic-bezier(0, 1, 1, 0);
+}
+.lds-ellipsis div:nth-child(1) {
+  left: 6px;
+  animation: lds-ellipsis1 0.9s infinite;
+}
+.lds-ellipsis div:nth-child(2) {
+  left: 6px;
+  animation: lds-ellipsis2 0.9s infinite;
+}
+.lds-ellipsis div:nth-child(3) {
+  left: 26px;
+  animation: lds-ellipsis2 0.9s infinite;
+}
+.lds-ellipsis div:nth-child(4) {
+  left: 46px;
+  animation: lds-ellipsis3 0.9s infinite;
+}
+@keyframes lds-ellipsis1 {
+  0% { transform: scale(0); }
+  100% { transform: scale(1); }
+}
+@keyframes lds-ellipsis2 {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(20px); }
+}
+@keyframes lds-ellipsis3 {
+  0% { transform: scale(1); }
+  100% { transform: scale(0); }
+}
