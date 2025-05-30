@@ -175,6 +175,68 @@
     });
     document.getElementById('flagBR').addEventListener('keypress', function(e){ if(e.key==='Enter'){setLanguage('pt-BR');showFlagDropdown(false);} });
     document.getElementById('flagUS').addEventListener('keypress', function(e){ if(e.key==='Enter'){setLanguage('en-US');showFlagDropdown(false);} });
+
+    // HEROES MOCK DATA AND RENDER
+    // Você pode trocar isso por um fetch ou seus dados reais
+    const HEROES = [
+      {
+        name: "Lancelot",
+        tier: "ss",
+        img: "https://static.wikia.nocookie.net/mobile-legends/images/5/51/Lancelot-MLBB.png",
+        role: "assassin",
+        lane: "jungle"
+      },
+      {
+        name: "Valentina",
+        tier: "ss",
+        img: "https://static.wikia.nocookie.net/mobile-legends/images/7/7d/Valentina-MLBB.png",
+        role: "mage",
+        lane: "mid"
+      },
+      {
+        name: "Fredrinn",
+        tier: "s",
+        img: "https://static.wikia.nocookie.net/mobile-legends/images/9/98/Fredrinn-MLBB.png",
+        role: "fighter",
+        lane: "exp"
+      },
+      {
+        name: "Claude",
+        tier: "a",
+        img: "https://static.wikia.nocookie.net/mobile-legends/images/e/ef/Claude-MLBB.png",
+        role: "marksman",
+        lane: "gold"
+      }
+    ];
+
+    function renderHeroes() {
+      // Limpa os containers
+      ["ss", "s", "a"].forEach(tier => {
+        document.getElementById(`tier-${tier}`).innerHTML = "";
+      });
+
+      let any = false;
+      HEROES.forEach(hero => {
+        const card = document.createElement("div");
+        card.className = "card";
+        card.innerHTML = `
+          <img src="${hero.img}" alt="${hero.name}">
+          <div class="hero-name">${hero.name}</div>
+          <div class="hero-meta">${hero.role.charAt(0).toUpperCase() + hero.role.slice(1)} &ndash; ${hero.lane.charAt(0).toUpperCase() + hero.lane.slice(1)}</div>
+        `;
+        const tierBox = document.getElementById(`tier-${hero.tier}`);
+        if (tierBox) {
+          tierBox.appendChild(card);
+          any = true;
+        }
+      });
+
+      // Exibe 'Nenhum herói encontrado' caso não haja resultados
+      document.getElementById('noResults').classList.toggle('hidden', any);
+    }
+
+    // Chame renderHeroes ao carregar
+    renderHeroes();
   </script>
 </body>
 </html>
