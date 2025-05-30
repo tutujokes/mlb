@@ -50,7 +50,7 @@
     function carregarTierList() {
       const rank = document.getElementById('rank').value;
       const days = document.getElementById('days').value;
-      const url = `https://mlbb-proxy.vercel.app/api/heroes?source=rank&days=${days}&rank=${rank}&size=130&sort_field=win_rate&sort_order=desc`;
+      const url = `https://mlbb-proxy.vercel.app/api/hero-rank?source=rank&days=${days}&rank=${rank}&size=130&sort_field=win_rate&sort_order=desc`;
 
       document.getElementById('tier-ss').innerHTML = '';
       document.getElementById('tier-s').innerHTML = '';
