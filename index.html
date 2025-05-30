@@ -5,10 +5,10 @@
   <title>moba.gg</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="Tier List Mobile Legends - Atualizado e filtrável por função, rota, rank e idioma.">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
-  <!-- FontAwesome for theme icon -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
   <link rel="stylesheet" href="css/estilo.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <!-- IMPORTANTE: FontAwesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
 </head>
 <body data-theme="light">
   <!-- HEADER -->
@@ -20,11 +20,11 @@
       </button>
       <div class="lang-switch-wrap">
         <button id="langSwitch" class="lang-switch" title="Trocar idioma">
-          <span id="langFlag" class="flag"></span>
+          <span id="langFlag" class="flag" style="background-image:url('https://cdn.jsdelivr.net/gh/hjnilsson/country-flags/svg/br.svg');"></span>
         </button>
         <div id="flagDropdown" class="flag-dropdown hidden">
-          <span class="flag-option selected" id="flagBR" tabindex="0" aria-label="Português (Brasil)"></span>
-          <span class="flag-option" id="flagUS" tabindex="0" aria-label="English (US)"></span>
+          <span class="flag-option selected" id="flagBR" style="background-image:url('https://cdn.jsdelivr.net/gh/hjnilsson/country-flags/svg/br.svg');" data-lang="pt-BR" tabindex="0" aria-label="Português (Brasil)"></span>
+          <span class="flag-option" id="flagUS" style="background-image:url('https://cdn.jsdelivr.net/gh/hjnilsson/country-flags/svg/us.svg');" data-lang="en-US" tabindex="0" aria-label="English (US)"></span>
         </div>
       </div>
     </div>
@@ -33,59 +33,56 @@
   <main class="main-moba">
     <h1 class="main-title" data-i18n="title">Tier List - Mobile Legends</h1>
     <div class="filters-row">
-      <div class="filter-group">
-        <label for="rank" data-i18n="rank_label">Rank:</label>
-        <select id="rank">
-          <option value="mythic" data-i18n="rank_mythic">Mítico</option>
-          <option value="legend" data-i18n="rank_legend">Lenda</option>
-          <option value="epic" data-i18n="rank_epic">Épico</option>
-          <option value="grandmaster" data-i18n="rank_grandmaster">Grão-mestre</option>
-          <option value="master" data-i18n="rank_master">Mestre</option>
-          <option value="elite" data-i18n="rank_elite">Elite</option>
-          <option value="warrior" data-i18n="rank_warrior">Guerreiro</option>
-        </select>
-        <label for="days" data-i18n="days_label" class="label-inline">Dias:</label>
-        <select id="days">
-          <option value="1" data-i18n="days_1">1</option>
-          <option value="3" data-i18n="days_3">3</option>
-          <option value="7" selected data-i18n="days_7">7</option>
-          <option value="15" data-i18n="days_15">15</option>
-          <option value="30" data-i18n="days_30">30</option>
-        </select>
-      </div>
+      <label for="rank" data-i18n="rank_label">Rank:</label>
+      <select id="rank">
+        <option value="mythic" data-i18n="rank_mythic">Mítico</option>
+        <option value="legend" data-i18n="rank_legend">Lenda</option>
+        <option value="epic" data-i18n="rank_epic">Épico</option>
+        <option value="grandmaster" data-i18n="rank_grandmaster">Grão-mestre</option>
+        <option value="master" data-i18n="rank_master">Mestre</option>
+        <option value="elite" data-i18n="rank_elite">Elite</option>
+        <option value="warrior" data-i18n="rank_warrior">Guerreiro</option>
+      </select>
+      <label for="days" data-i18n="days_label">Dias:</label>
+      <select id="days">
+        <option value="1" data-i18n="days_1">1</option>
+        <option value="3" data-i18n="days_3">3</option>
+        <option value="7" selected data-i18n="days_7">7</option>
+        <option value="15" data-i18n="days_15">15</option>
+        <option value="30" data-i18n="days_30">30</option>
+      </select>
     </div>
     <div class="filters-row bg-alt">
-      <div class="filter-group">
-        <label for="role" data-i18n="role_label">Função:</label>
-        <select id="role">
-          <option value="" data-i18n="all_roles">Todas</option>
-          <option value="mage" data-i18n="role_mage">Mago</option>
-          <option value="marksman" data-i18n="role_marksman">Atirador</option>
-          <option value="tank" data-i18n="role_tank">Tanque</option>
-          <option value="assassin" data-i18n="role_assassin">Assassino</option>
-          <option value="fighter" data-i18n="role_fighter">Lutador</option>
-          <option value="support" data-i18n="role_support">Suporte</option>
-        </select>
-        <label for="lane" data-i18n="lane_label" class="label-inline">Rota:</label>
-        <select id="lane">
-          <option value="" data-i18n="all_lanes">Todas</option>
-          <option value="mid" data-i18n="lane_mid">Meio</option>
-          <option value="gold" data-i18n="lane_gold">Ouro</option>
-          <option value="exp" data-i18n="lane_exp">EXP</option>
-          <option value="jungle" data-i18n="lane_jungle">Selva</option>
-          <option value="roam" data-i18n="lane_roam">Rotação</option>
-        </select>
-      </div>
+      <span class="filter-title" data-i18n="filter_title">Filtrar por Função e Rota</span>
+      <label for="role" data-i18n="role_label">Função:</label>
+      <select id="role">
+        <option value="" data-i18n="all_roles">Todas</option>
+        <option value="mage" data-i18n="role_mage">Mago</option>
+        <option value="marksman" data-i18n="role_marksman">Atirador</option>
+        <option value="tank" data-i18n="role_tank">Tanque</option>
+        <option value="assassin" data-i18n="role_assassin">Assassino</option>
+        <option value="fighter" data-i18n="role_fighter">Lutador</option>
+        <option value="support" data-i18n="role_support">Suporte</option>
+      </select>
+      <label for="lane" data-i18n="lane_label">Rota:</label>
+      <select id="lane">
+        <option value="" data-i18n="all_lanes">Todas</option>
+        <option value="mid" data-i18n="lane_mid">Meio</option>
+        <option value="gold" data-i18n="lane_gold">Ouro</option>
+        <option value="exp" data-i18n="lane_exp">EXP</option>
+        <option value="jungle" data-i18n="lane_jungle">Selva</option>
+        <option value="roam" data-i18n="lane_roam">Rotação</option>
+      </select>
     </div>
-    <div class="tier-box tier-ss mb-8">
+    <div class="tier-box tier-ss">
       <div class="tier-label ss">SS</div>
       <div id="tier-ss" class="tier-container"></div>
     </div>
-    <div class="tier-box tier-s mb-8">
+    <div class="tier-box tier-s">
       <div class="tier-label s">S</div>
       <div id="tier-s" class="tier-container"></div>
     </div>
-    <div class="tier-box tier-a mb-8">
+    <div class="tier-box tier-a">
       <div class="tier-label a">A</div>
       <div id="tier-a" class="tier-container"></div>
     </div>
@@ -111,7 +108,228 @@
   </footer>
 
   <script>
-    // Troca de Tema (icone FontAwesome)
+    // Traduções
+    const translations = {
+      'pt-BR': {
+        title: "Tier List - Mobile Legends",
+        rank_label: "Rank:",
+        rank_mythic: "Mítico",
+        rank_legend: "Lenda",
+        rank_epic: "Épico",
+        rank_grandmaster: "Grão-mestre",
+        rank_master: "Mestre",
+        rank_elite: "Elite",
+        rank_warrior: "Guerreiro",
+        days_label: "Dias:",
+        days_1: "1",
+        days_3: "3",
+        days_7: "7",
+        days_15: "15",
+        days_30: "30",
+        filter_title: "Filtrar por Função e Rota",
+        role_label: "Função:",
+        role_mage: "Mago",
+        role_marksman: "Atirador",
+        role_tank: "Tanque",
+        role_assassin: "Assassino",
+        role_fighter: "Lutador",
+        role_support: "Suporte",
+        all_roles: "Todas",
+        lane_label: "Rota:",
+        lane_mid: "Meio",
+        lane_gold: "Ouro",
+        lane_exp: "EXP",
+        lane_jungle: "Selva",
+        lane_roam: "Rotação",
+        all_lanes: "Todas",
+        no_heroes: "Nenhum herói encontrado."
+      },
+      'en-US': {
+        title: "Tier List - Mobile Legends",
+        rank_label: "Rank:",
+        rank_mythic: "Mythic",
+        rank_legend: "Legend",
+        rank_epic: "Epic",
+        rank_grandmaster: "Grandmaster",
+        rank_master: "Master",
+        rank_elite: "Elite",
+        rank_warrior: "Warrior",
+        days_label: "Days:",
+        days_1: "1",
+        days_3: "3",
+        days_7: "7",
+        days_15: "15",
+        days_30: "30",
+        filter_title: "Filter by Role and Lane",
+        role_label: "Role:",
+        role_mage: "Mage",
+        role_marksman: "Marksman",
+        role_tank: "Tank",
+        role_assassin: "Assassin",
+        role_fighter: "Fighter",
+        role_support: "Support",
+        all_roles: "All",
+        lane_label: "Lane:",
+        lane_mid: "Mid",
+        lane_gold: "Gold",
+        lane_exp: "EXP",
+        lane_jungle: "Jungle",
+        lane_roam: "Roam",
+        all_lanes: "All",
+        no_heroes: "No heroes found."
+      }
+    };
+
+    let heroIdToName = {};
+    let heroNameToId = {};
+    let heroExtraInfo = {};
+    let tierCards = [];
+    let tierRecords = [];
+    let currentLang = 'pt-BR';
+
+    function fetchHeroMap() {
+      return fetch('https://mlbb-proxy.vercel.app/api/hero-list')
+        .then(res => res.json())
+        .then(map => {
+          heroIdToName = map;
+          heroNameToId = {};
+          Object.entries(map).forEach(([id, name]) => {
+            heroNameToId[name] = id;
+          });
+        });
+    }
+
+    function fetchAllHeroPositions() {
+      return fetch('https://mlbb-proxy.vercel.app/api/hero-position?role=all&lane=all&size=127&index=1')
+        .then(res => res.json())
+        .then(json => {
+          heroExtraInfo = {};
+          (json.data.records || []).forEach(entry => {
+            const heroData = entry.data;
+            heroExtraInfo[String(heroData.hero_id)] = {
+              role: (heroData.hero && heroData.hero.data && heroData.hero.data.sortid &&
+                heroData.hero.data.sortid.length && heroData.hero.data.sortid[0] &&
+                heroData.hero.data.sortid[0].data && heroData.hero.data.sortid[0].data.sort_title)
+                ? heroData.hero.data.sortid[0].data.sort_title.toLowerCase() : "",
+              roadsort: (heroData.hero && heroData.hero.data && heroData.hero.data.roadsort)
+                ? heroData.hero.data.roadsort : []
+            };
+          });
+        });
+    }
+
+    function carregarTierList() {
+      const rank = document.getElementById('rank').value;
+      const days = document.getElementById('days').value;
+      const url = `https://mlbb-proxy.vercel.app/api/hero-rank?source=rank&days=${days}&rank=${rank}&size=130&sort_field=win_rate&sort_order=desc`;
+
+      document.getElementById('tier-ss').innerHTML = '';
+      document.getElementById('tier-s').innerHTML = '';
+      document.getElementById('tier-a').innerHTML = '';
+      document.getElementById('noResults').classList.add('hidden');
+      tierCards = [];
+      tierRecords = [];
+
+      Promise.all([fetchHeroMap(), fetchAllHeroPositions(), fetch(url).then(res => res.json())])
+        .then(([_, __, json]) => {
+          const records = json.data.records || [];
+          tierRecords = records;
+          let count = {ss:0,s:0,a:0};
+
+          records.forEach(entry => {
+            const hero = entry.data.main_hero.data;
+            const winRate = (entry.data.main_hero_win_rate * 100).toFixed(1);
+            const heroId = heroNameToId[hero.name];
+            const info = heroExtraInfo[heroId] || {};
+            let roadsortTitles = [];
+            let iconCount = 0;
+            let roadsortHtml = '';
+
+            if (Array.isArray(info.roadsort) && info.roadsort.length > 0) {
+              roadsortTitles = info.roadsort.map(rs =>
+                (rs.data && rs.data.road_sort_title) ? rs.data.road_sort_title : ''
+              ).filter(Boolean);
+              iconCount = info.roadsort.length;
+              roadsortHtml = info.roadsort.map(rs => {
+                const data = rs.data || {};
+                return data.road_sort_icon
+                  ? `<span class="hero-route"><img src="${data.road_sort_icon}" alt="" title="${data.road_sort_title}" width="60" height="60"></span>`
+                  : '';
+              }).join('');
+            }
+
+            const el = document.createElement('div');
+            el.className = 'card';
+            el.setAttribute('data-role', (info.role || '').toLowerCase());
+            el.setAttribute('data-routes', roadsortTitles.join('|').toLowerCase());
+            el.setAttribute('data-id', heroId || '');
+            el.setAttribute('data-name', hero.name);
+
+            el.innerHTML = `
+              <img src="${hero.head}" alt="Retrato do herói ${hero.name}" loading="lazy">
+              <div class="hero-name">${hero.name}</div>
+              <div class="hero-meta">${winRate}% WR</div>
+              <div class="hero-routes ${iconCount === 1 ? 'single' : ''}">${roadsortHtml}</div>
+            `;
+
+            tierCards.push(el);
+
+            if (winRate >= 54) {
+              document.getElementById('tier-ss').appendChild(el); count.ss++;
+            } else if (winRate >= 51) {
+              document.getElementById('tier-s').appendChild(el); count.s++;
+            } else {
+              document.getElementById('tier-a').appendChild(el); count.a++;
+            }
+          });
+
+          if (!count.ss && !count.s && !count.a) {
+            document.getElementById('noResults').classList.remove('hidden');
+          }
+          filtrarTierList(); // faz filtro se já está selecionado
+        })
+        .catch(err => {
+          document.getElementById('noResults').classList.remove('hidden');
+        });
+    }
+
+    function filtrarTierList() {
+      const role = document.getElementById('role').value.toLowerCase();
+      const lane = document.getElementById('lane').value.toLowerCase();
+      let visible = 0;
+      document.querySelectorAll('.tier-container .card').forEach(card => {
+        const heroRole = (card.getAttribute('data-role') || '').toLowerCase();
+        const heroRoutes = (card.getAttribute('data-routes') || '').toLowerCase();
+        let mostra = true;
+        if (role && !heroRole.includes(role)) mostra = false;
+        if (lane && !heroRoutes.includes(lane)) mostra = false;
+        card.classList.toggle('hidden', !mostra);
+        if (mostra) visible++;
+      });
+      document.getElementById('noResults').classList.toggle('hidden', visible !== 0);
+    }
+
+    // Tradução dinâmica
+    function translate(key) {
+      return translations[currentLang][key] || key;
+    }
+    function updateI18n() {
+      document.querySelectorAll('[data-i18n]').forEach(el => {
+        const key = el.getAttribute('data-i18n');
+        if (translations[currentLang][key]) {
+          el.textContent = translations[currentLang][key];
+        }
+      });
+      // Atualizar options de selects
+      document.querySelectorAll('option[data-i18n]').forEach(opt => {
+        const key = opt.getAttribute('data-i18n');
+        if (translations[currentLang][key]) {
+          opt.textContent = translations[currentLang][key];
+        }
+      });
+    }
+
+    // Modo noturno
     function setTheme(theme) {
       document.body.setAttribute('data-theme', theme);
       let icon = document.getElementById('themeIcon');
@@ -123,10 +341,9 @@
       localStorage.setItem('theme', theme);
     }
     function toggleTheme() {
-      const theme = document.body.getAttribute('data-theme') === "dark" ? "light" : "dark";
-      setTheme(theme);
+      const newTheme = document.body.getAttribute('data-theme') === "dark" ? "light" : "dark";
+      setTheme(newTheme);
     }
-    document.getElementById('themeSwitch').addEventListener('click', toggleTheme);
     (function() {
       let theme = localStorage.getItem('theme');
       if (!theme) {
@@ -135,150 +352,58 @@
       setTheme(theme);
     })();
 
-    // Troca de Idioma (flags)
-    function setFlagImages() {
-      document.getElementById('langFlag').style.backgroundImage =
-        (localStorage.getItem('lang') || document.documentElement.lang) === "en-US"
-        ? "url('https://cdn.jsdelivr.net/gh/hjnilsson/country-flags/svg/us.svg')"
-        : "url('https://cdn.jsdelivr.net/gh/hjnilsson/country-flags/svg/br.svg')";
-      document.getElementById('flagBR').style.backgroundImage =
-        "url('https://cdn.jsdelivr.net/gh/hjnilsson/country-flags/svg/br.svg')";
-      document.getElementById('flagUS').style.backgroundImage =
-        "url('https://cdn.jsdelivr.net/gh/hjnilsson/country-flags/svg/us.svg')";
-    }
+    // Troca de idioma
     function showFlagDropdown(show) {
       document.getElementById('flagDropdown').classList.toggle('hidden', !show);
     }
     function setLanguage(lang) {
+      currentLang = lang;
       document.documentElement.lang = lang;
-      localStorage.setItem('lang', lang);
-      setFlagImages();
+      updateI18n();
+      carregarTierList();
+      // flags
+      document.getElementById('langFlag').style.backgroundImage =
+        lang === "pt-BR"
+          ? "url('https://cdn.jsdelivr.net/gh/hjnilsson/country-flags/svg/br.svg')"
+          : "url('https://cdn.jsdelivr.net/gh/hjnilsson/country-flags/svg/us.svg')";
       document.getElementById('flagBR').classList.toggle('selected', lang === "pt-BR");
       document.getElementById('flagUS').classList.toggle('selected', lang === "en-US");
+      localStorage.setItem('lang', lang);
     }
-    (function() {
+
+    document.addEventListener('DOMContentLoaded', function () {
+      // idioma
       let lang = localStorage.getItem('lang');
       if (!lang) lang = navigator.language === "en-US" ? "en-US" : "pt-BR";
       setLanguage(lang);
-      setFlagImages();
-    })();
-    document.getElementById('langSwitch').addEventListener('click', function(e) {
-      showFlagDropdown(true);
-      e.stopPropagation();
-    });
-    document.getElementById('flagBR').addEventListener('click', function() { setLanguage('pt-BR'); showFlagDropdown(false); });
-    document.getElementById('flagUS').addEventListener('click', function() { setLanguage('en-US'); showFlagDropdown(false); });
-    document.addEventListener('click', function(e) {
-      if (!document.getElementById('flagDropdown').contains(e.target) && e.target.id !== "langSwitch") {
-        showFlagDropdown(false);
-      }
-    });
-    document.getElementById('flagBR').addEventListener('keypress', function(e){ if(e.key==='Enter'){setLanguage('pt-BR');showFlagDropdown(false);} });
-    document.getElementById('flagUS').addEventListener('keypress', function(e){ if(e.key==='Enter'){setLanguage('en-US');showFlagDropdown(false);} });
 
-    // Dados dos heróis e rotas (exemplo, adapte para seu backend)
-    const ROUTE_ICONS = {
-      mid: "https://static.wikia.nocookie.net/mobile-legends/images/5/5e/Lane_Mid.png",
-      gold: "https://static.wikia.nocookie.net/mobile-legends/images/c/c0/Lane_Gold.png",
-      exp: "https://static.wikia.nocookie.net/mobile-legends/images/5/5e/Lane_EXP.png",
-      jungle: "https://static.wikia.nocookie.net/mobile-legends/images/7/7e/Lane_Jungle.png",
-      roam: "https://static.wikia.nocookie.net/mobile-legends/images/6/61/Lane_Roam.png"
-    };
+      carregarTierList();
+      document.getElementById('rank').addEventListener('change', carregarTierList);
+      document.getElementById('days').addEventListener('change', carregarTierList);
+      document.getElementById('role').addEventListener('change', filtrarTierList);
+      document.getElementById('lane').addEventListener('change', filtrarTierList);
 
-    // Exemplo de lista, substitua pelo seu cálculo real (mantendo o formato)
-    const HEROES = [
-      {
-        name: "Lancelot",
-        tier: "ss",
-        img: "https://static.wikia.nocookie.net/mobile-legends/images/5/51/Lancelot-MLBB.png",
-        role: "assassin",
-        lanes: ["jungle"]
-      },
-      {
-        name: "Valentina",
-        tier: "ss",
-        img: "https://static.wikia.nocookie.net/mobile-legends/images/7/7d/Valentina-MLBB.png",
-        role: "mage",
-        lanes: ["mid"]
-      },
-      {
-        name: "Fredrinn",
-        tier: "s",
-        img: "https://static.wikia.nocookie.net/mobile-legends/images/9/98/Fredrinn-MLBB.png",
-        role: "fighter",
-        lanes: ["exp", "jungle"]
-      },
-      {
-        name: "Claude",
-        tier: "a",
-        img: "https://static.wikia.nocookie.net/mobile-legends/images/e/ef/Claude-MLBB.png",
-        role: "marksman",
-        lanes: ["gold"]
-      },
-      {
-        name: "Estes",
-        tier: "s",
-        img: "https://static.wikia.nocookie.net/mobile-legends/images/8/89/Estes-MLBB.png",
-        role: "support",
-        lanes: ["roam"]
-      }
-    ];
+      // Theme switch
+      document.getElementById('themeSwitch').addEventListener('click', toggleTheme);
 
-    function renderHeroes() {
-      // Limpa os containers
-      ["ss", "s", "a"].forEach(tier => {
-        document.getElementById(`tier-${tier}`).innerHTML = "";
+      // Language switch
+      const langSwitch = document.getElementById('langSwitch');
+      langSwitch.addEventListener('click', function(e) {
+        showFlagDropdown(true);
+        e.stopPropagation();
       });
-
-      // Pega filtros
-      const rank = document.getElementById('rank').value;
-      const days = document.getElementById('days').value;
-      const role = document.getElementById('role').value;
-      const lane = document.getElementById('lane').value;
-
-      let filtered = HEROES.slice();
-
-      // Filtro por função
-      if (role) filtered = filtered.filter(h => h.role === role);
-      // Filtro por rota
-      if (lane) filtered = filtered.filter(h => h.lanes && h.lanes.includes(lane));
-      // NOTA: Filtros por rank e days dependeriam de dados reais, aqui é só para manter formato
-
-      let any = false;
-      filtered.forEach(hero => {
-        const card = document.createElement("div");
-        card.className = "card";
-        card.innerHTML = `
-          <img src="${hero.img}" alt="${hero.name}">
-          <div class="hero-name">${hero.name}</div>
-          <div class="hero-meta">${capitalize(hero.role)}</div>
-          <div class="hero-routes${hero.lanes.length === 1 ? ' single' : ''}">
-            ${hero.lanes.map(ln =>
-              `<span class="hero-route"><img src="${ROUTE_ICONS[ln]}" width="60" height="60" alt="${ln}"></span>`
-            ).join('')}
-          </div>
-        `;
-        const tierBox = document.getElementById(`tier-${hero.tier}`);
-        if (tierBox) {
-          tierBox.appendChild(card);
-          any = true;
+      document.getElementById('flagBR').addEventListener('click', function() { setLanguage('pt-BR'); showFlagDropdown(false); });
+      document.getElementById('flagUS').addEventListener('click', function() { setLanguage('en-US'); showFlagDropdown(false); });
+      // fechar dropdown ao clicar fora
+      document.addEventListener('click', function(e) {
+        if (!document.getElementById('flagDropdown').contains(e.target) && e.target !== langSwitch) {
+          showFlagDropdown(false);
         }
       });
-
-      document.getElementById('noResults').classList.toggle('hidden', any);
-    }
-
-    function capitalize(str) {
-      return str.charAt(0).toUpperCase() + str.slice(1);
-    }
-
-    // Eventos dos filtros para atualizar a tier list
-    ["rank", "days", "role", "lane"].forEach(id => {
-      document.getElementById(id).addEventListener('change', renderHeroes);
+      // acessibilidade: teclado
+      document.getElementById('flagBR').addEventListener('keypress', function(e){ if(e.key==='Enter'){setLanguage('pt-BR');showFlagDropdown(false);} });
+      document.getElementById('flagUS').addEventListener('keypress', function(e){ if(e.key==='Enter'){setLanguage('en-US');showFlagDropdown(false);} });
     });
-
-    // Inicializa a listagem
-    renderHeroes();
   </script>
 </body>
-</html>
+  </html>
