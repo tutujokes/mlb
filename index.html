@@ -188,6 +188,8 @@
     let tierRecords = [];
     let currentLang = 'pt-BR';
 
+    let tierListRequestToken = 0;
+
     function fetchHeroMap() {
       return fetch('https://mlbb-proxy.vercel.app/api/hero-list')
         .then(res => res.json())
@@ -220,6 +222,8 @@
     }
 
     function carregarTierList() {
+      const myToken = ++tierListRequestToken;
+
       const rank = document.getElementById('rank').value;
       const days = document.getElementById('days').value;
       const url = `https://mlbb-proxy.vercel.app/api/hero-rank?source=rank&days=${days}&rank=${rank}&size=130&sort_field=win_rate&sort_order=desc`;
@@ -233,14 +237,19 @@
 
       Promise.all([fetchHeroMap(), fetchAllHeroPositions(), fetch(url).then(res => res.json())])
         .then(([_, __, json]) => {
+          if (myToken !== tierListRequestToken) return;
           const records = json.data.records || [];
           tierRecords = records;
           let count = {ss:0,s:0,a:0};
+          let idSet = new Set();
 
           records.forEach(entry => {
             const hero = entry.data.main_hero.data;
             const winRate = (entry.data.main_hero_win_rate * 100).toFixed(1);
             const heroId = heroNameToId[hero.name];
+            if (!heroId || idSet.has(heroId)) return;
+            idSet.add(heroId);
+
             const info = heroExtraInfo[heroId] || {};
             let roadsortTitles = [];
             let iconCount = 0;
@@ -287,7 +296,7 @@
           if (!count.ss && !count.s && !count.a) {
             document.getElementById('noResults').classList.remove('hidden');
           }
-          filtrarTierList(); // faz filtro se já está selecionado
+          filtrarTierList();
         })
         .catch(err => {
           document.getElementById('noResults').classList.remove('hidden');
@@ -310,7 +319,6 @@
       document.getElementById('noResults').classList.toggle('hidden', visible !== 0);
     }
 
-    // Tradução dinâmica
     function translate(key) {
       return translations[currentLang][key] || key;
     }
@@ -321,7 +329,6 @@
           el.textContent = translations[currentLang][key];
         }
       });
-      // Atualizar options de selects
       document.querySelectorAll('option[data-i18n]').forEach(opt => {
         const key = opt.getAttribute('data-i18n');
         if (translations[currentLang][key]) {
@@ -330,7 +337,6 @@
       });
     }
 
-    // Modo noturno
     function setTheme(theme) {
       document.body.setAttribute('data-theme', theme);
       let icon = document.getElementById('themeIcon');
@@ -353,7 +359,6 @@
       setTheme(theme);
     })();
 
-    // Troca de idioma
     function showFlagDropdown(show) {
       document.getElementById('flagDropdown').classList.toggle('hidden', !show);
     }
@@ -361,8 +366,6 @@
       currentLang = lang;
       document.documentElement.lang = lang;
       updateI18n();
-      carregarTierList();
-      // flags
       document.getElementById('langFlag').style.backgroundImage =
         lang === "pt-BR"
           ? "url('https://cdn.jsdelivr.net/gh/hjnilsson/country-flags/svg/br.svg')"
@@ -373,7 +376,6 @@
     }
 
     document.addEventListener('DOMContentLoaded', function () {
-      // idioma
       let lang = localStorage.getItem('lang');
       if (!lang) lang = navigator.language === "en-US" ? "en-US" : "pt-BR";
       setLanguage(lang);
@@ -384,26 +386,22 @@
       document.getElementById('role').addEventListener('change', filtrarTierList);
       document.getElementById('lane').addEventListener('change', filtrarTierList);
 
-      // Theme switch
       document.getElementById('themeSwitch').addEventListener('click', toggleTheme);
 
-      // Language switch
       const langSwitch = document.getElementById('langSwitch');
       langSwitch.addEventListener('click', function(e) {
         showFlagDropdown(true);
         e.stopPropagation();
       });
-      document.getElementById('flagBR').addEventListener('click', function() { setLanguage('pt-BR'); showFlagDropdown(false); });
-      document.getElementById('flagUS').addEventListener('click', function() { setLanguage('en-US'); showFlagDropdown(false); });
-      // fechar dropdown ao clicar fora
+      document.getElementById('flagBR').addEventListener('click', function() { setLanguage('pt-BR'); showFlagDropdown(false); carregarTierList(); });
+      document.getElementById('flagUS').addEventListener('click', function() { setLanguage('en-US'); showFlagDropdown(false); carregarTierList(); });
       document.addEventListener('click', function(e) {
         if (!document.getElementById('flagDropdown').contains(e.target) && e.target !== langSwitch) {
           showFlagDropdown(false);
         }
       });
-      // acessibilidade: teclado
-      document.getElementById('flagBR').addEventListener('keypress', function(e){ if(e.key==='Enter'){setLanguage('pt-BR');showFlagDropdown(false);} });
-      document.getElementById('flagUS').addEventListener('keypress', function(e){ if(e.key==='Enter'){setLanguage('en-US');showFlagDropdown(false);} });
+      document.getElementById('flagBR').addEventListener('keypress', function(e){ if(e.key==='Enter'){setLanguage('pt-BR'); showFlagDropdown(false); carregarTierList();} });
+      document.getElementById('flagUS').addEventListener('keypress', function(e){ if(e.key==='Enter'){setLanguage('en-US'); showFlagDropdown(false); carregarTierList();} });
     });
   </script>
 </body>
