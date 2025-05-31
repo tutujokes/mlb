@@ -267,17 +267,17 @@ function filtrarTierList() {
   setupHeroCardClicks();
 }
 
-// MODAL DETALHADO DE HERÓI
+// MODAL DETALHADO DE HERÓI - ALTERE OS ENDPOINTS AQUI!
 async function showHeroModal(heroId) {
   try {
     // Busca detalhes do herói
-    const detailsRes = await fetch(`https://mlbb-proxy.vercel.app/api/hero-detail?id=${heroId}`);
+    const detailsRes = await fetch(`https://mlbb-proxy.vercel.app/api/hero-detail?hero_id=${heroId}`);
     const detailsData = await detailsRes.json();
     const heroObj = detailsData?.data?.records?.[0]?.data?.hero?.data || {};
     const heroData = detailsData?.data?.records?.[0]?.data || {};
 
     // Busca stats do herói
-    const statsRes = await fetch(`https://mlbb-proxy.vercel.app/api/hero-detail-stats?id=${heroId}`);
+    const statsRes = await fetch(`https://mlbb-proxy.vercel.app/api/hero-detail-stats?main_heroid=${heroId}`);
     const statsData = await statsRes.json();
     const statsObj = statsData?.data?.records?.[0]?.data || {};
 
