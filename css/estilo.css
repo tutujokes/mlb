@@ -652,7 +652,25 @@ body[data-theme="dark"] .filters-row select {
   z-index: 3;
   font-variant-numeric: tabular-nums;
 }
-
+.build-item-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 7px;
+  margin: 0 2px;
+  vertical-align: middle;
+  background: #222;
+  box-shadow: 0 1px 4px #0002;
+}
+.build-plan {
+  display: inline-block;
+  margin-bottom: 6px;
+}
+.build-title {
+  font-weight: 600;
+  font-size: 0.95em;
+  margin-right: 6px;
+  color: #6366f1;
+}
 @media (max-width: 600px) {
   .hero-portrait { width: 60px; height: 60px; }
   #modal-hero-name { font-size: 1.1em; }
