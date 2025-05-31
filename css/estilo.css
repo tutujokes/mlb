@@ -8,6 +8,7 @@
   --gray-dark: #292b33;
   --gray-dark-alt: #23252c;
   --gray-dark-bg-alt: #2d2f37;
+  transition: background-color 0.33s, color 0.33s;
 }
 body[data-theme="dark"] {
   --bg-main: #23252c;
@@ -20,6 +21,7 @@ body[data-theme="dark"] {
   --gray-dark-bg-alt: #282a30;
   background: var(--bg-main);
   color: var(--text-main);
+  transition: background-color 0.33s, color 0.33s;
 }
 * { box-sizing: border-box; }
 html, body {
@@ -30,6 +32,15 @@ html, body {
   margin: 0;
   width: 100%;
   overflow-x: hidden;
+  transition: background-color 0.33s, color 0.33s;
+}
+.header-moba,
+.main-moba,
+.filters-row,
+.tier-box,
+.card,
+.footer-moba {
+  transition: background-color 0.33s, color 0.33s, border-color 0.33s;
 }
 .header-moba {
   background: linear-gradient(135deg, #6366f1 60%, #7e22ce 100%);
@@ -63,6 +74,7 @@ html, body {
 .theme-switch i {
   font-size: 1.4rem;
   pointer-events: none;
+  transition: color 0.3s;
 }
 .theme-switch:focus { outline: 2px solid #7e22ce; }
 .theme-switch:hover {
@@ -101,6 +113,7 @@ body[data-theme="dark"] .lang-switch:hover { background: #383a43;}
   background-size: cover;
   background-position: center;
   border: 1.5px solid #fff2;
+  transition: border-color 0.33s;
 }
 .flag-dropdown {
   display: flex; gap: 4px;
@@ -113,6 +126,7 @@ body[data-theme="dark"] .lang-switch:hover { background: #383a43;}
   z-index: 40;
   box-shadow: 0 2px 12px #0002;
   border: 1px solid #e5e7eb;
+  transition: background-color 0.33s, border-color 0.33s;
 }
 body[data-theme="dark"] .flag-dropdown {
   background: #2d2f37;
@@ -127,7 +141,7 @@ body[data-theme="dark"] .flag-dropdown {
   cursor: pointer;
   background-size: cover;
   background-position: center;
-  transition: border 0.15s;
+  transition: border 0.15s, background-color 0.33s;
   display: inline-block;
 }
 .flag-option.selected, .flag-option:focus { border-color: #6366f1;}
@@ -144,6 +158,7 @@ body[data-theme="dark"] .flag-dropdown {
   color: #6366f1;
   padding-left: 4px;
   padding-right: 4px;
+  transition: color 0.33s;
 }
 .filters-row {
   display: flex;
@@ -162,7 +177,6 @@ body[data-theme="dark"] .flag-dropdown {
   display: flex;
   align-items: center;
   gap: 9px;
-  /* ficam lado a lado */
 }
 .label-inline { margin-left: 10px; }
 .filter-title {
@@ -181,7 +195,7 @@ body[data-theme="dark"] .flag-dropdown {
   background: #fff;
   color: #23272f;
   font-family: inherit;
-  transition: border 0.2s, background 0.2s, color 0.2s;
+  transition: border 0.2s, background 0.33s, color 0.33s;
   min-width: 78px;
 }
 body[data-theme="dark"] .filters-row select {
@@ -201,7 +215,7 @@ body[data-theme="dark"] .filters-row select {
   margin-left: auto;
   margin-right: auto;
   box-shadow: 0 1px 8px rgba(30,40,60,0.07);
-  transition: background 0.3s;
+  transition: background-color 0.33s, color 0.33s;
 }
 .tier-label {
   position: absolute;
@@ -222,12 +236,13 @@ body[data-theme="dark"] .filters-row select {
   letter-spacing: -1px;
   z-index: 10;
   background: linear-gradient(135deg, #6366f1 60%, #7e22ce 100%);
+  transition: background 0.33s, color 0.33s;
 }
 .tier-label.ss { background: linear-gradient(135deg, #6366f1 60%, #7e22ce 100%);}
 .tier-label.s { background: linear-gradient(135deg, #7e22ce 30%, #6366f1 90%);}
 .tier-label.a {
   background: #ffb74d;
-  color: #fff !important; /* Corrige: letra "A" branca inclusive no dark */
+  color: #fff !important;
   text-shadow: 0 1px 12px #23272f42;
 }
 .tier-container {
@@ -235,9 +250,10 @@ body[data-theme="dark"] .filters-row select {
   flex-wrap: wrap;
   justify-content: center;
   gap: 18px 24px;
-  padding: 24px 0 4px 0; /* aumentou padding-top para afastar dos labels */
+  padding: 24px 0 4px 0;
   min-height: 40px;
   position: relative;
+  transition: background-color 0.33s, color 0.33s;
 }
 .card {
   border-radius: 12px;
@@ -251,7 +267,7 @@ body[data-theme="dark"] .filters-row select {
   align-items: center;
   background: var(--card-bg);
   box-shadow: 0 2px 8px rgba(30,40,60,0.09);
-  transition: box-shadow 0.17s, transform 0.13s;
+  transition: box-shadow 0.17s, transform 0.13s, background-color 0.33s, color 0.33s;
   animation: fadeInCard 0.5s cubic-bezier(.4,1.4,.5,1.01);
 }
 @keyframes fadeInCard {
@@ -271,6 +287,7 @@ body[data-theme="dark"] .filters-row select {
   background: #232323;
   border: 2px solid #f3f4f6;
   box-shadow: 0 1px 6px #6366f122;
+  transition: background 0.33s, border-color 0.33s;
 }
 .hero-name {
   font-weight: 600;
@@ -282,12 +299,14 @@ body[data-theme="dark"] .filters-row select {
   display: flex;
   align-items: center;
   justify-content: center;
+  transition: color 0.33s;
 }
 .hero-meta {
   font-size: 13px;
   color: var(--text-muted);
   font-weight: 600;
   margin-bottom: 2px;
+  transition: color 0.33s;
 }
 .hero-routes {
   display: flex;
@@ -307,6 +326,7 @@ body[data-theme="dark"] .filters-row select {
   box-shadow: none !important;
   margin: 0 auto;
   display: block;
+  transition: background 0.33s;
 }
 .hero-route span, .hero-route .route-name { display: none !important; }
 .hidden { display: none !important; }
@@ -322,6 +342,7 @@ body[data-theme="dark"] .filters-row select {
   margin: 0 auto;
   margin-top: 18px;
   animation: fadeInCard 0.4s;
+  transition: background-color 0.33s, color 0.33s;
 }
 .footer-moba {
   background: #23272f;
@@ -334,6 +355,7 @@ body[data-theme="dark"] .filters-row select {
   justify-content: flex-end;
   padding: 0 1.5rem;
   letter-spacing: 0.2px;
+  transition: background-color 0.33s, color 0.33s;
 }
 .footer-moba .footer-brand { color: #b1b6c9; margin-right: auto; font-weight: 400; font-size: 0.97rem;}
 .footer-moba .byarthur {
