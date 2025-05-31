@@ -1,129 +1,3 @@
-// Função para abrir/popular o modal do herói com seções dos endpoints detalhados
-async function showHeroModal(heroId) {
-  // Busca detalhes do herói
-  const detailsRes = await fetch(`/api/hero-detail?hero_id=${heroId}`);
-  const detailsData = await detailsRes.json();
-  const heroObj = detailsData?.data?.records?.[0]?.data?.hero?.data || {};
-  const heroData = detailsData?.data?.records?.[0]?.data || {};
-
-  // Busca stats do herói
-  const statsRes = await fetch(`/api/hero-detail-stats?main_heroid=${heroId}`);
-  const statsData = await statsRes.json();
-  const statsObj = statsData?.data?.records?.[0]?.data || {};
-
-  // SOBRE O CAMPEÃO
-  document.getElementById('modal-hero-img').src = heroObj.head_big || heroObj.head || '';
-  document.getElementById('modal-hero-name').textContent = heroObj.name || '';
-  document.getElementById('modal-hero-role').textContent = heroObj.sortlabel?.filter(Boolean).join(', ') || '';
-  document.getElementById('modal-hero-lanes').textContent = heroObj.roadsortlabel?.filter(Boolean).join(', ') || '';
-
-  // BUILDS
-  document.getElementById('modal-hero-builds').textContent = (heroObj.recommendmasterplan && heroObj.recommendmasterplan.length)
-    ? heroObj.recommendmasterplan.join(', ')
-    : 'Build recomendada não disponível.';
-  document.getElementById('modal-hero-specialties').textContent = (heroObj.speciality || []).join(', ');
-  document.getElementById('modal-hero-icons').innerHTML = `
-    ${(heroObj.roadsort || []).map(r => r.data?.road_sort_icon ? `<img src="${r.data.road_sort_icon}" title="${r.data.road_sort_title}" class="lane-icon"/>` : '').join('')}
-    ${(heroObj.sortid || []).map(s => s.data?.sort_icon ? `<img src="${s.data.sort_icon}" title="${s.data.sort_title}" class="role-icon"/>` : '').join('')}
-  `;
-
-  // HABILIDADES
-  const skillsList = (heroObj.heroskilllist?.[0]?.skilllist || []);
-  document.getElementById('modal-hero-skills').innerHTML = skillsList.map(skill => `
-    <div class="skill">
-      <img src="${skill.skillicon}" class="skill-icon" />
-      <div class="skill-info">
-        <div class="skill-name">${skill.skillname}</div>
-        <div class="skill-tags">${(skill.skilltag || []).map(tag => `<span class="skill-tag" style="background:rgba(${tag.tagrgb},.15);color:rgb(${tag.tagrgb});">${tag.tagname}</span>`).join(' ')}</div>
-        <div class="skill-desc">${skill.skilldesc}</div>
-        <div class="skill-cd">${skill['skillcd&cost'] ? `CD/Custo: ${skill['skillcd&cost']}` : ''}</div>
-      </div>
-    </div>
-  `).join('');
-
-  // ESTATÍSTICAS GERAIS
-  document.getElementById('modal-hero-stats').innerHTML = `
-    <div>Winrate: ${(statsObj.main_hero_win_rate*100).toFixed(1)}%</div>
-    <div>Banrate: ${(statsObj.main_hero_ban_rate*100).toFixed(1)}%</div>
-    <div>Appearance: ${(statsObj.main_hero_appearance_rate*100).toFixed(2)}%</div>
-  `;
-  document.getElementById('modal-hero-stats-graph').innerHTML = ''; // Adapte se quiser gráfico/tabela
-
-  // RELAÇÕES E SINERGIAS
-  const assist = heroData.relation?.assist;
-  document.getElementById('modal-hero-assist').innerHTML = assist ? `
-    <div class="relation-desc"><b>Aliados recomendados:</b> ${assist.desc}</div>
-    <div class="relation-list">
-      ${(assist.target_hero || []).map(h => `<img src="${h.data?.head}" class="relation-hero" />`).join('')}
-    </div>
-  ` : '';
-  const strong = heroData.relation?.strong;
-  document.getElementById('modal-hero-strong').innerHTML = strong ? `
-    <div class="relation-desc"><b>Forte contra:</b> ${strong.desc}</div>
-    <div class="relation-list">
-      ${(strong.target_hero || []).map(h => `<img src="${h.data?.head}" class="relation-hero" />`).join('')}
-    </div>
-  ` : '';
-  const weak = heroData.relation?.weak;
-  document.getElementById('modal-hero-weak').innerHTML = weak ? `
-    <div class="relation-desc"><b>Fraco contra:</b> ${weak.desc}</div>
-    <div class="relation-list">
-      ${(weak.target_hero || []).map(h => `<img src="${h.data?.head}" class="relation-hero" />`).join('')}
-    </div>
-  ` : '';
-
-  // PARCERIAS & COMBOS
-  document.getElementById('modal-hero-sub-heroes').innerHTML = (statsObj.sub_hero || []).map(sh => `
-    <div class="sub-hero">
-      <img src="${sh.hero?.data?.head}" class="sub-hero-img" />
-      <span>Winrate: ${(sh.hero_win_rate*100).toFixed(1)}% (+${(sh.increase_win_rate*100).toFixed(2)}%)</span>
-    </div>
-  `).join('');
-  document.getElementById('modal-hero-sub-heroes-impact').innerHTML = ''; // Adapte se quiser gráfico/tabela
-  document.getElementById('modal-hero-sub-heroes-last').innerHTML = (statsObj.sub_hero_last || []).map(sh => `
-    <div class="sub-hero negative">
-      <span>${sh.heroid}</span>
-      <span>Winrate: ${(sh.hero_win_rate*100).toFixed(1)}% (${(sh.increase_win_rate*100).toFixed(2)}%)</span>
-    </div>
-  `).join('');
-
-  // COUNTERS
-  // Mantém seu código antigo para popular #modal-hero-counters. Exemplo:
-  showHeroCounters(heroId);
-
-  // Exibe o modal
-  const modal = document.getElementById("heroModal");
-  modal.classList.remove("hidden");
-  setTimeout(() => modal.classList.add("show"), 5);
-}
-
-// Exemplo de função para counters visual (pode customizar conforme seu código antigo)
-async function showHeroCounters(heroId) {
-  // Aqui você pode usar seu fetch antigo para os counters, exemplo:
-  const res = await fetch(`https://mlbb-proxy.vercel.app/api/hero-counter?id=${heroId}`);
-  const json = await res.json();
-  const data = json?.data?.records?.[0]?.data;
-  const list = document.getElementById('modal-hero-counters');
-  let counters = [];
-  if (data) {
-    counters = (data.sub_hero_last && data.sub_hero_last.length) ? data.sub_hero_last
-             : (data.sub_hero && data.sub_hero.length) ? data.sub_hero
-             : [];
-  }
-  if (counters.length) {
-    list.innerHTML = counters.map(sh => `
-      <div class="counter-img-wrap">
-        <img src="${sh.hero.data.head}" 
-             title="Winrate: ${(sh.hero_win_rate*100).toFixed(1)}%" 
-             alt="Counter"
-             class="hero-modal-counter-img">
-        <span class="counter-badge">${(sh.hero_win_rate*100).toFixed(1)}%</span>
-      </div>
-    `).join('');
-  } else {
-    list.innerHTML = `<div class="hero-modal-counters-empty">Nenhum counter encontrado.</div>`;
-  }
-}
 // Traduções
 const translations = {
   'pt-BR': {
@@ -228,10 +102,12 @@ function updateI18n() {
 function setTheme(theme) {
   document.body.setAttribute('data-theme', theme);
   let icon = document.getElementById('themeIcon');
-  if (theme === "dark") {
-    icon.className = "fa-solid fa-sun";
-  } else {
-    icon.className = "fa-solid fa-moon";
+  if (icon) {
+    if (theme === "dark") {
+      icon.className = "fa-solid fa-sun";
+    } else {
+      icon.className = "fa-solid fa-moon";
+    }
   }
   localStorage.setItem('theme', theme);
 }
@@ -254,7 +130,7 @@ function setLanguage(lang) {
   localStorage.setItem('lang', lang);
 }
 
-// Modal
+// Modal idioma
 function showFlagDropdown(show) {
   document.getElementById('flagDropdown').classList.toggle('hidden', !show);
 }
@@ -289,18 +165,6 @@ function fetchAllHeroPositions() {
         };
       });
     });
-}
-
-// Busca Counter
-async function fetchHeroCounters(heroId) {
-  try {
-    const res = await fetch(`https://mlbb-proxy.vercel.app/api/hero-counter?id=${heroId}`);
-    const json = await res.json();
-    if (json && json.data && json.data.records && json.data.records[0] && json.data.records[0].data) {
-      return json.data.records[0].data;
-    }
-  } catch(e) {}
-  return null;
 }
 
 // Renderiza Tier List
@@ -404,28 +268,114 @@ function filtrarTierList() {
   setupHeroCardClicks();
 }
 
-// Modal de Counter
-async function showHeroCounterModal(heroId, heroName, heroImg) {
-  const modal = document.getElementById("heroModal");
-  const body = modal.querySelector(".hero-modal-body");
-  body.innerHTML = `
-    <div class="hero-modal-header">
-      <img src="${heroImg}" alt="${heroName}" class="hero-modal-portrait">
-      <div class="hero-modal-title">${heroName}</div>
-    </div>
-    <div class="hero-modal-counters-title">Counters</div>
-    <div class="hero-modal-counters-loading">Carregando...</div>
-    <div class="hero-modal-counters-list"></div>
-  `;
-  modal.classList.remove("hidden");
-  setTimeout(() => modal.classList.add("show"), 5);
+// MODAL DETALHADO DE HERÓI
+async function showHeroModal(heroId) {
+  try {
+    // Busca detalhes do herói
+    const detailsRes = await fetch(`/api/hero-detail?hero_id=${heroId}`);
+    const detailsData = await detailsRes.json();
+    const heroObj = detailsData?.data?.records?.[0]?.data?.hero?.data || {};
+    const heroData = detailsData?.data?.records?.[0]?.data || {};
 
-  // Fetch data
-  const data = await fetchHeroCounters(heroId);
+    // Busca stats do herói
+    const statsRes = await fetch(`/api/hero-detail-stats?main_heroid=${heroId}`);
+    const statsData = await statsRes.json();
+    const statsObj = statsData?.data?.records?.[0]?.data || {};
 
-  const list = body.querySelector(".hero-modal-counters-list");
-  const loading = body.querySelector(".hero-modal-counters-loading");
-  loading.style.display = "none";
+    // SOBRE O CAMPEÃO
+    document.getElementById('modal-hero-img').src = heroObj.head_big || heroObj.head || '';
+    document.getElementById('modal-hero-name').textContent = heroObj.name || '';
+    document.getElementById('modal-hero-role').textContent = heroObj.sortlabel?.filter(Boolean).join(', ') || '';
+    document.getElementById('modal-hero-lanes').textContent = heroObj.roadsortlabel?.filter(Boolean).join(', ') || '';
+
+    // BUILDS
+    document.getElementById('modal-hero-builds').textContent = (heroObj.recommendmasterplan && heroObj.recommendmasterplan.length)
+      ? heroObj.recommendmasterplan.join(', ')
+      : 'Build recomendada não disponível.';
+    document.getElementById('modal-hero-specialties').textContent = (heroObj.speciality || []).join(', ');
+    document.getElementById('modal-hero-icons').innerHTML = `
+      ${(heroObj.roadsort || []).map(r => r.data?.road_sort_icon ? `<img src="${r.data.road_sort_icon}" title="${r.data.road_sort_title}" class="lane-icon"/>` : '').join('')}
+      ${(heroObj.sortid || []).map(s => s.data?.sort_icon ? `<img src="${s.data.sort_icon}" title="${s.data.sort_title}" class="role-icon"/>` : '').join('')}
+    `;
+
+    // HABILIDADES
+    const skillsList = (heroObj.heroskilllist?.[0]?.skilllist || []);
+    document.getElementById('modal-hero-skills').innerHTML = skillsList.map(skill => `
+      <div class="skill">
+        <img src="${skill.skillicon}" class="skill-icon" />
+        <div class="skill-info">
+          <div class="skill-name">${skill.skillname}</div>
+          <div class="skill-tags">${(skill.skilltag || []).map(tag => `<span class="skill-tag" style="background:rgba(${tag.tagrgb},.15);color:rgb(${tag.tagrgb});">${tag.tagname}</span>`).join(' ')}</div>
+          <div class="skill-desc">${skill.skilldesc}</div>
+          <div class="skill-cd">${skill['skillcd&cost'] ? `CD/Custo: ${skill['skillcd&cost']}` : ''}</div>
+        </div>
+      </div>
+    `).join('');
+
+    // ESTATÍSTICAS GERAIS
+    document.getElementById('modal-hero-stats').innerHTML = `
+      <div>Winrate: ${(statsObj.main_hero_win_rate*100).toFixed(1)}%</div>
+      <div>Banrate: ${(statsObj.main_hero_ban_rate*100).toFixed(1)}%</div>
+      <div>Appearance: ${(statsObj.main_hero_appearance_rate*100).toFixed(2)}%</div>
+    `;
+    document.getElementById('modal-hero-stats-graph').innerHTML = ''; // Adapte se quiser gráfico/tabela
+
+    // RELAÇÕES E SINERGIAS
+    const assist = heroData.relation?.assist;
+    document.getElementById('modal-hero-assist').innerHTML = assist ? `
+      <div class="relation-desc"><b>Aliados recomendados:</b> ${assist.desc}</div>
+      <div class="relation-list">
+        ${(assist.target_hero || []).map(h => `<img src="${h.data?.head}" class="relation-hero" />`).join('')}
+      </div>
+    ` : '';
+    const strong = heroData.relation?.strong;
+    document.getElementById('modal-hero-strong').innerHTML = strong ? `
+      <div class="relation-desc"><b>Forte contra:</b> ${strong.desc}</div>
+      <div class="relation-list">
+        ${(strong.target_hero || []).map(h => `<img src="${h.data?.head}" class="relation-hero" />`).join('')}
+      </div>
+    ` : '';
+    const weak = heroData.relation?.weak;
+    document.getElementById('modal-hero-weak').innerHTML = weak ? `
+      <div class="relation-desc"><b>Fraco contra:</b> ${weak.desc}</div>
+      <div class="relation-list">
+        ${(weak.target_hero || []).map(h => `<img src="${h.data?.head}" class="relation-hero" />`).join('')}
+      </div>
+    ` : '';
+
+    // PARCERIAS & COMBOS
+    document.getElementById('modal-hero-sub-heroes').innerHTML = (statsObj.sub_hero || []).map(sh => `
+      <div class="sub-hero">
+        <img src="${sh.hero?.data?.head}" class="sub-hero-img" />
+        <span>Winrate: ${(sh.hero_win_rate*100).toFixed(1)}% (+${(sh.increase_win_rate*100).toFixed(2)}%)</span>
+      </div>
+    `).join('');
+    document.getElementById('modal-hero-sub-heroes-impact').innerHTML = ''; // Adapte se quiser gráfico/tabela
+    document.getElementById('modal-hero-sub-heroes-last').innerHTML = (statsObj.sub_hero_last || []).map(sh => `
+      <div class="sub-hero negative">
+        <span>${sh.heroid}</span>
+        <span>Winrate: ${(sh.hero_win_rate*100).toFixed(1)}% (${(sh.increase_win_rate*100).toFixed(2)}%)</span>
+      </div>
+    `).join('');
+
+    // COUNTERS (visual)
+    await showHeroCounters(heroId);
+
+    // Exibe o modal
+    const modal = document.getElementById("heroModal");
+    modal.classList.remove("hidden");
+    setTimeout(() => modal.classList.add("show"), 5);
+  } catch(e) {
+    alert("Erro ao carregar informações do herói.");
+  }
+}
+
+// COUNTERS (visual para o modal detalhado)
+async function showHeroCounters(heroId) {
+  const res = await fetch(`https://mlbb-proxy.vercel.app/api/hero-counter?id=${heroId}`);
+  const json = await res.json();
+  const data = json?.data?.records?.[0]?.data;
+  const list = document.getElementById('modal-hero-counters');
   let counters = [];
   if (data) {
     counters = (data.sub_hero_last && data.sub_hero_last.length) ? data.sub_hero_last
@@ -447,6 +397,7 @@ async function showHeroCounterModal(heroId, heroName, heroImg) {
   }
 }
 
+// CLICKS DOS CARDS: MODAL DETALHADO
 function setupHeroCardClicks() {
   document.querySelectorAll('.card').forEach(card => {
     if (card._detailsBound) return;
@@ -454,7 +405,7 @@ function setupHeroCardClicks() {
     card.style.cursor = "pointer";
     card.onclick = function() {
       const heroId = card.getAttribute('data-id');
-      showHeroModal(heroId); // <--- AGORA CHAMA O MODAL NOVO!
+      showHeroModal(heroId);
     };
   });
 }
