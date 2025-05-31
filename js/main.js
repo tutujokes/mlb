@@ -289,7 +289,7 @@ async function showHeroModal(heroId) {
 
     // BUILDS
     document.getElementById('modal-hero-builds').innerHTML =
-   (heroObj.recommendmasterplan && heroObj.recommendmasterplan.length)
+  (heroObj.recommendmasterplan && heroObj.recommendmasterplan.length)
     ? heroObj.recommendmasterplan.map(plan =>
         `<span class="build-plan">
           <span class="build-title">${plan.plan_name || ""}</span>
