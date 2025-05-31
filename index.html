@@ -5,9 +5,509 @@
   <title>moba.gg</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="Tier List Mobile Legends - Atualizado e filtrável por função, rota, rank e idioma.">
-  <link rel="stylesheet" href="css/estilo.css">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+  <style>
+:root {
+  --bg-main: #fff;
+  --bg-alt: #f3f4f6;
+  --text-main: #23272f;
+  --text-muted: #6366f1;
+  --card-bg: #fff;
+  --shadow: 0 1px 8px rgba(30,40,60,0.07);
+  --gray-dark: #292b33;
+  --gray-dark-alt: #23252c;
+  --gray-dark-bg-alt: #2d2f37;
+  transition: background-color 0.33s, color 0.33s;
+}
+body[data-theme="dark"] {
+  --bg-main: #23252c;
+  --bg-alt: #2d2f37;
+  --text-main: #e4e7ef;
+  --text-muted: #bfbff5;
+  --card-bg: #292b33;
+  --gray-dark: #292b33;
+  --gray-dark-alt: #23252c;
+  --gray-dark-bg-alt: #282a30;
+  background: var(--bg-main);
+  color: var(--text-main);
+  transition: background-color 0.33s, color 0.33s;
+}
+* { box-sizing: border-box; }
+html, body {
+  font-family: 'Inter', system-ui, sans-serif;
+  min-height: 100vh;
+  background: var(--bg-main);
+  color: var(--text-main);
+  margin: 0;
+  width: 100%;
+  overflow-x: hidden;
+  transition: background-color 0.33s, color 0.33s;
+}
+.header-moba,
+.main-moba,
+.filters-row,
+.tier-box,
+.card,
+.footer-moba {
+  transition: background-color 0.33s, color 0.33s, border-color 0.33s;
+}
+.header-moba {
+  background: linear-gradient(135deg, #6366f1 60%, #7e22ce 100%);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 22px 32px 18px 32px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  box-shadow: 0 1px 8px #23272f11;
+}
+.logo-moba { font-size: 2rem; font-weight: bold; letter-spacing: -1px; }
+.header-actions { display: flex; align-items: center; gap: 14px; }
+.theme-switch {
+  background: #fff;
+  color: #6366f1;
+  border: none;
+  cursor: pointer;
+  font-size: 1.2rem;
+  border-radius: 50%;
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s, color 0.2s, box-shadow 0.18s;
+  box-shadow: 0 2px 8px #6366f122;
+  position: relative;
+}
+.theme-switch i {
+  font-size: 1.4rem;
+  pointer-events: none;
+  transition: color 0.3s;
+}
+.theme-switch:focus { outline: 2px solid #7e22ce; }
+.theme-switch:hover {
+  background: #e0e7ff;
+  color: #7e22ce;
+}
+body[data-theme="dark"] .theme-switch {
+  background: #23252c;
+  color: #bfbff5;
+  box-shadow: 0 2px 8px #0003;
+}
+body[data-theme="dark"] .theme-switch:hover {
+  background: #313244;
+  color: #fff;
+}
+.lang-switch-wrap { position: relative; }
+.lang-switch {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-size: 1.6rem;
+  border-radius: 8px;
+  padding: 0.25rem 0.45rem;
+  transition: background 0.2s;
+  display: flex;
+  align-items: center;
+}
+.lang-switch:focus { outline: 2px solid #7e22ce; }
+.lang-switch:hover { background: #f3f4f6;}
+body[data-theme="dark"] .lang-switch:hover { background: #383a43;}
+.flag {
+  display: inline-block;
+  width: 28px;
+  height: 20px;
+  border-radius: 4px;
+  background-size: cover;
+  background-position: center;
+  border: 1.5px solid #fff2;
+  transition: border-color 0.33s;
+}
+.flag-dropdown {
+  display: flex; gap: 4px;
+  background: #fff;
+  border-radius: 6px;
+  padding: 7px 9px;
+  position: absolute;
+  top: 38px;
+  right: 0;
+  z-index: 40;
+  box-shadow: 0 2px 12px #0002;
+  border: 1px solid #e5e7eb;
+  transition: background-color 0.33s, border-color 0.33s;
+}
+body[data-theme="dark"] .flag-dropdown {
+  background: #2d2f37;
+  border: 1px solid #23252c;
+}
+.flag-dropdown.hidden { display: none; }
+.flag-option {
+  width: 28px; height: 20px;
+  border-radius: 3px;
+  margin: 0 2px;
+  border: 2px solid transparent;
+  cursor: pointer;
+  background-size: cover;
+  background-position: center;
+  transition: border 0.15s, background-color 0.33s;
+  display: inline-block;
+}
+.flag-option.selected, .flag-option:focus { border-color: #6366f1;}
+.main-moba {
+  max-width: 900px;
+  margin: 0 auto 32px auto;
+  padding: 0 12px;
+}
+.main-title {
+  text-align: center;
+  margin: 32px 0 28px 0;
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: #6366f1;
+  padding-left: 4px;
+  padding-right: 4px;
+  transition: color 0.33s;
+}
+.filters-row {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 34px;
+  margin-bottom: 20px;
+  padding: 12px 20px;
+  border-radius: 10px;
+  background: var(--bg-alt);
+  box-sizing: border-box;
+  flex-wrap: wrap;
+}
+.filters-row.bg-alt { background: var(--bg-alt); }
+.filter-group {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+}
+.label-inline { margin-left: 10px; }
+.filter-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #6366f1;
+  margin-right: 14px;
+}
+.filters-row label, .filters-row .filter-title { font-size: 1.1rem; font-weight: 500; color: #6366f1; margin: 0 3px;}
+.filter-title { font-weight: 600; margin-right: 6px;}
+.filters-row select {
+  padding: 7px 18px 7px 9px;
+  border-radius: 7px;
+  border: 1.5px solid #e5e7eb;
+  font-size: 1.05rem;
+  background: #fff;
+  color: #23272f;
+  font-family: inherit;
+  transition: border 0.2s, background 0.33s, color 0.33s;
+  min-width: 78px;
+}
+body[data-theme="dark"] .filters-row select {
+  background: #292b33;
+  color: #e4e7ef;
+  border: 1.5px solid #32343c;
+}
+.filters-row select:focus { border: 1.5px solid #6366f1; outline: none;}
+.tier-box {
+  background-color: var(--bg-alt);
+  border-radius: 14px;
+  margin-bottom: 36px;
+  padding: 20px 16px 10px 56px;
+  position: relative;
+  min-height: 120px;
+  max-width: 900px;
+  margin-left: auto;
+  margin-right: auto;
+  box-shadow: 0 1px 8px rgba(30,40,60,0.07);
+  transition: background-color 0.33s, color 0.33s;
+}
+.tier-label {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 1.6rem;
+  color: #fff;
+  writing-mode: vertical-rl;
+  text-orientation: mixed;
+  border-radius: 14px 0 0 14px;
+  text-shadow: 0 1px 12px #23272f21;
+  letter-spacing: -1px;
+  z-index: 10;
+  background: linear-gradient(135deg, #6366f1 60%, #7e22ce 100%);
+  transition: background 0.33s, color 0.33s;
+}
+.tier-label.ss { background: linear-gradient(135deg, #6366f1 60%, #7e22ce 100%);}
+.tier-label.s { background: linear-gradient(135deg, #7e22ce 30%, #6366f1 90%);}
+.tier-label.a {
+  background: #ffb74d;
+  color: #fff !important;
+  text-shadow: 0 1px 12px #23272f42;
+}
+.tier-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 18px 24px;
+  padding: 24px 0 4px 0;
+  min-height: 40px;
+  position: relative;
+  transition: background-color 0.33s, color 0.33s;
+}
+.card {
+  border-radius: 12px;
+  text-align: center;
+  padding: 14px 10px 10px 10px;
+  min-width: 138px;
+  max-width: 138px;
+  min-height: 175px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: var(--card-bg);
+  box-shadow: 0 2px 8px rgba(30,40,60,0.09);
+  transition: box-shadow 0.17s, transform 0.13s, background-color 0.33s, color 0.33s;
+  animation: fadeInCard 0.5s cubic-bezier(.4,1.4,.5,1.01);
+  cursor: pointer;
+}
+@keyframes fadeInCard {
+  from { opacity: 0; transform: translateY(30px);}
+  to { opacity: 1; transform: none;}
+}
+.card:hover {
+  box-shadow: 0 8px 32px #6366f133;
+  transform: translateY(-4px) scale(1.035);
+}
+.card > img[alt] {
+  width: 62px;
+  height: 62px;
+  border-radius: 50%;
+  margin-bottom: 8px;
+  object-fit: cover;
+  background: #232323;
+  border: 2px solid #f3f4f6;
+  box-shadow: 0 1px 6px #6366f122;
+  transition: background 0.33s, border-color 0.33s;
+}
+.hero-name {
+  font-weight: 600;
+  margin-top: 4px;
+  color: var(--text-main);
+  font-size: 1.02rem;
+  letter-spacing: -0.5px;
+  line-height: 1.1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.33s;
+}
+.hero-meta {
+  font-size: 13px;
+  color: var(--text-muted);
+  font-weight: 600;
+  margin-bottom: 2px;
+  transition: color 0.33s;
+}
+.hero-routes {
+  display: flex;
+  gap: 7px;
+  margin-top: 6px;
+  justify-content: center;
+  min-height: 21px;
+}
+.hero-routes.single { justify-content: center; }
+.hero-route img {
+  width: 60px !important;
+  height: 60px !important;
+  border-radius: 50%;
+  object-fit: cover;
+  border: none !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  margin: 0 auto;
+  display: block;
+  transition: background 0.33s;
+}
+.hero-route span, .hero-route .route-name { display: none !important; }
+.hidden { display: none !important; }
+.no-results {
+  color: #c026d3;
+  font-weight: 600;
+  background: #ffe4fe;
+  border-radius: 8px;
+  padding: 16px 0;
+  text-align: center;
+  font-size: 1.15rem;
+  min-width: 200px;
+  margin: 0 auto;
+  margin-top: 18px;
+  animation: fadeInCard 0.4s;
+  transition: background-color 0.33s, color 0.33s;
+}
+.footer-moba {
+  background: #23272f;
+  color: #b1b6c9;
+  width: 100%;
+  font-size: 1rem;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding: 0 1.5rem;
+  letter-spacing: 0.2px;
+  transition: background-color 0.33s, color 0.33s;
+}
+.footer-moba .footer-brand { color: #b1b6c9; margin-right: auto; font-weight: 400; font-size: 0.97rem;}
+.footer-moba .byarthur {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  font-weight: 500;
+  font-size: 1rem;
+  color: #6366f1;
+  margin-left: 18px;
+  letter-spacing: 0.3px;
+  text-decoration: none;
+  transition: color 0.18s;
+}
+.footer-moba .byarthur:hover,
+.footer-moba .byarthur:focus { color: #7e22ce; }
+.footer-moba .byarthur svg {
+  margin-left: 4px;
+  width: 18px;
+  height: 18px;
+  color: #6366f1;
+  stroke-width: 1.7px;
+  opacity: 0.98;
+  transition: color 0.2s;
+}
+.footer-moba .byarthur:hover svg,
+.footer-moba .byarthur:focus svg { color: #7e22ce; }
+/* ========== HERO MODAL ========== */
+.hero-modal {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: fixed;
+  z-index: 1100;
+  left: 0; top: 0; right: 0; bottom: 0;
+  background: rgba(30,35,60,0.65);
+  transition: opacity 0.22s cubic-bezier(.47,1.64,.41,.8), visibility 0.24s;
+  opacity: 0;
+  visibility: hidden;
+}
+.hero-modal.show {
+  opacity: 1;
+  visibility: visible;
+}
+.hero-modal.hidden { display: none !important; }
+.hero-modal-content {
+  background: var(--card-bg);
+  color: var(--text-main);
+  border-radius: 16px;
+  min-width: 320px; max-width: 96vw;
+  max-height: 88vh;
+  width: 420px;
+  box-shadow: 0 8px 32px #23272f55;
+  padding: 0 0 22px 0;
+  position: relative;
+  display: flex; flex-direction: column;
+  animation: fadeInCard 0.33s;
+}
+.hero-modal-close {
+  position: absolute;
+  top: 12px; right: 18px;
+  background: none;
+  border: none;
+  color: #6366f1;
+  font-size: 2rem;
+  font-weight: 700;
+  cursor: pointer;
+  opacity: 0.75;
+  transition: color 0.23s, opacity 0.23s;
+  z-index: 2;
+}
+.hero-modal-close:hover { color: #d32f2f; opacity: 1; }
+.hero-modal-header {
+  display: flex; align-items: center; gap: 18px;
+  padding: 30px 28px 8px 28px;
+}
+.hero-modal-portrait {
+  width: 72px; height: 72px; border-radius: 50%;
+  border: 3px solid #6366f1;
+  object-fit: cover;
+}
+.hero-modal-title {
+  font-size: 2rem;
+  font-family: 'Montserrat', 'Inter', sans-serif;
+  font-weight: 700;
+  color: #6366f1;
+  text-shadow: 0 1px 6px #23272f12;
+  letter-spacing: -1px;
+}
+.hero-modal-counters-title {
+  font-size: 1.2rem;
+  color: var(--text-main);
+  font-weight: 600;
+  padding: 12px 28px 3px 28px;
+  margin-top: 7px;
+  border-bottom: 1px solid var(--bg-alt);
+}
+.hero-modal-counters-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 11px 13px;
+  justify-content: flex-start;
+  align-items: center;
+  min-height: 58px;
+  padding: 16px 28px 0 28px;
+}
+.hero-modal-counter-img {
+  width: 54px; height: 54px; border-radius: 50%;
+  object-fit: cover;
+  border: 2.7px solid #6366f1;
+  box-shadow: 0 2px 8px #23272f1a;
+  background: #fff;
+  transition: transform 0.2s;
+}
+.hero-modal-counter-img:hover { transform: scale(1.12); }
+.hero-modal-counters-empty {
+  color: #c026d3;
+  font-size: 1rem;
+  padding: 18px 0;
+}
+.hero-modal-counters-loading {
+  color: var(--text-muted);
+  font-size: 1rem;
+  padding: 20px 28px 0 28px;
+}
+@media (max-width: 700px) {
+  .main-moba { padding: 0 2px; }
+  .header-moba { padding: 12px 8px 10px 8px; font-size: 1rem;}
+  .tier-box { padding-left: 18px; }
+  .tier-label { width: 28px; font-size: 1.1rem; }
+  .tier-container { padding: 10px 0 4px 0; }
+  .card { min-width: 110px; max-width: 110px;}
+  .footer-moba { font-size: 0.9rem; padding: 0 0.7rem; }
+  .filters-row { flex-direction: column; gap: 14px 0; padding: 10px 4px;}
+  .filter-group { width: 100%; justify-content: flex-start;}
+  .main-title { font-size: 1.7rem; }
+  .hero-modal-content { min-width: 0; width: 97vw; padding-bottom: 10px;}
+  .hero-modal-header, .hero-modal-counters-title, .hero-modal-counters-list { padding-left: 12px; padding-right: 12px;}
+  .hero-modal-counters-list {padding-bottom: 0;}
+}
+  </style>
 </head>
 <body data-theme="light">
   <header class="header-moba">
@@ -94,7 +594,6 @@
     <div class="hero-modal-content">
       <button class="hero-modal-close" title="Fechar">&times;</button>
       <div class="hero-modal-body">
-        <!-- Preenchido via JS -->
       </div>
     </div>
   </div>
@@ -118,314 +617,382 @@
   </footer>
 
   <script>
-    // Traduções
-    const translations = {
-      'pt-BR': {
-        title: "Tier List - Mobile Legends",
-        rank_label: "Rank:",
-        rank_mythic: "Mítico",
-        rank_legend: "Lenda",
-        rank_epic: "Épico",
-        rank_grandmaster: "Grão-mestre",
-        rank_master: "Mestre",
-        rank_elite: "Elite",
-        rank_warrior: "Guerreiro",
-        days_label: "Dias:",
-        days_1: "1",
-        days_3: "3",
-        days_7: "7",
-        days_15: "15",
-        days_30: "30",
-        filter_title: "Filtrar por Função e Rota",
-        role_label: "Função:",
-        role_mage: "Mago",
-        role_marksman: "Atirador",
-        role_tank: "Tanque",
-        role_assassin: "Assassino",
-        role_fighter: "Lutador",
-        role_support: "Suporte",
-        all_roles: "Todas",
-        lane_label: "Rota:",
-        lane_mid: "Meio",
-        lane_gold: "Ouro",
-        lane_exp: "EXP",
-        lane_jungle: "Selva",
-        lane_roam: "Rotação",
-        all_lanes: "Todas",
-        no_heroes: "Nenhum herói encontrado."
-      },
-      'en-US': {
-        title: "Tier List - Mobile Legends",
-        rank_label: "Rank:",
-        rank_mythic: "Mythic",
-        rank_legend: "Legend",
-        rank_epic: "Epic",
-        rank_grandmaster: "Grandmaster",
-        rank_master: "Master",
-        rank_elite: "Elite",
-        rank_warrior: "Warrior",
-        days_label: "Days:",
-        days_1: "1",
-        days_3: "3",
-        days_7: "7",
-        days_15: "15",
-        days_30: "30",
-        filter_title: "Filter by Role and Lane",
-        role_label: "Role:",
-        role_mage: "Mage",
-        role_marksman: "Marksman",
-        role_tank: "Tank",
-        role_assassin: "Assassin",
-        role_fighter: "Fighter",
-        role_support: "Support",
-        all_roles: "All",
-        lane_label: "Lane:",
-        lane_mid: "Mid",
-        lane_gold: "Gold",
-        lane_exp: "EXP",
-        lane_jungle: "Jungle",
-        lane_roam: "Roam",
-        all_lanes: "All",
-        no_heroes: "No heroes found."
-      }
-    };
+   // Traduções
+const translations = {
+  'pt-BR': {
+    title: "Tier List - Mobile Legends",
+    rank_label: "Rank:",
+    rank_mythic: "Mítico",
+    rank_legend: "Lenda",
+    rank_epic: "Épico",
+    rank_grandmaster: "Grão-mestre",
+    rank_master: "Mestre",
+    rank_elite: "Elite",
+    rank_warrior: "Guerreiro",
+    days_label: "Dias:",
+    days_1: "1",
+    days_3: "3",
+    days_7: "7",
+    days_15: "15",
+    days_30: "30",
+    filter_title: "Filtrar por Função e Rota",
+    role_label: "Função:",
+    role_mage: "Mago",
+    role_marksman: "Atirador",
+    role_tank: "Tanque",
+    role_assassin: "Assassino",
+    role_fighter: "Lutador",
+    role_support: "Suporte",
+    all_roles: "Todas",
+    lane_label: "Rota:",
+    lane_mid: "Meio",
+    lane_gold: "Ouro",
+    lane_exp: "EXP",
+    lane_jungle: "Selva",
+    lane_roam: "Rotação",
+    all_lanes: "Todas",
+    no_heroes: "Nenhum herói encontrado."
+  },
+  'en-US': {
+    title: "Tier List - Mobile Legends",
+    rank_label: "Rank:",
+    rank_mythic: "Mythic",
+    rank_legend: "Legend",
+    rank_epic: "Epic",
+    rank_grandmaster: "Grandmaster",
+    rank_master: "Master",
+    rank_elite: "Elite",
+    rank_warrior: "Warrior",
+    days_label: "Days:",
+    days_1: "1",
+    days_3: "3",
+    days_7: "7",
+    days_15: "15",
+    days_30: "30",
+    filter_title: "Filter by Role and Lane",
+    role_label: "Role:",
+    role_mage: "Mage",
+    role_marksman: "Marksman",
+    role_tank: "Tank",
+    role_assassin: "Assassin",
+    role_fighter: "Fighter",
+    role_support: "Support",
+    all_roles: "All",
+    lane_label: "Lane:",
+    lane_mid: "Mid",
+    lane_gold: "Gold",
+    lane_exp: "EXP",
+    lane_jungle: "Jungle",
+    lane_roam: "Roam",
+    all_lanes: "All",
+    no_heroes: "No heroes found."
+  }
+};
 
-    let heroIdToName = {};
-    let heroNameToId = {};
-    let heroExtraInfo = {};
-    let tierCards = [];
-    let tierRecords = [];
-    let currentLang = 'pt-BR';
+let heroIdToName = {};
+let heroNameToId = {};
+let heroExtraInfo = {};
+let tierCards = [];
+let tierRecords = [];
+let currentLang = 'pt-BR';
 
-    let tierListRequestToken = 0;
+let tierListRequestToken = 0;
 
-    function fetchHeroMap() {
-      return fetch('https://mlbb-proxy.vercel.app/api/hero-list')
-        .then(res => res.json())
-        .then(map => {
-          heroIdToName = map;
-          heroNameToId = {};
-          Object.entries(map).forEach(([id, name]) => {
-            heroNameToId[name] = id;
-          });
-        });
+// Funções utilitárias
+function translate(key) {
+  return translations[currentLang][key] || key;
+}
+function updateI18n() {
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const key = el.getAttribute('data-i18n');
+    if (translations[currentLang][key]) {
+      el.textContent = translations[currentLang][key];
     }
-
-    function fetchAllHeroPositions() {
-      return fetch('https://mlbb-proxy.vercel.app/api/hero-position?role=all&lane=all&size=128&index=1')
-        .then(res => res.json())
-        .then(json => {
-          heroExtraInfo = {};
-          (json.data.records || []).forEach(entry => {
-            const heroData = entry.data;
-            heroExtraInfo[String(heroData.hero_id)] = {
-              role: (heroData.hero && heroData.hero.data && heroData.hero.data.sortid &&
-                heroData.hero.data.sortid.length && heroData.hero.data.sortid[0] &&
-                heroData.hero.data.sortid[0].data && heroData.hero.data.sortid[0].data.sort_title)
-                ? heroData.hero.data.sortid[0].data.sort_title.toLowerCase() : "",
-              roadsort: (heroData.hero && heroData.hero.data && heroData.hero.data.roadsort)
-                ? heroData.hero.data.roadsort : []
-            };
-          });
-        });
+  });
+  document.querySelectorAll('option[data-i18n]').forEach(opt => {
+    const key = opt.getAttribute('data-i18n');
+    if (translations[currentLang][key]) {
+      opt.textContent = translations[currentLang][key];
     }
+  });
+}
 
-    function carregarTierList() {
-      const myToken = ++tierListRequestToken;
+// Tema
+function setTheme(theme) {
+  document.body.setAttribute('data-theme', theme);
+  let icon = document.getElementById('themeIcon');
+  if (theme === "dark") {
+    icon.className = "fa-solid fa-sun";
+  } else {
+    icon.className = "fa-solid fa-moon";
+  }
+  localStorage.setItem('theme', theme);
+}
+function toggleTheme() {
+  const newTheme = document.body.getAttribute('data-theme') === "dark" ? "light" : "dark";
+  setTheme(newTheme);
+}
 
-      const rank = document.getElementById('rank').value;
-      const days = document.getElementById('days').value;
-      const url = `https://mlbb-proxy.vercel.app/api/hero-rank?source=rank&days=${days}&rank=${rank}&size=130&sort_field=win_rate&sort_order=desc`;
+// Idioma
+function setLanguage(lang) {
+  currentLang = lang;
+  document.documentElement.lang = lang;
+  updateI18n();
+  document.getElementById('langFlag').style.backgroundImage =
+    lang === "pt-BR"
+      ? "url('https://cdn.jsdelivr.net/gh/hjnilsson/country-flags/svg/br.svg')"
+      : "url('https://cdn.jsdelivr.net/gh/hjnilsson/country-flags/svg/us.svg')";
+  document.getElementById('flagBR').classList.toggle('selected', lang === "pt-BR");
+  document.getElementById('flagUS').classList.toggle('selected', lang === "en-US");
+  localStorage.setItem('lang', lang);
+}
 
-      document.getElementById('tier-ss').innerHTML = '';
-      document.getElementById('tier-s').innerHTML = '';
-      document.getElementById('tier-a').innerHTML = '';
-      document.getElementById('noResults').classList.add('hidden');
-      tierCards = [];
-      tierRecords = [];
+// Modal
+function showFlagDropdown(show) {
+  document.getElementById('flagDropdown').classList.toggle('hidden', !show);
+}
 
-      Promise.all([fetchHeroMap(), fetchAllHeroPositions(), fetch(url).then(res => res.json())])
-        .then(([_, __, json]) => {
-          if (myToken !== tierListRequestToken) return;
-          const records = json.data.records || [];
-          tierRecords = records;
-          let count = {ss:0,s:0,a:0};
-          let idSet = new Set();
-
-          records.forEach(entry => {
-            const hero = entry.data.main_hero.data;
-            const winRate = (entry.data.main_hero_win_rate * 100).toFixed(1);
-            const heroId = heroNameToId[hero.name];
-            if (!heroId || idSet.has(heroId)) return;
-            idSet.add(heroId);
-
-            const info = heroExtraInfo[heroId] || {};
-            let roadsortTitles = [];
-            let iconCount = 0;
-            let roadsortHtml = '';
-
-            if (Array.isArray(info.roadsort) && info.roadsort.length > 0) {
-              roadsortTitles = info.roadsort.map(rs =>
-                (rs.data && rs.data.road_sort_title) ? rs.data.road_sort_title : ''
-              ).filter(Boolean);
-              iconCount = info.roadsort.length;
-              roadsortHtml = info.roadsort.map(rs => {
-                const data = rs.data || {};
-                return data.road_sort_icon
-                  ? `<span class="hero-route"><img src="${data.road_sort_icon}" alt="" title="${data.road_sort_title}" width="60" height="60"></span>`
-                  : '';
-              }).join('');
-            }
-
-            const el = document.createElement('div');
-            el.className = 'card';
-            el.setAttribute('data-role', (info.role || '').toLowerCase());
-            el.setAttribute('data-routes', roadsortTitles.join('|').toLowerCase());
-            el.setAttribute('data-id', heroId || '');
-            el.setAttribute('data-name', hero.name);
-
-            el.innerHTML = `
-              <img src="${hero.head}" alt="Retrato do herói ${hero.name}" loading="lazy">
-              <div class="hero-name">${hero.name}</div>
-              <div class="hero-meta">${winRate}% WR</div>
-              <div class="hero-routes ${iconCount === 1 ? 'single' : ''}">${roadsortHtml}</div>
-            `;
-
-            tierCards.push(el);
-
-            if (winRate >= 54) {
-              document.getElementById('tier-ss').appendChild(el); count.ss++;
-            } else if (winRate >= 51) {
-              document.getElementById('tier-s').appendChild(el); count.s++;
-            } else {
-              document.getElementById('tier-a').appendChild(el); count.a++;
-            }
-          });
-
-          if (!count.ss && !count.s && !count.a) {
-            document.getElementById('noResults').classList.remove('hidden');
-          }
-          filtrarTierList();
-          setTimeout(setupHeroCardClicks, 50); // cards clicáveis
-        })
-        .catch(err => {
-          document.getElementById('noResults').classList.remove('hidden');
-        });
-    }
-
-    function filtrarTierList() {
-      const role = document.getElementById('role').value.toLowerCase();
-      const lane = document.getElementById('lane').value.toLowerCase();
-      let visible = 0;
-      document.querySelectorAll('.tier-container .card').forEach(card => {
-        const heroRole = (card.getAttribute('data-role') || '').toLowerCase();
-        const heroRoutes = (card.getAttribute('data-routes') || '').toLowerCase();
-        let mostra = true;
-        if (role && !heroRole.includes(role)) mostra = false;
-        if (lane && !heroRoutes.includes(lane)) mostra = false;
-        card.classList.toggle('hidden', !mostra);
-        if (mostra) visible++;
-      });
-      document.getElementById('noResults').classList.toggle('hidden', visible !== 0);
-      setTimeout(setupHeroCardClicks, 50); // Atualiza eventos após filtro
-    }
-
-    // HERO COUNTER MODAL
-    async function fetchHeroCounters(heroId) {
-      try {
-        const res = await fetch(`https://mlbb-proxy.vercel.app/api/hero-counter?id=${heroId}`);
-        const json = await res.json();
-        if (json && json.data && json.data.records && json.data.records[0] && json.data.records[0].data) {
-          return json.data.records[0].data;
-        }
-      } catch(e) {}
-      return null;
-    }
-
-    function setupHeroCardClicks() {
-      document.querySelectorAll('.card').forEach(card => {
-        if (card._counterBound) return;
-        card._counterBound = true;
-        card.style.cursor = "pointer";
-        card.onclick = async function() {
-          const heroId = card.getAttribute('data-id');
-          const heroName = card.getAttribute('data-name');
-          const heroImg = card.querySelector('img').src;
-          showHeroCounterModal(heroId, heroName, heroImg);
-        };
-      });
-    }
-
-    async function showHeroCounterModal(heroId, heroName, heroImg) {
-      const modal = document.getElementById("heroModal");
-      const body = modal.querySelector(".hero-modal-body");
-      body.innerHTML = `
-        <div class="hero-modal-header">
-          <img src="${heroImg}" alt="${heroName}" class="hero-modal-portrait">
-          <div class="hero-modal-title">${heroName}</div>
-        </div>
-        <div class="hero-modal-counters-title">Counters</div>
-        <div class="hero-modal-counters-loading">Carregando...</div>
-        <div class="hero-modal-counters-list"></div>
-      `;
-      modal.classList.remove("hidden");
-      setTimeout(() => modal.classList.add("show"), 5);
-
-      // Fetch data
-      const data = await fetchHeroCounters(heroId);
-
-      const list = body.querySelector(".hero-modal-counters-list");
-      const loading = body.querySelector(".hero-modal-counters-loading");
-      loading.style.display = "none";
-      if (data && data.sub_hero_last && data.sub_hero_last.length) {
-        list.innerHTML = data.sub_hero_last.map(sh => `
-          <img src="${sh.hero.data.head}" 
-               title="Winrate: ${(sh.hero_win_rate*100).toFixed(1)}%" 
-               alt="Counter" 
-               class="hero-modal-counter-img">
-        `).join('');
-      } else {
-        list.innerHTML = `<div class="hero-modal-counters-empty">Nenhum counter encontrado.</div>`;
-      }
-    }
-
-    document.addEventListener('DOMContentLoaded', function () {
-      let lang = localStorage.getItem('lang');
-      if (!lang) lang = navigator.language === "en-US" ? "en-US" : "pt-BR";
-      setLanguage(lang);
-
-      carregarTierList();
-      document.getElementById('rank').addEventListener('change', carregarTierList);
-      document.getElementById('days').addEventListener('change', carregarTierList);
-      document.getElementById('role').addEventListener('change', filtrarTierList);
-      document.getElementById('lane').addEventListener('change', filtrarTierList);
-
-      document.getElementById('themeSwitch').addEventListener('click', toggleTheme);
-
-      const langSwitch = document.getElementById('langSwitch');
-      langSwitch.addEventListener('click', function(e) {
-        showFlagDropdown(true);
-        e.stopPropagation();
-      });
-      document.getElementById('flagBR').addEventListener('click', function() { setLanguage('pt-BR'); showFlagDropdown(false); carregarTierList(); });
-      document.getElementById('flagUS').addEventListener('click', function() { setLanguage('en-US'); showFlagDropdown(false); carregarTierList(); });
-      document.addEventListener('click', function(e) {
-        if (!document.getElementById('flagDropdown').contains(e.target) && e.target !== langSwitch) {
-          showFlagDropdown(false);
-        }
-      });
-      document.getElementById('flagBR').addEventListener('keypress', function(e){ if(e.key==='Enter'){setLanguage('pt-BR'); showFlagDropdown(false); carregarTierList();} });
-      document.getElementById('flagUS').addEventListener('keypress', function(e){ if(e.key==='Enter'){setLanguage('en-US'); showFlagDropdown(false); carregarTierList();} });
-
-      // Modal close
-      const modal = document.getElementById("heroModal");
-      modal.addEventListener("click", function(e) {
-        if (e.target === modal || e.target.classList.contains("hero-modal-close")) {
-          modal.classList.remove("show");
-          setTimeout(() => modal.classList.add("hidden"), 200);
-        }
+// Busca heróis
+function fetchHeroMap() {
+  return fetch('https://mlbb-proxy.vercel.app/api/hero-list')
+    .then(res => res.json())
+    .then(map => {
+      heroIdToName = map;
+      heroNameToId = {};
+      Object.entries(map).forEach(([id, name]) => {
+        heroNameToId[name] = id;
       });
     });
+}
+
+function fetchAllHeroPositions() {
+  return fetch('https://mlbb-proxy.vercel.app/api/hero-position?role=all&lane=all&size=128&index=1')
+    .then(res => res.json())
+    .then(json => {
+      heroExtraInfo = {};
+      (json.data.records || []).forEach(entry => {
+        const heroData = entry.data;
+        heroExtraInfo[String(heroData.hero_id)] = {
+          role: (heroData.hero && heroData.hero.data && heroData.hero.data.sortid &&
+            heroData.hero.data.sortid.length && heroData.hero.data.sortid[0] &&
+            heroData.hero.data.sortid[0].data && heroData.hero.data.sortid[0].data.sort_title)
+            ? heroData.hero.data.sortid[0].data.sort_title.toLowerCase() : "",
+          roadsort: (heroData.hero && heroData.hero.data && heroData.hero.data.roadsort)
+            ? heroData.hero.data.roadsort : []
+        };
+      });
+    });
+}
+
+// Busca Counter
+async function fetchHeroCounters(heroId) {
+  try {
+    const res = await fetch(`https://mlbb-proxy.vercel.app/api/hero-counter?id=${heroId}`);
+    const json = await res.json();
+    if (json && json.data && json.data.records && json.data.records[0] && json.data.records[0].data) {
+      return json.data.records[0].data;
+    }
+  } catch(e) {}
+  return null;
+}
+
+// Renderiza Tier List
+function carregarTierList() {
+  const myToken = ++tierListRequestToken;
+
+  const rank = document.getElementById('rank').value;
+  const days = document.getElementById('days').value;
+  const url = `https://mlbb-proxy.vercel.app/api/hero-rank?source=rank&days=${days}&rank=${rank}&size=130&sort_field=win_rate&sort_order=desc`;
+
+  document.getElementById('tier-ss').innerHTML = '';
+  document.getElementById('tier-s').innerHTML = '';
+  document.getElementById('tier-a').innerHTML = '';
+  document.getElementById('noResults').classList.add('hidden');
+  tierCards = [];
+  tierRecords = [];
+
+  Promise.all([fetchHeroMap(), fetchAllHeroPositions(), fetch(url).then(res => res.json())])
+    .then(([_, __, json]) => {
+      if (myToken !== tierListRequestToken) return;
+      const records = json.data.records || [];
+      tierRecords = records;
+      let count = {ss:0,s:0,a:0};
+      let idSet = new Set();
+
+      records.forEach(entry => {
+        const hero = entry.data.main_hero.data;
+        const winRate = (entry.data.main_hero_win_rate * 100).toFixed(1);
+        const heroId = heroNameToId[hero.name];
+        if (!heroId || idSet.has(heroId)) return;
+        idSet.add(heroId);
+
+        const info = heroExtraInfo[heroId] || {};
+        let roadsortTitles = [];
+        let iconCount = 0;
+        let roadsortHtml = '';
+
+        if (Array.isArray(info.roadsort) && info.roadsort.length > 0) {
+          roadsortTitles = info.roadsort.map(rs =>
+            (rs.data && rs.data.road_sort_title) ? rs.data.road_sort_title : ''
+          ).filter(Boolean);
+          iconCount = info.roadsort.length;
+          roadsortHtml = info.roadsort.map(rs => {
+            const data = rs.data || {};
+            return data.road_sort_icon
+              ? `<span class="hero-route"><img src="${data.road_sort_icon}" alt="" title="${data.road_sort_title}" width="60" height="60"></span>`
+              : '';
+          }).join('');
+        }
+
+        const el = document.createElement('div');
+        el.className = 'card';
+        el.setAttribute('data-role', (info.role || '').toLowerCase());
+        el.setAttribute('data-routes', roadsortTitles.join('|').toLowerCase());
+        el.setAttribute('data-id', heroId || '');
+        el.setAttribute('data-name', hero.name);
+
+        el.innerHTML = `
+          <img src="${hero.head}" alt="Retrato do herói ${hero.name}" loading="lazy">
+          <div class="hero-name">${hero.name}</div>
+          <div class="hero-meta">${winRate}% WR</div>
+          <div class="hero-routes ${iconCount === 1 ? 'single' : ''}">${roadsortHtml}</div>
+        `;
+
+        tierCards.push(el);
+
+        if (winRate >= 54) {
+          document.getElementById('tier-ss').appendChild(el); count.ss++;
+        } else if (winRate >= 51) {
+          document.getElementById('tier-s').appendChild(el); count.s++;
+        } else {
+          document.getElementById('tier-a').appendChild(el); count.a++;
+        }
+      });
+
+      if (!count.ss && !count.s && !count.a) {
+        document.getElementById('noResults').classList.remove('hidden');
+      }
+      filtrarTierList();
+      setupHeroCardClicks();
+    })
+    .catch(err => {
+      document.getElementById('noResults').classList.remove('hidden');
+    });
+}
+
+function filtrarTierList() {
+  const role = document.getElementById('role').value.toLowerCase();
+  const lane = document.getElementById('lane').value.toLowerCase();
+  let visible = 0;
+  document.querySelectorAll('.tier-container .card').forEach(card => {
+    const heroRole = (card.getAttribute('data-role') || '').toLowerCase();
+    const heroRoutes = (card.getAttribute('data-routes') || '').toLowerCase();
+    let mostra = true;
+    if (role && !heroRole.includes(role)) mostra = false;
+    if (lane && !heroRoutes.includes(lane)) mostra = false;
+    card.classList.toggle('hidden', !mostra);
+    if (mostra) visible++;
+  });
+  document.getElementById('noResults').classList.toggle('hidden', visible !== 0);
+  setupHeroCardClicks();
+}
+
+// Modal de Counter
+async function showHeroCounterModal(heroId, heroName, heroImg) {
+  const modal = document.getElementById("heroModal");
+  const body = modal.querySelector(".hero-modal-body");
+  body.innerHTML = `
+    <div class="hero-modal-header">
+      <img src="${heroImg}" alt="${heroName}" class="hero-modal-portrait">
+      <div class="hero-modal-title">${heroName}</div>
+    </div>
+    <div class="hero-modal-counters-title">Counters</div>
+    <div class="hero-modal-counters-loading">Carregando...</div>
+    <div class="hero-modal-counters-list"></div>
+  `;
+  modal.classList.remove("hidden");
+  setTimeout(() => modal.classList.add("show"), 5);
+
+  // Fetch data
+  const data = await fetchHeroCounters(heroId);
+
+  const list = body.querySelector(".hero-modal-counters-list");
+  const loading = body.querySelector(".hero-modal-counters-loading");
+  loading.style.display = "none";
+  if (data && data.sub_hero_last && data.sub_hero_last.length) {
+    list.innerHTML = data.sub_hero_last.map(sh => `
+      <img src="${sh.hero.data.head}" 
+           title="Winrate: ${(sh.hero_win_rate*100).toFixed(1)}%" 
+           alt="Counter" 
+           class="hero-modal-counter-img">
+    `).join('');
+  } else {
+    list.innerHTML = `<div class="hero-modal-counters-empty">Nenhum counter encontrado.</div>`;
+  }
+}
+
+function setupHeroCardClicks() {
+  document.querySelectorAll('.card').forEach(card => {
+    if (card._counterBound) return;
+    card._counterBound = true;
+    card.style.cursor = "pointer";
+    card.onclick = async function() {
+      const heroId = card.getAttribute('data-id');
+      const heroName = card.getAttribute('data-name');
+      const heroImg = card.querySelector('img').src;
+      showHeroCounterModal(heroId, heroName, heroImg);
+    };
+  });
+}
+
+// DOMContentLoaded
+document.addEventListener('DOMContentLoaded', function () {
+  // Tema inicial
+  let theme = localStorage.getItem('theme');
+  if (!theme) {
+    theme = window.matchMedia('(prefers-color-scheme: dark)').matches ? "dark" : "light";
+  }
+  setTheme(theme);
+
+  // Idioma inicial
+  let lang = localStorage.getItem('lang');
+  if (!lang) lang = navigator.language === "en-US" ? "en-US" : "pt-BR";
+  setLanguage(lang);
+
+  // Carrega a tierlist
+  carregarTierList();
+
+  document.getElementById('rank').addEventListener('change', carregarTierList);
+  document.getElementById('days').addEventListener('change', carregarTierList);
+  document.getElementById('role').addEventListener('change', filtrarTierList);
+  document.getElementById('lane').addEventListener('change', filtrarTierList);
+
+  document.getElementById('themeSwitch').addEventListener('click', toggleTheme);
+
+  const langSwitch = document.getElementById('langSwitch');
+  langSwitch.addEventListener('click', function(e) {
+    showFlagDropdown(true);
+    e.stopPropagation();
+  });
+  document.getElementById('flagBR').addEventListener('click', function() { setLanguage('pt-BR'); showFlagDropdown(false); carregarTierList(); });
+  document.getElementById('flagUS').addEventListener('click', function() { setLanguage('en-US'); showFlagDropdown(false); carregarTierList(); });
+  document.addEventListener('click', function(e) {
+    if (!document.getElementById('flagDropdown').contains(e.target) && e.target !== langSwitch) {
+      showFlagDropdown(false);
+    }
+  });
+  document.getElementById('flagBR').addEventListener('keypress', function(e){ if(e.key==='Enter'){setLanguage('pt-BR'); showFlagDropdown(false); carregarTierList();} });
+  document.getElementById('flagUS').addEventListener('keypress', function(e){ if(e.key==='Enter'){setLanguage('en-US'); showFlagDropdown(false); carregarTierList();} });
+
+  // Modal close
+  const modal = document.getElementById("heroModal");
+  modal.addEventListener("click", function(e) {
+    if (e.target === modal || e.target.classList.contains("hero-modal-close")) {
+      modal.classList.remove("show");
+      setTimeout(() => modal.classList.add("hidden"), 200);
+    }
+  });
+});
   </script>
 </body>
-</html>
+          </html>
