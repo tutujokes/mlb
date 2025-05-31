@@ -90,6 +90,15 @@
     <div id="noResults" class="no-results hidden" data-i18n="no_heroes">Nenhum herói encontrado.</div>
   </main>
 
+  <div id="heroModal" class="hero-modal hidden">
+    <div class="hero-modal-content">
+      <button class="hero-modal-close" title="Fechar">&times;</button>
+      <div class="hero-modal-body">
+        <!-- Preenchido via JS -->
+      </div>
+    </div>
+  </div>
+
   <footer class="footer-moba">
     <span class="footer-brand">moba.gg &reg; 2025</span>
     <a class="byarthur" href="https://github.com/tutujokes" target="_blank" rel="noopener" aria-label="GitHub">
@@ -203,7 +212,7 @@
     }
 
     function fetchAllHeroPositions() {
-      return fetch('https://mlbb-proxy.vercel.app/api/hero-position?role=all&lane=all&size=127&index=1')
+      return fetch('https://mlbb-proxy.vercel.app/api/hero-position?role=all&lane=all&size=128&index=1')
         .then(res => res.json())
         .then(json => {
           heroExtraInfo = {};
@@ -297,6 +306,7 @@
             document.getElementById('noResults').classList.remove('hidden');
           }
           filtrarTierList();
+          setTimeout(setupHeroCardClicks, 50); // cards clicáveis
         })
         .catch(err => {
           document.getElementById('noResults').classList.remove('hidden');
@@ -317,62 +327,66 @@
         if (mostra) visible++;
       });
       document.getElementById('noResults').classList.toggle('hidden', visible !== 0);
+      setTimeout(setupHeroCardClicks, 50); // Atualiza eventos após filtro
     }
 
-    function translate(key) {
-      return translations[currentLang][key] || key;
+    // HERO COUNTER MODAL
+    async function fetchHeroCounters(heroId) {
+      try {
+        const res = await fetch(`https://mlbb-proxy.vercel.app/api/hero-counter?id=${heroId}`);
+        const json = await res.json();
+        if (json && json.data && json.data.records && json.data.records[0] && json.data.records[0].data) {
+          return json.data.records[0].data;
+        }
+      } catch(e) {}
+      return null;
     }
-    function updateI18n() {
-      document.querySelectorAll('[data-i18n]').forEach(el => {
-        const key = el.getAttribute('data-i18n');
-        if (translations[currentLang][key]) {
-          el.textContent = translations[currentLang][key];
-        }
-      });
-      document.querySelectorAll('option[data-i18n]').forEach(opt => {
-        const key = opt.getAttribute('data-i18n');
-        if (translations[currentLang][key]) {
-          opt.textContent = translations[currentLang][key];
-        }
+
+    function setupHeroCardClicks() {
+      document.querySelectorAll('.card').forEach(card => {
+        if (card._counterBound) return;
+        card._counterBound = true;
+        card.style.cursor = "pointer";
+        card.onclick = async function() {
+          const heroId = card.getAttribute('data-id');
+          const heroName = card.getAttribute('data-name');
+          const heroImg = card.querySelector('img').src;
+          showHeroCounterModal(heroId, heroName, heroImg);
+        };
       });
     }
 
-    function setTheme(theme) {
-      document.body.setAttribute('data-theme', theme);
-      let icon = document.getElementById('themeIcon');
-      if (theme === "dark") {
-        icon.className = "fa-solid fa-sun";
+    async function showHeroCounterModal(heroId, heroName, heroImg) {
+      const modal = document.getElementById("heroModal");
+      const body = modal.querySelector(".hero-modal-body");
+      body.innerHTML = `
+        <div class="hero-modal-header">
+          <img src="${heroImg}" alt="${heroName}" class="hero-modal-portrait">
+          <div class="hero-modal-title">${heroName}</div>
+        </div>
+        <div class="hero-modal-counters-title">Counters</div>
+        <div class="hero-modal-counters-loading">Carregando...</div>
+        <div class="hero-modal-counters-list"></div>
+      `;
+      modal.classList.remove("hidden");
+      setTimeout(() => modal.classList.add("show"), 5);
+
+      // Fetch data
+      const data = await fetchHeroCounters(heroId);
+
+      const list = body.querySelector(".hero-modal-counters-list");
+      const loading = body.querySelector(".hero-modal-counters-loading");
+      loading.style.display = "none";
+      if (data && data.sub_hero_last && data.sub_hero_last.length) {
+        list.innerHTML = data.sub_hero_last.map(sh => `
+          <img src="${sh.hero.data.head}" 
+               title="Winrate: ${(sh.hero_win_rate*100).toFixed(1)}%" 
+               alt="Counter" 
+               class="hero-modal-counter-img">
+        `).join('');
       } else {
-        icon.className = "fa-solid fa-moon";
+        list.innerHTML = `<div class="hero-modal-counters-empty">Nenhum counter encontrado.</div>`;
       }
-      localStorage.setItem('theme', theme);
-    }
-    function toggleTheme() {
-      const newTheme = document.body.getAttribute('data-theme') === "dark" ? "light" : "dark";
-      setTheme(newTheme);
-    }
-    (function() {
-      let theme = localStorage.getItem('theme');
-      if (!theme) {
-        theme = window.matchMedia('(prefers-color-scheme: dark)').matches ? "dark" : "light";
-      }
-      setTheme(theme);
-    })();
-
-    function showFlagDropdown(show) {
-      document.getElementById('flagDropdown').classList.toggle('hidden', !show);
-    }
-    function setLanguage(lang) {
-      currentLang = lang;
-      document.documentElement.lang = lang;
-      updateI18n();
-      document.getElementById('langFlag').style.backgroundImage =
-        lang === "pt-BR"
-          ? "url('https://cdn.jsdelivr.net/gh/hjnilsson/country-flags/svg/br.svg')"
-          : "url('https://cdn.jsdelivr.net/gh/hjnilsson/country-flags/svg/us.svg')";
-      document.getElementById('flagBR').classList.toggle('selected', lang === "pt-BR");
-      document.getElementById('flagUS').classList.toggle('selected', lang === "en-US");
-      localStorage.setItem('lang', lang);
     }
 
     document.addEventListener('DOMContentLoaded', function () {
@@ -402,6 +416,15 @@
       });
       document.getElementById('flagBR').addEventListener('keypress', function(e){ if(e.key==='Enter'){setLanguage('pt-BR'); showFlagDropdown(false); carregarTierList();} });
       document.getElementById('flagUS').addEventListener('keypress', function(e){ if(e.key==='Enter'){setLanguage('en-US'); showFlagDropdown(false); carregarTierList();} });
+
+      // Modal close
+      const modal = document.getElementById("heroModal");
+      modal.addEventListener("click", function(e) {
+        if (e.target === modal || e.target.classList.contains("hero-modal-close")) {
+          modal.classList.remove("show");
+          setTimeout(() => modal.classList.add("hidden"), 200);
+        }
+      });
     });
   </script>
 </body>
