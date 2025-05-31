@@ -1,7 +1,3 @@
-// (Coloque esse código junto com suas funções já antigas de tierlist, filtro, tema, idioma, etc!)
-
-/* ... Seu código anterior ... */
-
 // Função para abrir/popular o modal do herói com seções dos endpoints detalhados
 async function showHeroModal(heroId) {
   // Busca detalhes do herói
@@ -453,14 +449,12 @@ async function showHeroCounterModal(heroId, heroName, heroImg) {
 
 function setupHeroCardClicks() {
   document.querySelectorAll('.card').forEach(card => {
-    if (card._counterBound) return;
-    card._counterBound = true;
+    if (card._detailsBound) return;
+    card._detailsBound = true;
     card.style.cursor = "pointer";
-    card.onclick = async function() {
+    card.onclick = function() {
       const heroId = card.getAttribute('data-id');
-      const heroName = card.getAttribute('data-name');
-      const heroImg = card.querySelector('img').src;
-      showHeroCounterModal(heroId, heroName, heroImg);
+      showHeroModal(heroId); // <--- AGORA CHAMA O MODAL NOVO!
     };
   });
 }
