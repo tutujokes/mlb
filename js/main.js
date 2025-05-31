@@ -272,8 +272,8 @@ function filtrarTierList() {
 async function showHeroModal(heroId) {
   try {
     // Busca detalhes do herói
-    const detailsRes = await fetch(`/api/hero-detail?hero_id=${heroId}`);
-    const detailsData = await detailsRes.json();
+    const detailsRes = await fetch(`https://mlbb-proxy.vercel.app/api/hero-detail?id=${heroId}`);
+    const statsRes = await fetch(`https://mlbb-proxy.vercel.app/api/hero-detail-stats?id=${heroId}`);
     const heroObj = detailsData?.data?.records?.[0]?.data?.hero?.data || {};
     const heroData = detailsData?.data?.records?.[0]?.data || {};
 
