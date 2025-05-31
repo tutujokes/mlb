@@ -76,7 +76,6 @@ let heroExtraInfo = {};
 let tierCards = [];
 let tierRecords = [];
 let currentLang = 'pt-BR';
-
 let tierListRequestToken = 0;
 
 // Funções utilitárias
@@ -273,12 +272,12 @@ async function showHeroModal(heroId) {
   try {
     // Busca detalhes do herói
     const detailsRes = await fetch(`https://mlbb-proxy.vercel.app/api/hero-detail?id=${heroId}`);
-    const statsRes = await fetch(`https://mlbb-proxy.vercel.app/api/hero-detail-stats?id=${heroId}`);
+    const detailsData = await detailsRes.json();
     const heroObj = detailsData?.data?.records?.[0]?.data?.hero?.data || {};
     const heroData = detailsData?.data?.records?.[0]?.data || {};
 
     // Busca stats do herói
-    const statsRes = await fetch(`/api/hero-detail-stats?main_heroid=${heroId}`);
+    const statsRes = await fetch(`https://mlbb-proxy.vercel.app/api/hero-detail-stats?id=${heroId}`);
     const statsData = await statsRes.json();
     const statsObj = statsData?.data?.records?.[0]?.data || {};
 
