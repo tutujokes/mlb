@@ -288,9 +288,14 @@ async function showHeroModal(heroId) {
     document.getElementById('modal-hero-lanes').textContent = heroObj.roadsortlabel?.filter(Boolean).join(', ') || '';
 
     // BUILDS
-    document.getElementById('modal-hero-builds').textContent = (heroObj.recommendmasterplan && heroObj.recommendmasterplan.length)
-      ? heroObj.recommendmasterplan.join(', ')
-      : 'Build recomendada não disponível.';
+    document.getElementById('modal-hero-builds').innerHTML =
+    (heroObj.recommendmasterplan && heroObj.recommendmasterplan.length)
+    ? heroObj.recommendmasterplan.map(plan =>
+        `<span class="build-plan">${(plan.item_list || []).map(item =>
+          `<img src="${item.item_icon}" alt="${item.item_name}" title="${item.item_name}" class="build-item-icon" style="width:32px;height:32px;margin:0 2px;vertical-align:middle;">`
+        ).join('')}</span>`
+      ).join('<br>')
+    : 'Build recomendada não disponível.';
     document.getElementById('modal-hero-specialties').textContent = (heroObj.speciality || []).join(', ');
     document.getElementById('modal-hero-icons').innerHTML = `
       ${(heroObj.roadsort || []).map(r => r.data?.road_sort_icon ? `<img src="${r.data.road_sort_icon}" title="${r.data.road_sort_title}" class="lane-icon"/>` : '').join('')}
