@@ -407,12 +407,13 @@ body[data-theme="dark"] .filters-row select {
   color: var(--text-main);
   border-radius: 16px;
   min-width: 320px; max-width: 96vw;
-  max-height: 88vh;
+  max-height: 90vh; /* <-- Limite de altura do modal para permitir scroll interno */
   width: 420px;
   box-shadow: 0 8px 32px #23272f55;
   padding: 0 0 22px 0;
   position: relative;
-  display: flex; flex-direction: column;
+  display: flex;
+  flex-direction: column;
   animation: fadeInCard 0.33s;
 }
 .hero-modal-close {
@@ -513,6 +514,9 @@ body[data-theme="dark"] .filters-row select {
 .hero-modal-body {
   font-family: 'Inter', Arial, sans-serif;
   padding: 0 14px 18px 14px;
+  overflow-y: auto;      /* Scroll interno no corpo do modal */
+  flex: 1 1 auto;
+  min-height: 0;
 }
 
 .modal-section {
@@ -667,4 +671,4 @@ body[data-theme="dark"] .filters-row select {
   .hero-modal-content { min-width: 0; width: 97vw; padding-bottom: 10px;}
   .hero-modal-header, .hero-modal-counters-title, .hero-modal-counters-list { padding-left: 12px; padding-right: 12px;}
   .hero-modal-counters-list {padding-bottom: 0;}
-  }
+    }
