@@ -32,7 +32,8 @@ const translations = {
     lane_jungle: "Selva",
     lane_roam: "Rotação",
     all_lanes: "Todas",
-    no_heroes: "Nenhum herói encontrado."
+    no_heroes: "Nenhum herói encontrado.",
+    order_label: "Ordem Recomendada das Habilidades:"
   },
   'en-US': {
     title: "Tier List - Mobile Legends",
@@ -66,19 +67,13 @@ const translations = {
     lane_jungle: "Jungle",
     lane_roam: "Roam",
     all_lanes: "All",
-    no_heroes: "No heroes found."
+    no_heroes: "No heroes found.",
+    order_label: "Recommended Skill Order:"
   }
 };
 
-let heroIdToName = {};
-let heroNameToId = {};
-let heroExtraInfo = {};
-let tierCards = [];
-let tierRecords = [];
-let currentLang = 'pt-BR';
-let tierListRequestToken = 0;
-
-// Funções utilitárias
+// Utilitários de tradução e idioma
+let currentLang = localStorage.getItem('lang') || (navigator.language === "en-US" ? "en-US" : "pt-BR");
 function translate(key) {
   return translations[currentLang][key] || key;
 }
@@ -96,6 +91,11 @@ function updateI18n() {
     }
   });
 }
+function setLanguage(lang) {
+  currentLang = lang;
+  localStorage.setItem('lang', lang);
+  updateI18n();
+}
 
 // Tema
 function setTheme(theme) {
@@ -111,22 +111,8 @@ function setTheme(theme) {
   localStorage.setItem('theme', theme);
 }
 function toggleTheme() {
-  const newTheme = document.body.getAttribute('data-theme') === "dark" ? "light" : "dark";
-  setTheme(newTheme);
-}
-
-// Idioma
-function setLanguage(lang) {
-  currentLang = lang;
-  document.documentElement.lang = lang;
-  updateI18n();
-  document.getElementById('langFlag').style.backgroundImage =
-    lang === "pt-BR"
-      ? "url('https://cdn.jsdelivr.net/gh/hjnilsson/country-flags/svg/br.svg')"
-      : "url('https://cdn.jsdelivr.net/gh/hjnilsson/country-flags/svg/us.svg')";
-  document.getElementById('flagBR').classList.toggle('selected', lang === "pt-BR");
-  document.getElementById('flagUS').classList.toggle('selected', lang === "en-US");
-  localStorage.setItem('lang', lang);
+  let theme = document.body.getAttribute('data-theme') === "dark" ? "light" : "dark";
+  setTheme(theme);
 }
 
 // Modal idioma
@@ -134,7 +120,19 @@ function showFlagDropdown(show) {
   document.getElementById('flagDropdown').classList.toggle('hidden', !show);
 }
 
-// Busca heróis
+// Buscas e caches
+let heroIdToName = {};
+let heroNameToId = {};
+let heroExtraInfo = {};
+let tierCards = [];
+let tierRecords = [];
+let tierListRequestToken = 0;
+
+// Caches de detalhes e stats de heróis
+const heroDetailsCache = {};
+const heroStatsCache = {};
+
+// Busca lista de heróis
 function fetchHeroMap() {
   return fetch('https://mlbb-proxy.vercel.app/api/hero-list')
     .then(res => res.json())
@@ -147,6 +145,7 @@ function fetchHeroMap() {
     });
 }
 
+// Busca extras (role/lane)
 function fetchAllHeroPositions() {
   return fetch('https://mlbb-proxy.vercel.app/api/hero-position?role=all&lane=all&size=128&index=1')
     .then(res => res.json())
@@ -169,7 +168,6 @@ function fetchAllHeroPositions() {
 // Renderiza Tier List
 function carregarTierList() {
   const myToken = ++tierListRequestToken;
-
   const rank = document.getElementById('rank').value;
   const days = document.getElementById('days').value;
   const url = `https://mlbb-proxy.vercel.app/api/hero-rank?source=rank&days=${days}&rank=${rank}&size=130&sort_field=win_rate&sort_order=desc`;
@@ -186,7 +184,7 @@ function carregarTierList() {
       if (myToken !== tierListRequestToken) return;
       const records = json.data.records || [];
       tierRecords = records;
-      let count = {ss:0,s:0,a:0};
+      let count = { ss: 0, s: 0, a: 0 };
       let idSet = new Set();
 
       records.forEach(entry => {
@@ -267,18 +265,38 @@ function filtrarTierList() {
   setupHeroCardClicks();
 }
 
-// MODAL DETALHADO DE HERÓI - ALTERE OS ENDPOINTS AQUI!
+// Busca detalhes do herói com cache
+async function getHeroDetails(heroId) {
+  if (heroDetailsCache[heroId]) return heroDetailsCache[heroId];
+  const detailsRes = await fetch(`https://mlbb-proxy.vercel.app/api/hero-detail?hero_id=${heroId}`);
+  const detailsData = await detailsRes.json();
+  heroDetailsCache[heroId] = detailsData;
+  return detailsData;
+}
+
+// Busca stats do herói com cache
+async function getHeroStats(heroId) {
+  if (heroStatsCache[heroId]) return heroStatsCache[heroId];
+  const statsRes = await fetch(`https://mlbb-proxy.vercel.app/api/hero-detail-stats?main_heroid=${heroId}`);
+  const statsData = await statsRes.json();
+  heroStatsCache[heroId] = statsData;
+  return statsData;
+}
+
+// MODAL DETALHADO DE HERÓI
 async function showHeroModal(heroId) {
+  // Mostra loading imediato
+  document.getElementById('heroModal').classList.remove('hidden');
+  document.querySelector('.hero-modal-body').innerHTML = '<div style="padding:40px;text-align:center;">Carregando...</div>';
+
   try {
-    // Busca detalhes do herói
-    const detailsRes = await fetch(`https://mlbb-proxy.vercel.app/api/hero-detail?hero_id=${heroId}`);
-    const detailsData = await detailsRes.json();
+    // Busca detalhes e stats em paralelo
+    const [detailsData, statsData] = await Promise.all([
+      getHeroDetails(heroId),
+      getHeroStats(heroId)
+    ]);
     const heroObj = detailsData?.data?.records?.[0]?.data?.hero?.data || {};
     const heroData = detailsData?.data?.records?.[0]?.data || {};
-
-    // Busca stats do herói
-    const statsRes = await fetch(`https://mlbb-proxy.vercel.app/api/hero-detail-stats?main_heroid=${heroId}`);
-    const statsData = await statsRes.json();
     const statsObj = statsData?.data?.records?.[0]?.data || {};
 
     // SOBRE O CAMPEÃO
@@ -287,47 +305,45 @@ async function showHeroModal(heroId) {
     document.getElementById('modal-hero-role').textContent = heroObj.sortlabel?.filter(Boolean).join(', ') || '';
     document.getElementById('modal-hero-lanes').textContent = heroObj.roadsortlabel?.filter(Boolean).join(', ') || '';
 
-    // BUILDS
-    document.getElementById('modal-hero-builds').innerHTML =
-  (heroObj.recommendmasterplan && heroObj.recommendmasterplan.length)
-    ? heroObj.recommendmasterplan.map(plan =>
-        `<span class="build-plan">
-          <span class="build-title">${plan.plan_name || ""}</span>
-          ${(plan.item_list || []).map(item =>
-            `<img src="${item.item_icon}" alt="${item.item_name}" title="${item.item_name}" class="build-item-icon" style="width:32px;height:32px;margin:0 2px;vertical-align:middle;">`
-          ).join('')}
-        </span>`
-      ).join('<br>')
-    : 'Build recomendada não disponível.';
+    // Exibe ordem de habilidades (recommendedlevel)
+    const skillsList = heroObj.heroskilllist?.[0]?.skilllist || [];
+    let skillOrderHtml = '';
+    if (skillsList.length && skillsList[0].recommendedlevel) {
+      skillOrderHtml = `<div><b>${translate('order_label')}</b><br>${skillsList[0].recommendedlevel}</div>`;
+    } else if (skillsList.length) {
+      skillOrderHtml = `<div><b>${translate('order_label')}</b><br>${skillsList.map((_, i) => i + 1).join('-')}</div>`;
+    } else {
+      skillOrderHtml = `<div><b>${translate('order_label')}</b> N/D</div>`;
+    }
+    document.getElementById('modal-hero-builds').innerHTML = skillOrderHtml;
+
+    // Especialidades e ícones
     document.getElementById('modal-hero-specialties').textContent = (heroObj.speciality || []).join(', ');
     document.getElementById('modal-hero-icons').innerHTML = `
       ${(heroObj.roadsort || []).map(r => r.data?.road_sort_icon ? `<img src="${r.data.road_sort_icon}" title="${r.data.road_sort_title}" class="lane-icon"/>` : '').join('')}
       ${(heroObj.sortid || []).map(s => s.data?.sort_icon ? `<img src="${s.data.sort_icon}" title="${s.data.sort_title}" class="role-icon"/>` : '').join('')}
     `;
 
-    // HABILIDADES
-    const skillsList = (heroObj.heroskilllist?.[0]?.skilllist || []);
+    // Habilidades detalhadas
     document.getElementById('modal-hero-skills').innerHTML = skillsList.map(skill => `
       <div class="skill">
         <img src="${skill.skillicon}" class="skill-icon" />
         <div class="skill-info">
           <div class="skill-name">${skill.skillname}</div>
-          <div class="skill-tags">${(skill.skilltag || []).map(tag => `<span class="skill-tag" style="background:rgba(${tag.tagrgb},.15);color:rgb(${tag.tagrgb});">${tag.tagname}</span>`).join(' ')}</div>
-          <div class="skill-desc">${skill.skilldesc}</div>
-          <div class="skill-cd">${skill['skillcd&cost'] ? `CD/Custo: ${skill['skillcd&cost']}` : ''}</div>
+          <div class="skill-desc">${skill.desc || skill.skilldesc || ''}</div>
         </div>
       </div>
     `).join('');
 
-    // ESTATÍSTICAS GERAIS
+    // Estatísticas
     document.getElementById('modal-hero-stats').innerHTML = `
-      <div>Winrate: ${(statsObj.main_hero_win_rate*100).toFixed(1)}%</div>
-      <div>Banrate: ${(statsObj.main_hero_ban_rate*100).toFixed(1)}%</div>
-      <div>Appearance: ${(statsObj.main_hero_appearance_rate*100).toFixed(2)}%</div>
+      <div>Winrate: ${(statsObj.main_hero_win_rate * 100).toFixed(1)}%</div>
+      <div>Banrate: ${(statsObj.main_hero_ban_rate * 100).toFixed(1)}%</div>
+      <div>Appearance: ${(statsObj.main_hero_appearance_rate * 100).toFixed(2)}%</div>
     `;
-    document.getElementById('modal-hero-stats-graph').innerHTML = ''; // Adapte se quiser gráfico/tabela
+    document.getElementById('modal-hero-stats-graph').innerHTML = '';
 
-    // RELAÇÕES E SINERGIAS
+    // Relações e sinergias
     const assist = heroData.relation?.assist;
     document.getElementById('modal-hero-assist').innerHTML = assist ? `
       <div class="relation-desc"><b>Aliados recomendados:</b> ${assist.desc}</div>
@@ -350,34 +366,34 @@ async function showHeroModal(heroId) {
       </div>
     ` : '';
 
-    // PARCERIAS & COMBOS
+    // Parcerias & counters
     document.getElementById('modal-hero-sub-heroes').innerHTML = (statsObj.sub_hero || []).map(sh => `
       <div class="sub-hero">
         <img src="${sh.hero?.data?.head}" class="sub-hero-img" />
-        <span>Winrate: ${(sh.hero_win_rate*100).toFixed(1)}% (+${(sh.increase_win_rate*100).toFixed(2)}%)</span>
+        <span>Winrate: ${(sh.hero_win_rate * 100).toFixed(1)}% (+${(sh.increase_win_rate * 100).toFixed(2)}%)</span>
       </div>
     `).join('');
-    document.getElementById('modal-hero-sub-heroes-impact').innerHTML = ''; // Adapte se quiser gráfico/tabela
+    document.getElementById('modal-hero-sub-heroes-impact').innerHTML = '';
     document.getElementById('modal-hero-sub-heroes-last').innerHTML = (statsObj.sub_hero_last || []).map(sh => `
       <div class="sub-hero negative">
         <span>${sh.heroid}</span>
-        <span>Winrate: ${(sh.hero_win_rate*100).toFixed(1)}% (${(sh.increase_win_rate*100).toFixed(2)}%)</span>
+        <span>Winrate: ${(sh.hero_win_rate * 100).toFixed(1)}% (${(sh.increase_win_rate * 100).toFixed(2)}%)</span>
       </div>
     `).join('');
 
-    // COUNTERS (visual)
+    // Counters
     await showHeroCounters(heroId);
 
     // Exibe o modal
     const modal = document.getElementById("heroModal");
     modal.classList.remove("hidden");
     setTimeout(() => modal.classList.add("show"), 5);
-  } catch(e) {
-    alert("Erro ao carregar informações do herói.");
+  } catch (e) {
+    document.querySelector('.hero-modal-body').innerHTML = '<div style="padding:40px;text-align:center;color:red;">Erro ao carregar detalhes do herói.</div>';
   }
 }
 
-// COUNTERS (visual para o modal detalhado)
+// Counters para o modal detalhado
 async function showHeroCounters(heroId) {
   const res = await fetch(`https://mlbb-proxy.vercel.app/api/hero-counter?id=${heroId}`);
   const json = await res.json();
@@ -386,17 +402,17 @@ async function showHeroCounters(heroId) {
   let counters = [];
   if (data) {
     counters = (data.sub_hero_last && data.sub_hero_last.length) ? data.sub_hero_last
-             : (data.sub_hero && data.sub_hero.length) ? data.sub_hero
-             : [];
+      : (data.sub_hero && data.sub_hero.length) ? data.sub_hero
+        : [];
   }
   if (counters.length) {
     list.innerHTML = counters.map(sh => `
       <div class="counter-img-wrap">
         <img src="${sh.hero.data.head}" 
-             title="Winrate: ${(sh.hero_win_rate*100).toFixed(1)}%" 
+             title="Winrate: ${(sh.hero_win_rate * 100).toFixed(1)}%" 
              alt="Counter"
              class="hero-modal-counter-img">
-        <span class="counter-badge">${(sh.hero_win_rate*100).toFixed(1)}%</span>
+        <span class="counter-badge">${(sh.hero_win_rate * 100).toFixed(1)}%</span>
       </div>
     `).join('');
   } else {
@@ -404,13 +420,13 @@ async function showHeroCounters(heroId) {
   }
 }
 
-// CLICKS DOS CARDS: MODAL DETALHADO
+// Clicks dos cards: modal detalhado
 function setupHeroCardClicks() {
   document.querySelectorAll('.card').forEach(card => {
     if (card._detailsBound) return;
     card._detailsBound = true;
     card.style.cursor = "pointer";
-    card.onclick = function() {
+    card.onclick = function () {
       const heroId = card.getAttribute('data-id');
       showHeroModal(heroId);
     };
@@ -442,26 +458,30 @@ document.addEventListener('DOMContentLoaded', function () {
   document.getElementById('themeSwitch').addEventListener('click', toggleTheme);
 
   const langSwitch = document.getElementById('langSwitch');
-  langSwitch.addEventListener('click', function(e) {
+  langSwitch.addEventListener('click', function (e) {
     showFlagDropdown(true);
     e.stopPropagation();
   });
-  document.getElementById('flagBR').addEventListener('click', function() { setLanguage('pt-BR'); showFlagDropdown(false); carregarTierList(); });
-  document.getElementById('flagUS').addEventListener('click', function() { setLanguage('en-US'); showFlagDropdown(false); carregarTierList(); });
-  document.addEventListener('click', function(e) {
-    if (!document.getElementById('flagDropdown').contains(e.target) && e.target !== langSwitch) {
-      showFlagDropdown(false);
-    }
-  });
-  document.getElementById('flagBR').addEventListener('keypress', function(e){ if(e.key==='Enter'){setLanguage('pt-BR'); showFlagDropdown(false); carregarTierList();} });
-  document.getElementById('flagUS').addEventListener('keypress', function(e){ if(e.key==='Enter'){setLanguage('en-US'); showFlagDropdown(false); carregarTierList();} });
+  document.getElementById('flagBR').addEventListener('click', function () { setLanguage('pt-BR'); showFlagDropdown(false); carregarTierList(); });
+  document.getElementById('flagUS').addEventListener('click', function () { setLanguage('en-US'); showFlagDropdown(false); carregarTierList(); });
 
   // Modal close
-  const modal = document.getElementById("heroModal");
-  modal.addEventListener("click", function(e) {
-    if (e.target === modal || e.target.classList.contains("hero-modal-close")) {
-      modal.classList.remove("show");
-      setTimeout(() => modal.classList.add("hidden"), 200);
+  document.querySelector('.hero-modal-close').onclick = function () {
+    const modal = document.getElementById('heroModal');
+    modal.classList.remove('show');
+    setTimeout(() => {
+      modal.classList.add('hidden');
+    }, 300);
+  };
+  // Fecha modal ao clicar fora do conteúdo
+  document.getElementById('heroModal').addEventListener('click', function (e) {
+    if (e.target === this) {
+      this.classList.remove('show');
+      setTimeout(() => this.classList.add('hidden'), 300);
     }
+  });
+  // Fecha dropdown idioma ao clicar fora
+  document.body.addEventListener('click', function () {
+    showFlagDropdown(false);
   });
 });
