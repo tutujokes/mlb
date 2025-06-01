@@ -290,6 +290,13 @@ async function showHeroModal(heroId) {
       getHeroDetails(heroId),
       getHeroStats(heroId)
     ]);
+    console.log(
+  'detailsData.data.records:', detailsData?.data?.records,
+  '\ndetailsData.data.records[0]:', detailsData?.data?.records?.[0],
+  '\ndetailsData.data.records[0].data:', detailsData?.data?.records?.[0]?.data,
+  '\ndetailsData.data.records[0].data.hero:', detailsData?.data?.records?.[0]?.data?.hero,
+  '\ndetailsData.data.records[0].data.hero.data:', detailsData?.data?.records?.[0]?.data?.hero?.data
+);
     console.log('detailsData', detailsData);
     console.log('statsData', statsData);
 
