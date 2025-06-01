@@ -652,24 +652,92 @@ body[data-theme="dark"] .filters-row select {
   z-index: 3;
   font-variant-numeric: tabular-nums;
 }
-.build-item-icon {
-  width: 32px;
-  height: 32px;
-  border-radius: 7px;
-  margin: 0 2px;
-  vertical-align: middle;
-  background: #222;
-  box-shadow: 0 1px 4px #0002;
+#modal-hero-skillorder {
+  margin-bottom: 10px;
+  text-align: center;
 }
-.build-plan {
-  display: inline-block;
-  margin-bottom: 6px;
+.skill-order-list {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  margin-top: 5px;
+  margin-bottom: 5px;
 }
-.build-title {
-  font-weight: 600;
+.skill-order-step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 38px;
+}
+.skill-order-num {
+  background: var(--primary);
+  color: #fff;
+  font-weight: bold;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.01em;
+  margin-bottom: 2px;
+  box-shadow: 0 2px 8px #0002;
+}
+.skill-order-label {
   font-size: 0.95em;
-  margin-right: 6px;
-  color: #6366f1;
+  color: #888;
+  text-align: center;
+  max-width: 50px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.skill-order-arrow {
+  font-size: 1.3em;
+  color: var(--primary);
+  margin: 0 2px;
+  margin-top: 7px;
+}
+
+/* Habilidades detalhadas no modal */
+#modal-hero-skills .skill {
+  display: flex;
+  align-items: flex-start;
+  gap: 13px;
+  margin-bottom: 13px;
+}
+.skill-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 8px;
+  border: 2px solid #e9e9e9;
+  background: #fff;
+}
+.skill-info {
+  flex: 1;
+}
+.skill-name {
+  font-size: 1.08em;
+  font-weight: bold;
+  color: var(--primary);
+  margin-bottom: 2px;
+}
+.skill-desc {
+  font-size: .98em;
+  color: var(--text-color);
+  margin-bottom: 2px;
+}
+.skill-tags {
+  margin-bottom: 1px;
+}
+.skill-tag {
+  display: inline-block;
+  border-radius: 5px;
+  padding: 2px 6px;
+  font-size: .92em;
+  margin-right: 2px;
+  margin-bottom: 1px;
 }
 @media (max-width: 600px) {
   .hero-portrait { width: 60px; height: 60px; }
@@ -689,4 +757,4 @@ body[data-theme="dark"] .filters-row select {
   .hero-modal-content { min-width: 0; width: 97vw; padding-bottom: 10px;}
   .hero-modal-header, .hero-modal-counters-title, .hero-modal-counters-list { padding-left: 12px; padding-right: 12px;}
   .hero-modal-counters-list {padding-bottom: 0;}
-  }
+                         }
