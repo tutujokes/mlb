@@ -484,7 +484,70 @@ document.addEventListener('DOMContentLoaded', function () {
   let lang = localStorage.getItem('lang');
   if (!lang) lang = navigator.language === "en-US" ? "en-US" : "pt-BR";
   setLanguage(lang);
+// ... (restante do seu código igual) ...
 
+function setupHeroCardClicks() {
+  document.querySelectorAll('.card').forEach(card => {
+    if (card._detailsBound) return;
+    card._detailsBound = true;
+    card.style.cursor = "pointer";
+    card.onclick = function () {
+      const heroId = card.getAttribute('data-id');
+      showHeroModal(heroId);
+    };
+  });
+}
+
+async function showHeroModal(heroId) {
+  const modal = document.getElementById('heroModal');
+  // Sempre remova as duas classes primeiro
+  modal.classList.remove('hidden');
+  modal.classList.remove('show');
+
+  // Torna visível imediatamente
+  modal.style.display = 'flex';
+  modal.style.opacity = '0';
+  modal.style.visibility = 'visible';
+
+  document.querySelector('.hero-modal-body').innerHTML = '<div style="padding:40px;text-align:center;">Carregando...</div>';
+
+  try {
+    // ... (restante da lógica de busca e renderização igual) ...
+
+    // Ao final do carregamento, mostre o modal
+    setTimeout(() => {
+      modal.classList.add('show');
+      modal.classList.remove('hidden');
+      modal.style.removeProperty('display');
+      modal.style.removeProperty('opacity');
+      modal.style.removeProperty('visibility');
+    }, 10);
+
+  } catch (e) {
+    document.querySelector('.hero-modal-body').innerHTML = '<div style="padding:40px;text-align:center;color:red;">Erro ao carregar detalhes do herói.</div>';
+    modal.classList.add('show'); // ainda mostra o modal para o usuário ver o erro
+    modal.classList.remove('hidden');
+  }
+}
+
+// Fecha modal ao clicar no X
+document.addEventListener('DOMContentLoaded', function () {
+  // ... (restante igual) ...
+  document.querySelector('.hero-modal-close').onclick = function () {
+    const modal = document.getElementById('heroModal');
+    modal.classList.remove('show');
+    modal.classList.add('hidden');
+  };
+  // Fecha modal ao clicar fora do conteúdo
+  document.getElementById('heroModal').addEventListener('click', function (e) {
+    if (e.target === this) {
+      this.classList.remove('show');
+      this.classList.add('hidden');
+    }
+  });
+  // ... (restante igual) ...
+});
+// ... (restante igual) ...
   // Carrega a tierlist
   carregarTierList();
 
