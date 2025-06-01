@@ -520,3 +520,76 @@ body[data-theme="dark"] .filters-row select {
   .hero-modal-header, .hero-modal-counters-title, .hero-modal-counters-list { padding-left: 12px; padding-right: 12px;}
   .hero-modal-counters-list {padding-bottom: 0;}
 }
+/* ...seu CSS anterior... */
+
+.hero-modal-skills-section {
+  border-bottom: 1px solid var(--bg-alt);
+  margin: 0 0 8px 0;
+  padding-bottom: 8px;
+}
+.hero-modal-skills-title {
+  font-size: 1.2rem;
+  color: var(--text-main);
+  font-weight: 600;
+  padding: 10px 28px 2px 28px;
+  margin-top: 7px;
+  margin-bottom: 7px;
+}
+.hero-modal-skills-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 0 24px 0 24px;
+}
+.hero-modal-skill {
+  background: var(--bg-alt);
+  border-radius: 10px;
+  padding: 8px 12px;
+}
+.hero-modal-skill-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 13px;
+}
+.hero-modal-skill-icon {
+  width: 38px;
+  height: 38px;
+  border-radius: 7px;
+  margin-top: 2px;
+  background: #222;
+}
+.hero-modal-skill-info {
+  flex: 1;
+}
+.hero-modal-skill-name {
+  font-weight: bold;
+  font-size: 1.07em;
+  margin-bottom: 3px;
+}
+.hero-modal-skill-desc {
+  font-size: .97em;
+  color: #444;
+  margin-bottom: 2px;
+}
+.hero-modal-skill-tags {
+  display: flex;
+  gap: 8px;
+  margin-top: 5px;
+  font-size: .95em;
+}
+.hero-modal-skill-tag {
+  background: #6366f1;
+  color: #fff;
+  border-radius: 6px;
+  padding: 2px 9px;
+  font-size: .91em;
+  font-weight: 600;
+}
+.hero-modal-skill-cost {
+  background: #ffc107;
+  color: #23272f;
+  border-radius: 6px;
+  padding: 2px 10px;
+  font-size: .91em;
+  font-weight: 600;
+}
