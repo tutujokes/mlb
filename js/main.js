@@ -1,6 +1,7 @@
 // ======================
 // MLB Tier List - main.js
 // ======================
+
 // Dicionário de traduções
 const translations = {
   'pt-BR': {
@@ -71,7 +72,7 @@ const translations = {
   }
 };
 
-// Função que aplica as traduções nos elementos com data-i18n
+// Aplica as traduções nos elementos com data-i18n
 function applyTranslations(lang) {
   const dict = translations[lang] || translations['pt-BR'];
   document.querySelectorAll('[data-i18n]').forEach(el => {
@@ -87,6 +88,7 @@ function applyTranslations(lang) {
     }
   });
 }
+
 // ---- Funções de Utilidade e Cache ----
 function toggleTheme() {
   let theme = document.body.getAttribute('data-theme') === "dark" ? "light" : "dark";
@@ -235,6 +237,7 @@ function carregarTierList() {
     })
     .catch(err => {
       document.getElementById('noResults').classList.remove('hidden');
+      console.error('Erro ao carregar tier list:', err);
     });
 }
 
@@ -287,6 +290,8 @@ async function showHeroModal(heroId) {
       getHeroDetails(heroId),
       getHeroStats(heroId)
     ]);
+    console.log('detailsData', detailsData);
+    console.log('statsData', statsData);
 
     const heroObj = detailsData?.data?.records?.[0]?.data?.hero?.data || {};
     const heroData = detailsData?.data?.records?.[0]?.data || {};
@@ -513,7 +518,7 @@ function setLanguage(lang) {
     flagCurrent.alt = lang === 'pt-BR' ? 'Português' : 'English';
   }
 
-  // ... complete aqui a tradução, se necessário
+  applyTranslations(lang);
   carregarTierList();
 }
 
@@ -603,4 +608,4 @@ function setTheme(theme) {
       ? '<i class="icon-moon"></i>'
       : '<i class="icon-sun"></i>';
   }
-            }
+}
