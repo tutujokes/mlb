@@ -384,9 +384,8 @@ document.addEventListener('DOMContentLoaded', function () {
   });
 });
 
-// ... [código anterior igual] ...
+// ...código anterior...
 
-// Modal de Counter + Skills usando Popper.js para hover responsivo!
 async function showHeroCounterModal(heroId, heroName, heroImg) {
   const modal = document.getElementById("heroModal");
   const body = modal.querySelector(".hero-modal-body");
@@ -410,44 +409,84 @@ async function showHeroCounterModal(heroId, heroName, heroImg) {
     detailsData.data.records[0].data.hero.data.heroskilllist
   ) {
     const skills = detailsData.data.records[0].data.hero.data.heroskilllist.flatMap(s => s.skilllist);
+
     const skillLabels = ["P", "1", "2", "ULT"];
     const labelNames = ["Passiva", "Skill 1", "Skill 2", "Ultimate"];
+
+    // Skills principais
+    const mainSkills = skills.slice(0, 4);
+    const extraSkills = skills.slice(4);
+
+    // Render main skills
+    let skillsRowHtml = mainSkills.map((skill, i) => {
+      const tags = Array.isArray(skill.skilltag)
+        ? skill.skilltag.map(tag =>
+            `<span class="hero-modal-skill-tag" style="background:rgb(${tag.tagrgb});">${tag.tagname}</span>`
+          ).join(' ')
+        : '';
+      const cost = skill["skillcd&cost"] ? `<div class="hero-modal-skill-cost">${skill["skillcd&cost"]}</div>` : '';
+      const label = skillLabels[i] || "";
+      const labelName = labelNames[i] || "";
+      return `
+        <div class="hero-modal-skill-inline">
+          <div class="hero-modal-skill-icon-wrap" tabindex="0">
+            <img src="${skill.skillicon}" alt="${skill.skillname}" class="hero-modal-skill-icon">
+            <div class="hero-modal-skill-hover-pop hidden">
+              <div class="hero-modal-skill-hover-title">${skill.skillname}</div>
+              <div class="hero-modal-skill-hover-desc">${skill.desc || skill.skilldesc || ""}</div>
+              <div class="hero-modal-skill-hover-tags">${tags}</div>
+              ${cost}
+            </div>
+          </div>
+          <div class="hero-modal-skill-label hero-modal-skill-label-${label}">
+            (${label})<span class="hero-modal-skill-label-name">${labelName}</span>
+          </div>
+        </div>
+      `;
+    }).join("");
+
+    // Render extra skills (só mostra se houver)
+    let extraHtml = "";
+    if (extraSkills.length > 0) {
+      extraHtml = `
+        <div class="hero-modal-skill-inline hero-modal-skill-extra-toggle" tabindex="0">
+          <div class="hero-modal-skill-extra-btn" id="extraSkillsBtn" aria-label="Mostrar habilidades extras" title="Habilidades extras" tabindex="0">+</div>
+          <div class="hero-modal-skill-extra-pop hidden" id="extraSkillsPopover">
+            ${extraSkills.map((skill, idx) => {
+              const tags = Array.isArray(skill.skilltag)
+                ? skill.skilltag.map(tag =>
+                    `<span class="hero-modal-skill-tag" style="background:rgb(${tag.tagrgb});">${tag.tagname}</span>`
+                  ).join(' ')
+                : '';
+              const cost = skill["skillcd&cost"] ? `<div class="hero-modal-skill-cost">${skill["skillcd&cost"]}</div>` : '';
+              return `
+                <div class="hero-modal-skill-inline hero-modal-skill-inline-extra">
+                  <div class="hero-modal-skill-icon-wrap" tabindex="0">
+                    <img src="${skill.skillicon}" alt="${skill.skillname}" class="hero-modal-skill-icon">
+                    <div class="hero-modal-skill-hover-pop hidden">
+                      <div class="hero-modal-skill-hover-title">${skill.skillname}</div>
+                      <div class="hero-modal-skill-hover-desc">${skill.desc || skill.skilldesc || ""}</div>
+                      <div class="hero-modal-skill-hover-tags">${tags}</div>
+                      ${cost}
+                    </div>
+                  </div>
+                  <div class="hero-modal-skill-label hero-modal-skill-label-EX">
+                    (EX${idx+1})<span class="hero-modal-skill-label-name">Extra</span>
+                  </div>
+                </div>
+              `;
+            }).join("")}
+          </div>
+        </div>
+      `;
+    }
 
     skillHtml = `
       <div class="hero-modal-skills-section">
         <div class="hero-modal-skills-title">Skills</div>
         <div class="hero-modal-skills-row">
-          ${skills.map((skill, i) => {
-            const tags = Array.isArray(skill.skilltag)
-              ? skill.skilltag.map(tag =>
-                  `<span class="hero-modal-skill-tag" style="background:rgb(${tag.tagrgb});">${tag.tagname}</span>`
-                ).join(' ')
-              : '';
-            const cost = skill["skillcd&cost"] ? `<div class="hero-modal-skill-cost">${skill["skillcd&cost"]}</div>` : '';
-            let labelIndex = i;
-            if (skills.length === 4) labelIndex = i;
-            else if (skills.length === 5) labelIndex = i < 4 ? i : 3;
-            else if (skills.length === 3) labelIndex = i + 1;
-            const label = skillLabels[labelIndex] || "";
-            const labelName = labelNames[labelIndex] || "";
-
-            return `
-              <div class="hero-modal-skill-inline">
-                <div class="hero-modal-skill-icon-wrap" tabindex="0">
-                  <img src="${skill.skillicon}" alt="${skill.skillname}" class="hero-modal-skill-icon">
-                  <div class="hero-modal-skill-hover-pop hidden" id="skill-popover-${i}">
-                    <div class="hero-modal-skill-hover-title">${skill.skillname}</div>
-                    <div class="hero-modal-skill-hover-desc">${skill.desc || skill.skilldesc || ""}</div>
-                    <div class="hero-modal-skill-hover-tags">${tags}</div>
-                    ${cost}
-                  </div>
-                </div>
-                <div class="hero-modal-skill-label hero-modal-skill-label-${label}">
-                  (${label})<span class="hero-modal-skill-label-name">${labelName}</span>
-                </div>
-              </div>
-            `;
-          }).join("")}
+          ${skillsRowHtml}
+          ${extraHtml}
         </div>
       </div>
     `;
@@ -473,12 +512,12 @@ async function showHeroCounterModal(heroId, heroName, heroImg) {
   modal.classList.remove("hidden");
   setTimeout(() => modal.classList.add("show"), 5);
 
-  // ================= Popper.js skill hover =================
+  // Popper para skills principais
   setTimeout(() => {
-    document.querySelectorAll('.hero-modal-skill-icon-wrap').forEach((wrap, idx) => {
+    document.querySelectorAll('.hero-modal-skill-icon-wrap').forEach((wrap) => {
       const icon = wrap.querySelector('.hero-modal-skill-icon');
       const popover = wrap.querySelector('.hero-modal-skill-hover-pop');
-
+      if (!popover) return;
       let popperInstance = null;
       function show() {
         popover.classList.remove('hidden');
@@ -487,45 +526,26 @@ async function showHeroCounterModal(heroId, heroName, heroImg) {
           modifiers: [
             {
               name: 'preventOverflow',
-              options: {
-                boundary: document.body,
-                padding: 8,
-              },
+              options: { boundary: document.body, padding: 8 },
             },
-            {
-              name: 'flip',
-              options: {
-                fallbackPlacements: ['top', 'right', 'left'],
-              },
-            },
-            {
-              name: 'offset',
-              options: {
-                offset: [0, 8],
-              },
-            },
+            { name: 'flip', options: { fallbackPlacements: ['top', 'right', 'left'] } },
+            { name: 'offset', options: { offset: [0, 8] } },
           ],
         });
       }
       function hide() {
         popover.classList.add('hidden');
-        if (popperInstance) {
-          popperInstance.destroy();
-          popperInstance = null;
-        }
+        if (popperInstance) popperInstance.destroy();
+        popperInstance = null;
       }
-      // Mouse events
       wrap.addEventListener('mouseenter', show);
       wrap.addEventListener('mouseleave', hide);
-      // Acessibilidade: focus
       wrap.addEventListener('focus', show);
       wrap.addEventListener('blur', hide);
-      // Touch (mobile): tap abre, tap fora fecha
       wrap.addEventListener('touchstart', function(e){
         e.stopPropagation();
         if (popover.classList.contains('hidden')) {
           show();
-          // Fecha ao tocar fora
           document.body.addEventListener('touchstart', function closePopper(ev){
             if (!wrap.contains(ev.target)) {
               hide();
@@ -535,6 +555,48 @@ async function showHeroCounterModal(heroId, heroName, heroImg) {
         }
       });
     });
+
+    // Popper para skills extras (+)
+    const extraBtn = document.getElementById('extraSkillsBtn');
+    const extraPopover = document.getElementById('extraSkillsPopover');
+    let extraPopperInstance = null;
+    if (extraBtn && extraPopover) {
+      function showExtra() {
+        extraPopover.classList.remove('hidden');
+        extraPopperInstance = Popper.createPopper(extraBtn, extraPopover, {
+          placement: 'bottom',
+          modifiers: [
+            { name: 'preventOverflow', options: { boundary: document.body, padding: 12 } },
+            { name: 'flip', options: { fallbackPlacements: ['top','left','right'] } },
+            { name: 'offset', options: { offset: [0, 8] } },
+          ]
+        });
+      }
+      function hideExtra() {
+        extraPopover.classList.add('hidden');
+        if (extraPopperInstance) extraPopperInstance.destroy();
+        extraPopperInstance = null;
+      }
+      extraBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        if (extraPopover.classList.contains('hidden')) {
+          showExtra();
+        } else {
+          hideExtra();
+        }
+      });
+      extraBtn.addEventListener('mouseenter', showExtra);
+      extraBtn.addEventListener('mouseleave', hideExtra);
+      extraBtn.addEventListener('focus', showExtra);
+      extraBtn.addEventListener('blur', hideExtra);
+
+      // Fecha ao clicar fora
+      document.body.addEventListener('click', function closeExtraPopper(ev){
+        if (!extraBtn.contains(ev.target) && !extraPopover.contains(ev.target)) {
+          hideExtra();
+        }
+      });
+    }
   }, 400);
 
   // Fetch counters
@@ -562,5 +624,3 @@ async function showHeroCounterModal(heroId, heroName, heroImg) {
     list.innerHTML = `<div class="hero-modal-counters-empty">Nenhum counter encontrado.</div>`;
   }
 }
-
-// ... restante do código igual ...
