@@ -294,8 +294,23 @@ async function showHeroModal(heroId) {
     console.log('statsData', statsData);
 
     const heroObj = detailsData?.data?.records?.[0]?.data?.hero?.data || {};
+    if (
+  !detailsData?.data?.records?.length ||
+  !detailsData?.data?.records?.[0]?.data?.hero?.data
+) {
+  document.querySelector('.hero-modal-body').innerHTML =
+    '<div style="padding:40px;text-align:center;color:red;">Detalhes do herói indisponíveis.</div>';
+  return;
+    }
     const heroData = detailsData?.data?.records?.[0]?.data || {};
-    const statsObj = statsData?.data?.records?.[0]?.data || {};
+    const statsObj = statsData?.data?.records?.[0]?.data || {};if (
+  !detailsData?.data?.records?.length ||
+  !detailsData?.data?.records?.[0]?.data?.hero?.data
+) {
+  document.querySelector('.hero-modal-body').innerHTML =
+    '<div style="padding:40px;text-align:center;color:red;">Detalhes do herói indisponíveis.</div>';
+  return;
+    }
 
     // Atualização segura dos elementos do modal
     const heroImg = document.getElementById('modal-hero-img');
