@@ -8,86 +8,98 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 </head>
 <body>
-  <header>
-    <h1 data-i18n="title">Tier List - Mobile Legends</h1>
-    <div class="toolbar">
-      <button id="themeSwitch"><i id="themeIcon" class="fa-solid fa-moon"></i></button>
-      <div id="langSwitch" class="lang-switch">
-        <img src="https://cdn.jsdelivr.net/gh/lipis/flag-icons/flags/4x3/br.svg" width="24" height="18" alt="Português"/>
-        <img src="https://cdn.jsdelivr.net/gh/lipis/flag-icons/flags/4x3/us.svg" width="24" height="18" alt="English"/>
-      </div>
-      <div id="flagDropdown" class="flag-dropdown hidden">
-        <button id="flagBR"><img src="https://cdn.jsdelivr.net/gh/lipis/flag-icons/flags/4x3/br.svg" width="24" height="18"/> Português</button>
-        <button id="flagUS"><img src="https://cdn.jsdelivr.net/gh/lipis/flag-icons/flags/4x3/us.svg" width="24" height="18"/> English</button>
+  <header class="header-moba">
+    <div class="logo-moba">
+      <span data-i18n="title">Tier List - Mobile Legends</span>
+    </div>
+    <div class="header-actions">
+      <button id="themeSwitch" class="theme-switch" title="Tema"><i id="themeIcon" class="fa-solid fa-moon"></i></button>
+      <div class="lang-switch-wrap">
+        <button id="langSwitch" class="lang-switch" title="Idioma">
+          <img src="https://cdn.jsdelivr.net/gh/lipis/flag-icons/flags/4x3/br.svg" width="24" height="18" alt="Português"/>
+          <img src="https://cdn.jsdelivr.net/gh/lipis/flag-icons/flags/4x3/us.svg" width="24" height="18" alt="English"/>
+        </button>
+        <div id="flagDropdown" class="flag-dropdown hidden">
+          <button id="flagBR"><img src="https://cdn.jsdelivr.net/gh/lipis/flag-icons/flags/4x3/br.svg" width="24" height="18"/> Português</button>
+          <button id="flagUS"><img src="https://cdn.jsdelivr.net/gh/lipis/flag-icons/flags/4x3/us.svg" width="24" height="18"/> English</button>
+        </div>
       </div>
     </div>
   </header>
-  <main>
-    <section class="filters">
-      <label for="rank" data-i18n="rank_label">Rank:</label>
-      <select id="rank">
-        <option value="mythic" data-i18n="rank_mythic">Mítico</option>
-        <option value="legend" data-i18n="rank_legend">Lenda</option>
-        <option value="epic" data-i18n="rank_epic">Épico</option>
-        <option value="grandmaster" data-i18n="rank_grandmaster">Grão-mestre</option>
-        <option value="master" data-i18n="rank_master">Mestre</option>
-        <option value="elite" data-i18n="rank_elite">Elite</option>
-        <option value="warrior" data-i18n="rank_warrior">Guerreiro</option>
-      </select>
-      <label for="days" data-i18n="days_label">Dias:</label>
-      <select id="days">
-        <option value="1" data-i18n="days_1">1</option>
-        <option value="3" data-i18n="days_3">3</option>
-        <option value="7" data-i18n="days_7">7</option>
-        <option value="15" data-i18n="days_15">15</option>
-        <option value="30" data-i18n="days_30">30</option>
-      </select>
-      <label for="role" data-i18n="role_label">Função:</label>
-      <select id="role">
-        <option value="" data-i18n="all_roles">Todas</option>
-        <option value="mage" data-i18n="role_mage">Mago</option>
-        <option value="marksman" data-i18n="role_marksman">Atirador</option>
-        <option value="tank" data-i18n="role_tank">Tanque</option>
-        <option value="assassin" data-i18n="role_assassin">Assassino</option>
-        <option value="fighter" data-i18n="role_fighter">Lutador</option>
-        <option value="support" data-i18n="role_support">Suporte</option>
-      </select>
-      <label for="lane" data-i18n="lane_label">Rota:</label>
-      <select id="lane">
-        <option value="" data-i18n="all_lanes">Todas</option>
-        <option value="mid" data-i18n="lane_mid">Meio</option>
-        <option value="gold" data-i18n="lane_gold">Ouro</option>
-        <option value="exp" data-i18n="lane_exp">EXP</option>
-        <option value="jungle" data-i18n="lane_jungle">Selva</option>
-        <option value="roam" data-i18n="lane_roam">Rotação</option>
-      </select>
+  <main class="main-moba">
+    <h1 class="main-title" data-i18n="title">Tier List - Mobile Legends</h1>
+    <section class="filters-row bg-alt">
+      <div class="filter-group">
+        <label for="rank" class="filter-title" data-i18n="rank_label">Rank:</label>
+        <select id="rank">
+          <option value="mythic" data-i18n="rank_mythic">Mítico</option>
+          <option value="legend" data-i18n="rank_legend">Lenda</option>
+          <option value="epic" data-i18n="rank_epic">Épico</option>
+          <option value="grandmaster" data-i18n="rank_grandmaster">Grão-mestre</option>
+          <option value="master" data-i18n="rank_master">Mestre</option>
+          <option value="elite" data-i18n="rank_elite">Elite</option>
+          <option value="warrior" data-i18n="rank_warrior">Guerreiro</option>
+        </select>
+      </div>
+      <div class="filter-group">
+        <label for="days" class="filter-title" data-i18n="days_label">Dias:</label>
+        <select id="days">
+          <option value="1" data-i18n="days_1">1</option>
+          <option value="3" data-i18n="days_3">3</option>
+          <option value="7" data-i18n="days_7">7</option>
+          <option value="15" data-i18n="days_15">15</option>
+          <option value="30" data-i18n="days_30">30</option>
+        </select>
+      </div>
+      <div class="filter-group">
+        <label for="role" class="filter-title" data-i18n="role_label">Função:</label>
+        <select id="role">
+          <option value="" data-i18n="all_roles">Todas</option>
+          <option value="mage" data-i18n="role_mage">Mago</option>
+          <option value="marksman" data-i18n="role_marksman">Atirador</option>
+          <option value="tank" data-i18n="role_tank">Tanque</option>
+          <option value="assassin" data-i18n="role_assassin">Assassino</option>
+          <option value="fighter" data-i18n="role_fighter">Lutador</option>
+          <option value="support" data-i18n="role_support">Suporte</option>
+        </select>
+      </div>
+      <div class="filter-group">
+        <label for="lane" class="filter-title" data-i18n="lane_label">Rota:</label>
+        <select id="lane">
+          <option value="" data-i18n="all_lanes">Todas</option>
+          <option value="mid" data-i18n="lane_mid">Meio</option>
+          <option value="gold" data-i18n="lane_gold">Ouro</option>
+          <option value="exp" data-i18n="lane_exp">EXP</option>
+          <option value="jungle" data-i18n="lane_jungle">Selva</option>
+          <option value="roam" data-i18n="lane_roam">Rotação</option>
+        </select>
+      </div>
     </section>
-    <section class="tierlist">
-      <div class="tier-container" id="tier-ss-container">
-        <h2>SS</h2>
-        <div id="tier-ss" class="tier"></div>
-      </div>
-      <div class="tier-container" id="tier-s-container">
-        <h2>S</h2>
-        <div id="tier-s" class="tier"></div>
-      </div>
-      <div class="tier-container" id="tier-a-container">
-        <h2>A</h2>
-        <div id="tier-a" class="tier"></div>
-      </div>
-      <div id="noResults" class="no-results hidden" data-i18n="no_heroes">Nenhum herói encontrado.</div>
+
+    <section class="tier-box" style="margin-bottom: 24px;">
+      <div class="tier-label ss">SS</div>
+      <div class="tier-container" id="tier-ss"></div>
     </section>
+    <section class="tier-box" style="margin-bottom: 24px;">
+      <div class="tier-label s">S</div>
+      <div class="tier-container" id="tier-s"></div>
+    </section>
+    <section class="tier-box">
+      <div class="tier-label a">A</div>
+      <div class="tier-container" id="tier-a"></div>
+    </section>
+    <div id="noResults" class="no-results hidden" data-i18n="no_heroes">Nenhum herói encontrado.</div>
   </main>
 
   <!-- MODAL DE DETALHES DO HERÓI -->
-  <div id="heroModal" class="modal hidden">
-    <div class="modal-content">
+  <div id="heroModal" class="hero-modal hidden">
+    <div class="hero-modal-content">
       <button class="hero-modal-close" title="Fechar">&times;</button>
       <div class="hero-modal-body">
         <div class="hero-modal-header">
-          <img id="modal-hero-img" src="" alt="Hero"/>
-          <div>
-            <h2 id="modal-hero-name"></h2>
+          <img id="modal-hero-img" class="hero-modal-portrait" src="" alt="Retrato do herói"/>
+          <div class="hero-about">
+            <div id="modal-hero-name" class="hero-modal-title"></div>
             <div>
               <span id="modal-hero-role"></span> | <span id="modal-hero-lanes"></span>
             </div>
@@ -110,6 +122,12 @@
     </div>
   </div>
 
-  <script src="/js/main.js"></script>
+  <footer class="footer-moba">
+    <span class="footer-brand">Mobile Legends Tier List</span>
+    <a class="byarthur" href="https://github.com/tutujokes/mlb" target="_blank">
+      by tutujokes <i class="fa-brands fa-github"></i>
+    </a>
+  </footer>
+  <script src="js/main.js"></script>
 </body>
 </html>
