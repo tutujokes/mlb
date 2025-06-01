@@ -305,26 +305,18 @@ async function showHeroModal(heroId) {
     document.getElementById('modal-hero-role').textContent = heroObj.sortlabel?.filter(Boolean).join(', ') || '';
     document.getElementById('modal-hero-lanes').textContent = heroObj.roadsortlabel?.filter(Boolean).join(', ') || '';
 
-    // Exibe ordem de habilidades (recommendedlevel)
-    const skillsList = heroObj.heroskilllist?.[0]?.skilllist || [];
-    let skillOrderHtml = '';
-    if (skillsList.length && skillsList[0].recommendedlevel) {
-      skillOrderHtml = `<div><b>${translate('order_label')}</b><br>${skillsList[0].recommendedlevel}</div>`;
-    } else if (skillsList.length) {
-      skillOrderHtml = `<div><b>${translate('order_label')}</b><br>${skillsList.map((_, i) => i + 1).join('-')}</div>`;
-    } else {
-      skillOrderHtml = `<div><b>${translate('order_label')}</b> N/D</div>`;
-    }
-    document.getElementById('modal-hero-builds').innerHTML = skillOrderHtml;
+    // Ordem de habilidades visual
+    renderSkillOrder(heroObj);
 
     // Especialidades e ícones
     document.getElementById('modal-hero-specialties').textContent = (heroObj.speciality || []).join(', ');
     document.getElementById('modal-hero-icons').innerHTML = `
       ${(heroObj.roadsort || []).map(r => r.data?.road_sort_icon ? `<img src="${r.data.road_sort_icon}" title="${r.data.road_sort_title}" class="lane-icon"/>` : '').join('')}
-      ${(heroObj.sortid || []).map(s => s.data?.sort_icon ? `<img src="${s.data.sort_icon}" title="${s.data.sort_title}" class="role-icon"/>` : '').join('')}
+      ${(heroObj.sortid || []).map(s => s.data?.sort_icon ? `<img src="${s.data?.sort_icon}" title="${s.data?.sort_title}" class="role-icon"/>` : '').join('')}
     `;
 
     // Habilidades detalhadas
+    const skillsList = heroObj.heroskilllist?.[0]?.skilllist || [];
     document.getElementById('modal-hero-skills').innerHTML = skillsList.map(skill => `
       <div class="skill">
         <img src="${skill.skillicon}" class="skill-icon" />
@@ -390,6 +382,52 @@ async function showHeroModal(heroId) {
     setTimeout(() => modal.classList.add("show"), 5);
   } catch (e) {
     document.querySelector('.hero-modal-body').innerHTML = '<div style="padding:40px;text-align:center;color:red;">Erro ao carregar detalhes do herói.</div>';
+  }
+}
+
+// Renderização visual da ordem de habilidades
+function renderSkillOrder(heroObj) {
+  const skillOrderDiv = document.getElementById('modal-hero-skillorder');
+  skillOrderDiv.innerHTML = '';
+  const skillsList = heroObj.heroskilllist?.[0]?.skilllist || [];
+  let skillOrderArr = [];
+
+  // Tenta pegar recommendedlevel (string tipo "1-2-1-3-1-2-3...")
+  if (skillsList.length && skillsList[0].recommendedlevel) {
+    const order = skillsList[0].recommendedlevel
+      .replace(/\s/g, '')
+      .replace(/,/g, '-')
+      .split(/-|\s/)
+      .filter(Boolean)
+      .map(i => parseInt(i, 10));
+    skillOrderArr = order;
+  }
+  // Se não houver, mostra ordem padrão
+  if (!skillOrderArr.length && skillsList.length) {
+    skillOrderArr = skillsList.map((_, i) => i + 1);
+  }
+
+  if (skillOrderArr.length) {
+    // Mapeia índice para nome/ícone
+    const nodeList = [];
+    for (let i = 0; i < skillOrderArr.length; i++) {
+      const idx = skillOrderArr[i] - 1;
+      const skill = skillsList[idx];
+      if (!skill) continue;
+      nodeList.push(`
+        <div class="skill-order-step">
+          <div class="skill-order-num">${skillOrderArr[i]}</div>
+          <img src="${skill.skillicon}" alt="${skill.skillname}" class="skill-icon" style="width:32px;height:32px;">
+          <span class="skill-order-label">${skill.skillname}</span>
+        </div>
+      `);
+      if (i !== skillOrderArr.length - 1) {
+        nodeList.push(`<span class="skill-order-arrow">&rarr;</span>`);
+      }
+    }
+    skillOrderDiv.innerHTML = `<div class="skill-order-list">${nodeList.join('')}</div>`;
+  } else {
+    skillOrderDiv.innerHTML = '<div style="color:#888;">Ordem não disponível.</div>';
   }
 }
 
