@@ -796,3 +796,49 @@ body[data-theme=dark] .hero-modal-skill-extra-pop {
   min-width: 62px;
   margin-right: 2px;
 }
+.hero-modal-title-wrap {
+  display: flex;
+  align-items: flex-end;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+.hero-modal-title {
+  font-size: 2rem;
+  font-family: 'Montserrat', 'Inter', sans-serif;
+  font-weight: 700;
+  color: #6366f1;
+  letter-spacing: -1px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+.hero-modal-desc-label {
+  font-size: 1.01em;
+  color: #8a8fa6;
+  font-weight: 500;
+  margin-left: 14px;
+  padding: 3px 12px;
+  background: #f3f4f6;
+  border-radius: 8px;
+  font-family: 'Inter', 'Arial', sans-serif;
+  max-width: 260px;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+}
+@media (max-width: 700px) {
+  .hero-modal-title-wrap {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+  }
+  .hero-modal-desc-label {
+    font-size: 0.97em;
+    padding: 2px 7px;
+    margin-left: 0;
+    margin-top: 3px;
+    max-width: 92vw;
+    white-space: normal;
+  }
+}
