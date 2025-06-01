@@ -384,9 +384,9 @@ document.addEventListener('DOMContentLoaded', function () {
   });
 });
 
-// ... código anterior ...
+// ... [código anterior igual] ...
 
-// Modal de Counter + Skills em linha com hover responsivo, tags, custo e labels
+// Modal de Counter + Skills usando Popper.js para hover responsivo!
 async function showHeroCounterModal(heroId, heroName, heroImg) {
   const modal = document.getElementById("heroModal");
   const body = modal.querySelector(".hero-modal-body");
@@ -399,7 +399,6 @@ async function showHeroCounterModal(heroId, heroName, heroImg) {
     detailsData = await res.json();
   } catch (e) {}
 
-  // Render skills section
   if (
     detailsData &&
     detailsData.data &&
@@ -410,10 +409,7 @@ async function showHeroCounterModal(heroId, heroName, heroImg) {
     detailsData.data.records[0].data.hero.data &&
     detailsData.data.records[0].data.hero.data.heroskilllist
   ) {
-    // skills: array flat de todas as skilllist de cada heroskilllist
     const skills = detailsData.data.records[0].data.hero.data.heroskilllist.flatMap(s => s.skilllist);
-
-    // Labels padrão MLBB
     const skillLabels = ["P", "1", "2", "ULT"];
     const labelNames = ["Passiva", "Skill 1", "Skill 2", "Ultimate"];
 
@@ -422,25 +418,16 @@ async function showHeroCounterModal(heroId, heroName, heroImg) {
         <div class="hero-modal-skills-title">Skills</div>
         <div class="hero-modal-skills-row">
           ${skills.map((skill, i) => {
-            // Tags coloridas
             const tags = Array.isArray(skill.skilltag)
               ? skill.skilltag.map(tag =>
                   `<span class="hero-modal-skill-tag" style="background:rgb(${tag.tagrgb});">${tag.tagname}</span>`
                 ).join(' ')
               : '';
             const cost = skill["skillcd&cost"] ? `<div class="hero-modal-skill-cost">${skill["skillcd&cost"]}</div>` : '';
-            // Label (P, 1, 2, ULT)
             let labelIndex = i;
-            if (skills.length === 4) {
-              // padrão MLBB: 0-P, 1-1, 2-2, 3-ULT
-              labelIndex = i;
-            } else if (skills.length === 5) {
-              // raro, mas pode existir skill extra
-              labelIndex = i < 4 ? i : 3;
-            } else if (skills.length === 3) {
-              // sem passiva explícita
-              labelIndex = i + 1;
-            }
+            if (skills.length === 4) labelIndex = i;
+            else if (skills.length === 5) labelIndex = i < 4 ? i : 3;
+            else if (skills.length === 3) labelIndex = i + 1;
             const label = skillLabels[labelIndex] || "";
             const labelName = labelNames[labelIndex] || "";
 
@@ -448,7 +435,7 @@ async function showHeroCounterModal(heroId, heroName, heroImg) {
               <div class="hero-modal-skill-inline">
                 <div class="hero-modal-skill-icon-wrap" tabindex="0">
                   <img src="${skill.skillicon}" alt="${skill.skillname}" class="hero-modal-skill-icon">
-                  <div class="hero-modal-skill-hover" role="tooltip">
+                  <div class="hero-modal-skill-hover-pop hidden" id="skill-popover-${i}">
                     <div class="hero-modal-skill-hover-title">${skill.skillname}</div>
                     <div class="hero-modal-skill-hover-desc">${skill.desc || skill.skilldesc || ""}</div>
                     <div class="hero-modal-skill-hover-tags">${tags}</div>
@@ -486,48 +473,72 @@ async function showHeroCounterModal(heroId, heroName, heroImg) {
   modal.classList.remove("hidden");
   setTimeout(() => modal.classList.add("show"), 5);
 
-  // Responsivo: previne overflow do hover
+  // ================= Popper.js skill hover =================
   setTimeout(() => {
-    document.querySelectorAll('.hero-modal-skill-icon-wrap').forEach(wrap => {
-      wrap.addEventListener('mouseover', function(e) {
-        const hover = wrap.querySelector('.hero-modal-skill-hover');
-        if (hover) {
-          hover.style.left = '50%';
-          hover.style.right = 'auto';
-          hover.style.transform = 'translate(-50%, 8px) scale(0.97)';
-          hover.style.maxWidth = '320px';
-          hover.style.minWidth = '220px';
-          hover.style.whiteSpace = 'normal';
-          // Ajusta para não sair do viewport
-          const rect = hover.getBoundingClientRect();
-          const vw = Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0);
-          if (rect.right > vw - 10) {
-            hover.style.left = 'auto';
-            hover.style.right = '0';
-            hover.style.transform = 'translate(0, 8px) scale(0.97)';
-          }
-          if (rect.left < 10) {
-            hover.style.left = '0';
-            hover.style.right = 'auto';
-            hover.style.transform = 'translate(0, 8px) scale(0.97)';
-          }
+    document.querySelectorAll('.hero-modal-skill-icon-wrap').forEach((wrap, idx) => {
+      const icon = wrap.querySelector('.hero-modal-skill-icon');
+      const popover = wrap.querySelector('.hero-modal-skill-hover-pop');
+
+      let popperInstance = null;
+      function show() {
+        popover.classList.remove('hidden');
+        popperInstance = Popper.createPopper(icon, popover, {
+          placement: 'bottom',
+          modifiers: [
+            {
+              name: 'preventOverflow',
+              options: {
+                boundary: document.body,
+                padding: 8,
+              },
+            },
+            {
+              name: 'flip',
+              options: {
+                fallbackPlacements: ['top', 'right', 'left'],
+              },
+            },
+            {
+              name: 'offset',
+              options: {
+                offset: [0, 8],
+              },
+            },
+          ],
+        });
+      }
+      function hide() {
+        popover.classList.add('hidden');
+        if (popperInstance) {
+          popperInstance.destroy();
+          popperInstance = null;
         }
-      });
-      // Para acessibilidade, mostra hover no focus também
-      wrap.addEventListener('focus', function(e){
-        const hover = wrap.querySelector('.hero-modal-skill-hover');
-        if (hover) hover.style.opacity = 1;
-      });
-      wrap.addEventListener('blur', function(e){
-        const hover = wrap.querySelector('.hero-modal-skill-hover');
-        if (hover) hover.style.opacity = 0;
+      }
+      // Mouse events
+      wrap.addEventListener('mouseenter', show);
+      wrap.addEventListener('mouseleave', hide);
+      // Acessibilidade: focus
+      wrap.addEventListener('focus', show);
+      wrap.addEventListener('blur', hide);
+      // Touch (mobile): tap abre, tap fora fecha
+      wrap.addEventListener('touchstart', function(e){
+        e.stopPropagation();
+        if (popover.classList.contains('hidden')) {
+          show();
+          // Fecha ao tocar fora
+          document.body.addEventListener('touchstart', function closePopper(ev){
+            if (!wrap.contains(ev.target)) {
+              hide();
+              document.body.removeEventListener('touchstart', closePopper);
+            }
+          });
+        }
       });
     });
   }, 400);
 
   // Fetch counters
   const data = await fetchHeroCounters(heroId);
-
   const list = body.querySelector(".hero-modal-counters-list");
   const loading = body.querySelector(".hero-modal-counters-loading");
   loading.style.display = "none";
@@ -552,4 +563,4 @@ async function showHeroCounterModal(heroId, heroName, heroImg) {
   }
 }
 
-// ... resto do código igual ...
+// ... restante do código igual ...
