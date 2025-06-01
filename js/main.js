@@ -1,4 +1,7 @@
-// Traduções
+// ======================
+// MLB Tier List - main.js
+// ======================
+// Dicionário de traduções
 const translations = {
   'pt-BR': {
     title: "Tier List - Mobile Legends",
@@ -16,15 +19,14 @@ const translations = {
     days_7: "7",
     days_15: "15",
     days_30: "30",
-    filter_title: "Filtrar por Função e Rota",
     role_label: "Função:",
+    all_roles: "Todas",
     role_mage: "Mago",
     role_marksman: "Atirador",
     role_tank: "Tanque",
     role_assassin: "Assassino",
     role_fighter: "Lutador",
     role_support: "Suporte",
-    all_roles: "Todas",
     lane_label: "Rota:",
     lane_mid: "Meio",
     lane_gold: "Ouro",
@@ -32,8 +34,7 @@ const translations = {
     lane_jungle: "Selva",
     lane_roam: "Rotação",
     all_lanes: "Todas",
-    no_heroes: "Nenhum herói encontrado.",
-    order_label: "Ordem Recomendada das Habilidades:"
+    no_heroes: "Nenhum herói encontrado."
   },
   'en-US': {
     title: "Tier List - Mobile Legends",
@@ -51,15 +52,14 @@ const translations = {
     days_7: "7",
     days_15: "15",
     days_30: "30",
-    filter_title: "Filter by Role and Lane",
     role_label: "Role:",
+    all_roles: "All",
     role_mage: "Mage",
     role_marksman: "Marksman",
     role_tank: "Tank",
     role_assassin: "Assassin",
     role_fighter: "Fighter",
     role_support: "Support",
-    all_roles: "All",
     lane_label: "Lane:",
     lane_mid: "Mid",
     lane_gold: "Gold",
@@ -67,60 +67,37 @@ const translations = {
     lane_jungle: "Jungle",
     lane_roam: "Roam",
     all_lanes: "All",
-    no_heroes: "No heroes found.",
-    order_label: "Recommended Skill Order:"
+    no_heroes: "No heroes found."
   }
 };
 
-// Utilitários de tradução e idioma
-let currentLang = localStorage.getItem('lang') || (navigator.language === "en-US" ? "en-US" : "pt-BR");
-function translate(key) {
-  return translations[currentLang][key] || key;
-}
-function updateI18n() {
+// Função que aplica as traduções nos elementos com data-i18n
+function applyTranslations(lang) {
+  const dict = translations[lang] || translations['pt-BR'];
   document.querySelectorAll('[data-i18n]').forEach(el => {
     const key = el.getAttribute('data-i18n');
-    if (translations[currentLang][key]) {
-      el.textContent = translations[currentLang][key];
+    if (dict[key]) {
+      if (el.tagName === "INPUT" || el.tagName === "TEXTAREA") {
+        el.placeholder = dict[key];
+      } else if (el.tagName === "OPTION") {
+        el.text = dict[key];
+      } else {
+        el.textContent = dict[key];
+      }
     }
   });
-  document.querySelectorAll('option[data-i18n]').forEach(opt => {
-    const key = opt.getAttribute('data-i18n');
-    if (translations[currentLang][key]) {
-      opt.textContent = translations[currentLang][key];
-    }
-  });
 }
-function setLanguage(lang) {
-  currentLang = lang;
-  localStorage.setItem('lang', lang);
-  updateI18n();
-}
-
-// Tema
-function setTheme(theme) {
-  document.body.setAttribute('data-theme', theme);
-  let icon = document.getElementById('themeIcon');
-  if (icon) {
-    if (theme === "dark") {
-      icon.className = "fa-solid fa-sun";
-    } else {
-      icon.className = "fa-solid fa-moon";
-    }
-  }
-  localStorage.setItem('theme', theme);
-}
+// ---- Funções de Utilidade e Cache ----
 function toggleTheme() {
   let theme = document.body.getAttribute('data-theme') === "dark" ? "light" : "dark";
   setTheme(theme);
 }
 
-// Modal idioma
 function showFlagDropdown(show) {
-  document.getElementById('flagDropdown').classList.toggle('hidden', !show);
+  const dropdown = document.getElementById('flagDropdown');
+  if (dropdown) dropdown.classList.toggle('hidden', !show);
 }
 
-// Buscas e caches
 let heroIdToName = {};
 let heroNameToId = {};
 let heroExtraInfo = {};
@@ -128,11 +105,10 @@ let tierCards = [];
 let tierRecords = [];
 let tierListRequestToken = 0;
 
-// Caches de detalhes e stats de heróis
 const heroDetailsCache = {};
 const heroStatsCache = {};
 
-// Busca lista de heróis
+// ---- Busca de Dados ----
 function fetchHeroMap() {
   return fetch('https://mlbb-proxy.vercel.app/api/hero-list')
     .then(res => res.json())
@@ -145,7 +121,6 @@ function fetchHeroMap() {
     });
 }
 
-// Busca extras (role/lane)
 function fetchAllHeroPositions() {
   return fetch('https://mlbb-proxy.vercel.app/api/hero-position?role=all&lane=all&size=128&index=1')
     .then(res => res.json())
@@ -165,7 +140,7 @@ function fetchAllHeroPositions() {
     });
 }
 
-// Renderiza Tier List
+// ---- Renderização da Tier List ----
 function carregarTierList() {
   const myToken = ++tierListRequestToken;
   const rank = document.getElementById('rank').value;
@@ -191,7 +166,6 @@ function carregarTierList() {
         const hero = entry.data.main_hero.data;
         const winRate = (entry.data.main_hero_win_rate * 100).toFixed(1);
 
-        // Robust heroId match
         let heroId = heroNameToId[hero.name];
         if (!heroId) {
           const tryName = hero.name.normalize('NFD').replace(/[\u0300-\u036f]/g, "").toLowerCase();
@@ -281,7 +255,8 @@ function filtrarTierList() {
   setupHeroCardClicks();
 }
 
-// Busca detalhes do herói com cache
+// ---- Modal Detalhado de Herói ----
+
 async function getHeroDetails(heroId) {
   if (heroDetailsCache[heroId]) return heroDetailsCache[heroId];
   const detailsRes = await fetch(`https://mlbb-proxy.vercel.app/api/hero-detail?hero_id=${heroId}`);
@@ -290,7 +265,6 @@ async function getHeroDetails(heroId) {
   return detailsData;
 }
 
-// Busca stats do herói com cache
 async function getHeroStats(heroId) {
   if (heroStatsCache[heroId]) return heroStatsCache[heroId];
   const statsRes = await fetch(`https://mlbb-proxy.vercel.app/api/hero-detail-stats?main_heroid=${heroId}`);
@@ -299,94 +273,133 @@ async function getHeroStats(heroId) {
   return statsData;
 }
 
-// MODAL DETALHADO DE HERÓI
 async function showHeroModal(heroId) {
   const modal = document.getElementById('heroModal');
+  if (!modal) return;
   modal.classList.remove('hidden');
   modal.classList.remove('show');
-  document.querySelector('.hero-modal-body').innerHTML = '<div style="padding:40px;text-align:center;">Carregando...</div>';
+  const modalBody = document.querySelector('.hero-modal-body');
+  if (modalBody) {
+    modalBody.innerHTML = '<div style="padding:40px;text-align:center;">Carregando...</div>';
+  }
   try {
-    // Para debug, descomente:
-    // alert('ID enviado para showHeroModal: ' + heroId);
-
     const [detailsData, statsData] = await Promise.all([
       getHeroDetails(heroId),
       getHeroStats(heroId)
     ]);
-    // Para debug, descomente:
-    // console.log('detailsData', detailsData);
-    // console.log('statsData', statsData);
 
     const heroObj = detailsData?.data?.records?.[0]?.data?.hero?.data || {};
     const heroData = detailsData?.data?.records?.[0]?.data || {};
     const statsObj = statsData?.data?.records?.[0]?.data || {};
 
-    document.getElementById('modal-hero-img').src = heroObj.head_big || heroObj.head || '';
-    document.getElementById('modal-hero-name').textContent = heroObj.name || '';
-    document.getElementById('modal-hero-role').textContent = heroObj.sortlabel?.filter(Boolean).join(', ') || '';
-    document.getElementById('modal-hero-lanes').textContent = heroObj.roadsortlabel?.filter(Boolean).join(', ') || '';
+    // Atualização segura dos elementos do modal
+    const heroImg = document.getElementById('modal-hero-img');
+    if (heroImg) heroImg.src = heroObj.head_big || heroObj.head || '';
+
+    const heroName = document.getElementById('modal-hero-name');
+    if (heroName) heroName.textContent = heroObj.name || '';
+
+    const heroRole = document.getElementById('modal-hero-role');
+    if (heroRole) heroRole.textContent = heroObj.sortlabel?.filter(Boolean).join(', ') || '';
+
+    const heroLanes = document.getElementById('modal-hero-lanes');
+    if (heroLanes) heroLanes.textContent = heroObj.roadsortlabel?.filter(Boolean).join(', ') || '';
 
     renderSkillOrder(heroObj);
 
-    document.getElementById('modal-hero-specialties').textContent = (heroObj.speciality || []).join(', ');
-    document.getElementById('modal-hero-icons').innerHTML = `
-      ${(heroObj.roadsort || []).map(r => r.data?.road_sort_icon ? `<img src="${r.data.road_sort_icon}" title="${r.data.road_sort_title}" class="lane-icon"/>` : '').join('')}
-      ${(heroObj.sortid || []).map(s => s.data?.sort_icon ? `<img src="${s.data?.sort_icon}" title="${s.data?.sort_title}" class="role-icon"/>` : '').join('')}
-    `;
+    const heroSpecialties = document.getElementById('modal-hero-specialties');
+    if (heroSpecialties) heroSpecialties.textContent = (heroObj.speciality || []).join(', ');
+
+    const heroIcons = document.getElementById('modal-hero-icons');
+    if (heroIcons) {
+      heroIcons.innerHTML = `
+        ${(heroObj.roadsort || []).map(r => r.data?.road_sort_icon ? `<img src="${r.data.road_sort_icon}" title="${r.data.road_sort_title}" class="lane-icon"/>` : '').join('')}
+        ${(heroObj.sortid || []).map(s => s.data?.sort_icon ? `<img src="${s.data?.sort_icon}" title="${s.data?.sort_title}" class="role-icon"/>` : '').join('')}
+      `;
+    }
 
     const skillsList = heroObj.heroskilllist?.[0]?.skilllist || [];
-    document.getElementById('modal-hero-skills').innerHTML = skillsList.map(skill => `
-      <div class="skill">
-        <img src="${skill.skillicon}" class="skill-icon" />
-        <div class="skill-info">
-          <div class="skill-name">${skill.skillname}</div>
-          <div class="skill-desc">${skill.desc || skill.skilldesc || ''}</div>
+    const heroSkills = document.getElementById('modal-hero-skills');
+    if (heroSkills) {
+      heroSkills.innerHTML = skillsList.map(skill => `
+        <div class="skill">
+          <img src="${skill.skillicon}" class="skill-icon" />
+          <div class="skill-info">
+            <div class="skill-name">${skill.skillname}</div>
+            <div class="skill-desc">${skill.desc || skill.skilldesc || ''}</div>
+          </div>
         </div>
-      </div>
-    `).join('');
+      `).join('');
+    }
 
-    document.getElementById('modal-hero-stats').innerHTML = `
-      <div>Winrate: ${(statsObj.main_hero_win_rate * 100).toFixed(1)}%</div>
-      <div>Banrate: ${(statsObj.main_hero_ban_rate * 100).toFixed(1)}%</div>
-      <div>Appearance: ${(statsObj.main_hero_appearance_rate * 100).toFixed(2)}%</div>
-    `;
-    document.getElementById('modal-hero-stats-graph').innerHTML = '';
+    const heroStats = document.getElementById('modal-hero-stats');
+    if (heroStats) {
+      heroStats.innerHTML = `
+        <div>Winrate: ${(statsObj.main_hero_win_rate * 100).toFixed(1)}%</div>
+        <div>Banrate: ${(statsObj.main_hero_ban_rate * 100).toFixed(1)}%</div>
+        <div>Appearance: ${(statsObj.main_hero_appearance_rate * 100).toFixed(2)}%</div>
+      `;
+    }
 
+    const heroStatsGraph = document.getElementById('modal-hero-stats-graph');
+    if (heroStatsGraph) heroStatsGraph.innerHTML = '';
+
+    // Assist, Strong, Weak, Sub Heroes, Counters
     const assist = heroData.relation?.assist;
-    document.getElementById('modal-hero-assist').innerHTML = assist ? `
-      <div class="relation-desc"><b>Aliados recomendados:</b> ${assist.desc}</div>
-      <div class="relation-list">
-        ${(assist.target_hero || []).map(h => `<img src="${h.data?.head}" class="relation-hero" />`).join('')}
-      </div>
-    ` : '';
-    const strong = heroData.relation?.strong;
-    document.getElementById('modal-hero-strong').innerHTML = strong ? `
-      <div class="relation-desc"><b>Forte contra:</b> ${strong.desc}</div>
-      <div class="relation-list">
-        ${(strong.target_hero || []).map(h => `<img src="${h.data?.head}" class="relation-hero" />`).join('')}
-      </div>
-    ` : '';
-    const weak = heroData.relation?.weak;
-    document.getElementById('modal-hero-weak').innerHTML = weak ? `
-      <div class="relation-desc"><b>Fraco contra:</b> ${weak.desc}</div>
-      <div class="relation-list">
-        ${(weak.target_hero || []).map(h => `<img src="${h.data?.head}" class="relation-hero" />`).join('')}
-      </div>
-    ` : '';
+    const heroAssist = document.getElementById('modal-hero-assist');
+    if (heroAssist) {
+      heroAssist.innerHTML = assist ? `
+        <div class="relation-desc"><b>Aliados recomendados:</b> ${assist.desc}</div>
+        <div class="relation-list">
+          ${(assist.target_hero || []).map(h => `<img src="${h.data?.head}" class="relation-hero" />`).join('')}
+        </div>
+      ` : '';
+    }
 
-    document.getElementById('modal-hero-sub-heroes').innerHTML = (statsObj.sub_hero || []).map(sh => `
-      <div class="sub-hero">
-        <img src="${sh.hero?.data?.head}" class="sub-hero-img" />
-        <span>Winrate: ${(sh.hero_win_rate * 100).toFixed(1)}% (+${(sh.increase_win_rate * 100).toFixed(2)}%)</span>
-      </div>
-    `).join('');
-    document.getElementById('modal-hero-sub-heroes-impact').innerHTML = '';
-    document.getElementById('modal-hero-sub-heroes-last').innerHTML = (statsObj.sub_hero_last || []).map(sh => `
-      <div class="sub-hero negative">
-        <span>${sh.heroid}</span>
-        <span>Winrate: ${(sh.hero_win_rate * 100).toFixed(1)}% (${(sh.increase_win_rate * 100).toFixed(2)}%)</span>
-      </div>
-    `).join('');
+    const strong = heroData.relation?.strong;
+    const heroStrong = document.getElementById('modal-hero-strong');
+    if (heroStrong) {
+      heroStrong.innerHTML = strong ? `
+        <div class="relation-desc"><b>Forte contra:</b> ${strong.desc}</div>
+        <div class="relation-list">
+          ${(strong.target_hero || []).map(h => `<img src="${h.data?.head}" class="relation-hero" />`).join('')}
+        </div>
+      ` : '';
+    }
+
+    const weak = heroData.relation?.weak;
+    const heroWeak = document.getElementById('modal-hero-weak');
+    if (heroWeak) {
+      heroWeak.innerHTML = weak ? `
+        <div class="relation-desc"><b>Fraco contra:</b> ${weak.desc}</div>
+        <div class="relation-list">
+          ${(weak.target_hero || []).map(h => `<img src="${h.data?.head}" class="relation-hero" />`).join('')}
+        </div>
+      ` : '';
+    }
+
+    const heroSubHeroes = document.getElementById('modal-hero-sub-heroes');
+    if (heroSubHeroes) {
+      heroSubHeroes.innerHTML = (statsObj.sub_hero || []).map(sh => `
+        <div class="sub-hero">
+          <img src="${sh.hero?.data?.head}" class="sub-hero-img" />
+          <span>Winrate: ${(sh.hero_win_rate * 100).toFixed(1)}% (+${(sh.increase_win_rate * 100).toFixed(2)}%)</span>
+        </div>
+      `).join('');
+    }
+
+    const heroSubHeroesImpact = document.getElementById('modal-hero-sub-heroes-impact');
+    if (heroSubHeroesImpact) heroSubHeroesImpact.innerHTML = '';
+
+    const heroSubHeroesLast = document.getElementById('modal-hero-sub-heroes-last');
+    if (heroSubHeroesLast) {
+      heroSubHeroesLast.innerHTML = (statsObj.sub_hero_last || []).map(sh => `
+        <div class="sub-hero negative">
+          <span>${sh.heroid}</span>
+          <span>Winrate: ${(sh.hero_win_rate * 100).toFixed(1)}% (${(sh.increase_win_rate * 100).toFixed(2)}%)</span>
+        </div>
+      `).join('');
+    }
 
     await showHeroCounters(heroId);
 
@@ -396,13 +409,17 @@ async function showHeroModal(heroId) {
 
   } catch (e) {
     console.error('Erro ao carregar detalhes:', e);
-    document.querySelector('.hero-modal-body').innerHTML = '<div style="padding:40px;text-align:center;color:red;">Erro ao carregar detalhes do herói.</div>';
+    const modalBody = document.querySelector('.hero-modal-body');
+    if (modalBody) {
+      modalBody.innerHTML = '<div style="padding:40px;text-align:center;color:red;">Erro ao carregar detalhes do herói.</div>';
+    }
     modal.classList.add('show');
   }
 }
 
 function renderSkillOrder(heroObj) {
   const skillOrderDiv = document.getElementById('modal-hero-skillorder');
+  if (!skillOrderDiv) return;
   skillOrderDiv.innerHTML = '';
   const skillsList = heroObj.heroskilllist?.[0]?.skilllist || [];
   let skillOrderArr = [];
@@ -448,6 +465,7 @@ async function showHeroCounters(heroId) {
   const json = await res.json();
   const data = json?.data?.records?.[0]?.data;
   const list = document.getElementById('modal-hero-counters');
+  if (!list) return;
   let counters = [];
   if (data) {
     counters = (data.sub_hero_last && data.sub_hero_last.length) ? data.sub_hero_last
@@ -481,6 +499,25 @@ function setupHeroCardClicks() {
   });
 }
 
+// ---- Idioma: Corrigido para mostrar bandeira atual ----
+function setLanguage(lang) {
+  localStorage.setItem('lang', lang);
+
+  // Troca a bandeira principal
+  const flagCurrent = document.getElementById('flagCurrent');
+  if (flagCurrent) {
+    flagCurrent.src =
+      lang === 'pt-BR'
+        ? 'https://cdn.jsdelivr.net/gh/lipis/flag-icons/flags/4x3/br.svg'
+        : 'https://cdn.jsdelivr.net/gh/lipis/flag-icons/flags/4x3/us.svg';
+    flagCurrent.alt = lang === 'pt-BR' ? 'Português' : 'English';
+  }
+
+  // ... complete aqui a tradução, se necessário
+  carregarTierList();
+}
+
+// ---- Eventos DOMContentLoaded ----
 document.addEventListener('DOMContentLoaded', function () {
   let theme = localStorage.getItem('theme');
   if (!theme) {
@@ -502,27 +539,68 @@ document.addEventListener('DOMContentLoaded', function () {
   document.getElementById('themeSwitch').addEventListener('click', toggleTheme);
 
   const langSwitch = document.getElementById('langSwitch');
-  langSwitch.addEventListener('click', function (e) {
-    showFlagDropdown(true);
-    e.stopPropagation();
-  });
-  document.getElementById('flagBR').addEventListener('click', function () { setLanguage('pt-BR'); showFlagDropdown(false); carregarTierList(); });
-  document.getElementById('flagUS').addEventListener('click', function () { setLanguage('en-US'); showFlagDropdown(false); carregarTierList(); });
+  if (langSwitch) {
+    langSwitch.addEventListener('click', function (e) {
+      showFlagDropdown(true);
+      e.stopPropagation();
+    });
+  }
 
-  document.querySelector('.hero-modal-close').onclick = function () {
-    const modal = document.getElementById('heroModal');
-    modal.classList.remove('show');
-    setTimeout(() => {
-      modal.classList.add('hidden');
-    }, 300);
-  };
-  document.getElementById('heroModal').addEventListener('click', function (e) {
-    if (e.target === this) {
-      this.classList.remove('show');
-      setTimeout(() => this.classList.add('hidden'), 300);
-    }
-  });
+  // Clique nas opções do dropdown de idioma
+  const flagBR = document.getElementById('flagBR');
+  if (flagBR) {
+    flagBR.addEventListener('click', function () {
+      setLanguage('pt-BR');
+      showFlagDropdown(false);
+    });
+  }
+
+  const flagUS = document.getElementById('flagUS');
+  if (flagUS) {
+    flagUS.addEventListener('click', function () {
+      setLanguage('en-US');
+      showFlagDropdown(false);
+    });
+  }
+
+  // Fechar modal do herói
+  const closeModal = document.querySelector('.hero-modal-close');
+  if (closeModal) {
+    closeModal.onclick = function () {
+      const modal = document.getElementById('heroModal');
+      if (modal) {
+        modal.classList.remove('show');
+        setTimeout(() => {
+          modal.classList.add('hidden');
+        }, 300);
+      }
+    };
+  }
+
+  const heroModal = document.getElementById('heroModal');
+  if (heroModal) {
+    heroModal.addEventListener('click', function (e) {
+      if (e.target === this) {
+        this.classList.remove('show');
+        setTimeout(() => this.classList.add('hidden'), 300);
+      }
+    });
+  }
+
   document.body.addEventListener('click', function () {
     showFlagDropdown(false);
   });
 });
+
+// ---- Tema ----
+function setTheme(theme) {
+  document.body.setAttribute('data-theme', theme);
+  localStorage.setItem('theme', theme);
+  // Troca ícone do botão
+  const themeSwitch = document.getElementById('themeSwitch');
+  if (themeSwitch) {
+    themeSwitch.innerHTML = theme === 'dark'
+      ? '<i class="icon-moon"></i>'
+      : '<i class="icon-sun"></i>';
+  }
+            }
