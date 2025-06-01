@@ -383,9 +383,8 @@ document.addEventListener('DOMContentLoaded', function () {
     }
   });
 });
-// ... [código anterior igual] ...
 
-// Modal de Counter + Skills
+// Modal de Counter + Skills em linha com hover de descrição/tag/custo
 async function showHeroCounterModal(heroId, heroName, heroImg) {
   const modal = document.getElementById("heroModal");
   const body = modal.querySelector(".hero-modal-body");
@@ -407,30 +406,37 @@ async function showHeroCounterModal(heroId, heroName, heroImg) {
     detailsData.data.records[0].data &&
     detailsData.data.records[0].data.hero &&
     detailsData.data.records[0].data.hero.data &&
-    detailsData.data.records[0].data.hero.data.heroskilllist &&
-    detailsData.data.records[0].data.hero.data.heroskilllist[0] &&
-    detailsData.data.records[0].data.hero.data.heroskilllist[0].skilllist
+    detailsData.data.records[0].data.hero.data.heroskilllist
   ) {
-    const skilllist = detailsData.data.records[0].data.hero.data.heroskilllist[0].skilllist;
+    // skills: array flat de todas as skilllist de cada heroskilllist
+    const skills = detailsData.data.records[0].data.hero.data.heroskilllist.flatMap(s => s.skilllist);
+
     skillHtml = `
       <div class="hero-modal-skills-section">
         <div class="hero-modal-skills-title">Skills</div>
-        <div class="hero-modal-skills-list">
-          ${skilllist.map(skill => `
-            <div class="hero-modal-skill">
-              <div class="hero-modal-skill-header">
-                <img src="${skill.skillicon}" alt="${skill.skillname}" class="hero-modal-skill-icon">
-                <div class="hero-modal-skill-info">
-                  <div class="hero-modal-skill-name">${skill.skillname}</div>
-                  <div class="hero-modal-skill-desc">${skill.desc || skill.skilldesc || ""}</div>
+        <div class="hero-modal-skills-row">
+          ${skills.map(skill => {
+            // Tags coloridas
+            const tags = Array.isArray(skill.skilltag)
+              ? skill.skilltag.map(tag =>
+                  `<span class="hero-modal-skill-tag" style="background:rgb(${tag.tagrgb});">${tag.tagname}</span>`
+                ).join(' ')
+              : '';
+            const cost = skill["skillcd&cost"] ? `<div class="hero-modal-skill-cost">${skill["skillcd&cost"]}</div>` : '';
+            return `
+              <div class="hero-modal-skill-inline">
+                <div class="hero-modal-skill-icon-wrap">
+                  <img src="${skill.skillicon}" alt="${skill.skillname}" class="hero-modal-skill-icon">
+                  <div class="hero-modal-skill-hover">
+                    <div class="hero-modal-skill-hover-title">${skill.skillname}</div>
+                    <div class="hero-modal-skill-hover-desc">${skill.desc || skill.skilldesc || ""}</div>
+                    <div class="hero-modal-skill-hover-tags">${tags}</div>
+                    ${cost}
+                  </div>
                 </div>
               </div>
-              <div class="hero-modal-skill-tags">
-                ${skill.skilltag ? `<span class="hero-modal-skill-tag">${skill.skilltag}</span>` : ""}
-                ${skill.cost ? `<span class="hero-modal-skill-cost">${skill.cost}</span>` : ""}
-              </div>
-            </div>
-          `).join("")}
+            `;
+          }).join("")}
         </div>
       </div>
     `;
@@ -438,7 +444,7 @@ async function showHeroCounterModal(heroId, heroName, heroImg) {
     skillHtml = `
       <div class="hero-modal-skills-section">
         <div class="hero-modal-skills-title">Skills</div>
-        <div class="hero-modal-skills-list">Nenhuma habilidade encontrada.</div>
+        <div class="hero-modal-skills-row">Nenhuma habilidade encontrada.</div>
       </div>
     `;
   }
@@ -482,5 +488,3 @@ async function showHeroCounterModal(heroId, heroName, heroImg) {
     list.innerHTML = `<div class="hero-modal-counters-empty">Nenhum counter encontrado.</div>`;
   }
 }
-
-// ... [restante do código igual] ...
