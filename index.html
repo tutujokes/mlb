@@ -1,27 +1,27 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Tier List - Mobile Legends</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>MLB Tier List</title>
   <link rel="stylesheet" href="css/estilo.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 </head>
 <body>
   <header class="header-moba">
-    <div class="logo-moba">
-      <span data-i18n="title">Tier List - Mobile Legends</span>
-    </div>
+    <div class="logo-moba">MLB Tier List</div>
     <div class="header-actions">
-      <button id="themeSwitch" class="theme-switch" title="Tema"><i id="themeIcon" class="fa-solid fa-moon"></i></button>
+      <button class="theme-switch" id="themeSwitch" title="Trocar tema">
+        <i class="icon-sun"></i>
+      </button>
       <div class="lang-switch-wrap">
-        <button id="langSwitch" class="lang-switch" title="Idioma">
-          <img src="https://cdn.jsdelivr.net/gh/lipis/flag-icons/flags/4x3/br.svg" width="24" height="18" alt="Português"/>
-          <img src="https://cdn.jsdelivr.net/gh/lipis/flag-icons/flags/4x3/us.svg" width="24" height="18" alt="English"/>
+        <!-- Só a bandeira atual -->
+        <button class="lang-switch" id="langSwitch">
+          <img id="flagCurrent" src="https://cdn.jsdelivr.net/gh/lipis/flag-icons/flags/4x3/br.svg" width="24" height="18" alt="Bandeira atual"/>
         </button>
         <div id="flagDropdown" class="flag-dropdown hidden">
-          <button id="flagBR"><img src="https://cdn.jsdelivr.net/gh/lipis/flag-icons/flags/4x3/br.svg" width="24" height="18"/> Português</button>
-          <button id="flagUS"><img src="https://cdn.jsdelivr.net/gh/lipis/flag-icons/flags/4x3/us.svg" width="24" height="18"/> English</button>
+          <button id="flagBR" class="flag-option"><img src="https://cdn.jsdelivr.net/gh/lipis/flag-icons/flags/4x3/br.svg" width="24" height="18"/> Português</button>
+          <button id="flagUS" class="flag-option"><img src="https://cdn.jsdelivr.net/gh/lipis/flag-icons/flags/4x3/us.svg" width="24" height="18"/> English</button>
         </div>
       </div>
     </div>
@@ -92,42 +92,41 @@
   </main>
 
   <!-- MODAL DE DETALHES DO HERÓI -->
-<div id="heroModal" class="hero-modal hidden">
-  <div class="hero-modal-content">
-    <button class="hero-modal-close" title="Fechar">&times;</button>
-    <div class="hero-modal-body">
-      <div class="hero-modal-header">
-        <img id="modal-hero-img" class="hero-modal-portrait" src="" alt="Retrato do herói"/>
-        <div class="hero-about">
-          <div id="modal-hero-name" class="hero-modal-title"></div>
-          <div>
-            <span id="modal-hero-role"></span> | <span id="modal-hero-lanes"></span>
+  <div id="heroModal" class="hero-modal hidden">
+    <div class="hero-modal-content">
+      <button class="hero-modal-close" title="Fechar">&times;</button>
+      <div class="hero-modal-body">
+        <div class="hero-modal-header">
+          <img id="modal-hero-img" class="hero-modal-portrait" src="" alt="Retrato do herói"/>
+          <div class="hero-about">
+            <div id="modal-hero-name" class="hero-modal-title"></div>
+            <div>
+              <span id="modal-hero-role"></span> | <span id="modal-hero-lanes"></span>
+            </div>
+            <div id="modal-hero-specialties"></div>
+            <div id="modal-hero-icons"></div>
           </div>
-          <div id="modal-hero-specialties"></div>
-          <div id="modal-hero-icons"></div>
         </div>
+        <div id="modal-hero-skillorder"></div>
+        <div id="modal-hero-skills"></div>
+        <div id="modal-hero-stats"></div>
+        <div id="modal-hero-stats-graph"></div>
+        <div id="modal-hero-assist"></div>
+        <div id="modal-hero-strong"></div>
+        <div id="modal-hero-weak"></div>
+        <div id="modal-hero-sub-heroes"></div>
+        <div id="modal-hero-sub-heroes-impact"></div>
+        <div id="modal-hero-sub-heroes-last"></div>
+        <div id="modal-hero-counters"></div>
       </div>
-      <div id="modal-hero-skillorder"></div>
-      <div id="modal-hero-skills"></div>
-      <div id="modal-hero-stats"></div>
-      <div id="modal-hero-stats-graph"></div>
-      <div id="modal-hero-assist"></div>
-      <div id="modal-hero-strong"></div>
-      <div id="modal-hero-weak"></div>
-      <div id="modal-hero-sub-heroes"></div>
-      <div id="modal-hero-sub-heroes-impact"></div>
-      <div id="modal-hero-sub-heroes-last"></div>
-      <div id="modal-hero-counters"></div>
     </div>
   </div>
-</div>
 
   <footer class="footer-moba">
-    <span class="footer-brand">Mobile Legends Tier List</span>
-    <a class="byarthur" href="https://github.com/tutujokes/mlb" target="_blank">
-      by tutujokes <i class="fa-brands fa-github"></i>
-    </a>
+    <span class="footer-brand">MLB Tier List &copy; 2025</span>
+    <a href="https://github.com/tutujokes/mlb" target="_blank" class="byarthur">by @tutujokes</a>
   </footer>
+
   <script src="js/main.js"></script>
 </body>
-</html>
+              </html>
