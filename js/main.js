@@ -286,39 +286,38 @@ async function getHeroStats(heroId) {
 // MODAL DETALHADO DE HERÓI
 async function showHeroModal(heroId) {
   const modal = document.getElementById('heroModal');
-  // Remove qualquer efeito de ocultação
   modal.classList.remove('hidden');
-  // Garante animação correta ao reabrir
   modal.classList.remove('show');
   document.querySelector('.hero-modal-body').innerHTML = '<div style="padding:40px;text-align:center;">Carregando...</div>';
 
   try {
-    // Busca detalhes e stats em paralelo
+    // DEBUG: veja heroId e dados
+    // console.log("heroId:", heroId);
+
     const [detailsData, statsData] = await Promise.all([
       getHeroDetails(heroId),
       getHeroStats(heroId)
     ]);
+    // console.log("detailsData", detailsData);
+    // console.log("statsData", statsData);
+
     const heroObj = detailsData?.data?.records?.[0]?.data?.hero?.data || {};
     const heroData = detailsData?.data?.records?.[0]?.data || {};
     const statsObj = statsData?.data?.records?.[0]?.data || {};
 
-    // SOBRE O CAMPEÃO
     document.getElementById('modal-hero-img').src = heroObj.head_big || heroObj.head || '';
     document.getElementById('modal-hero-name').textContent = heroObj.name || '';
     document.getElementById('modal-hero-role').textContent = heroObj.sortlabel?.filter(Boolean).join(', ') || '';
     document.getElementById('modal-hero-lanes').textContent = heroObj.roadsortlabel?.filter(Boolean).join(', ') || '';
 
-    // Ordem de habilidades visual
     renderSkillOrder(heroObj);
 
-    // Especialidades e ícones
     document.getElementById('modal-hero-specialties').textContent = (heroObj.speciality || []).join(', ');
     document.getElementById('modal-hero-icons').innerHTML = `
       ${(heroObj.roadsort || []).map(r => r.data?.road_sort_icon ? `<img src="${r.data.road_sort_icon}" title="${r.data.road_sort_title}" class="lane-icon"/>` : '').join('')}
       ${(heroObj.sortid || []).map(s => s.data?.sort_icon ? `<img src="${s.data?.sort_icon}" title="${s.data?.sort_title}" class="role-icon"/>` : '').join('')}
     `;
 
-    // Habilidades detalhadas
     const skillsList = heroObj.heroskilllist?.[0]?.skilllist || [];
     document.getElementById('modal-hero-skills').innerHTML = skillsList.map(skill => `
       <div class="skill">
@@ -330,7 +329,6 @@ async function showHeroModal(heroId) {
       </div>
     `).join('');
 
-    // Estatísticas
     document.getElementById('modal-hero-stats').innerHTML = `
       <div>Winrate: ${(statsObj.main_hero_win_rate * 100).toFixed(1)}%</div>
       <div>Banrate: ${(statsObj.main_hero_ban_rate * 100).toFixed(1)}%</div>
@@ -338,7 +336,6 @@ async function showHeroModal(heroId) {
     `;
     document.getElementById('modal-hero-stats-graph').innerHTML = '';
 
-    // Relações e sinergias
     const assist = heroData.relation?.assist;
     document.getElementById('modal-hero-assist').innerHTML = assist ? `
       <div class="relation-desc"><b>Aliados recomendados:</b> ${assist.desc}</div>
@@ -361,7 +358,6 @@ async function showHeroModal(heroId) {
       </div>
     ` : '';
 
-    // Parcerias & counters
     document.getElementById('modal-hero-sub-heroes').innerHTML = (statsObj.sub_hero || []).map(sh => `
       <div class="sub-hero">
         <img src="${sh.hero?.data?.head}" class="sub-hero-img" />
@@ -376,10 +372,8 @@ async function showHeroModal(heroId) {
       </div>
     `).join('');
 
-    // Counters
     await showHeroCounters(heroId);
 
-    // Exibe o modal (animação)
     setTimeout(() => {
       modal.classList.add('show');
     }, 5);
@@ -390,14 +384,12 @@ async function showHeroModal(heroId) {
   }
 }
 
-// Renderização visual da ordem de habilidades
 function renderSkillOrder(heroObj) {
   const skillOrderDiv = document.getElementById('modal-hero-skillorder');
   skillOrderDiv.innerHTML = '';
   const skillsList = heroObj.heroskilllist?.[0]?.skilllist || [];
   let skillOrderArr = [];
 
-  // Tenta pegar recommendedlevel (string tipo "1-2-1-3-1-2-3...")
   if (skillsList.length && skillsList[0].recommendedlevel) {
     const order = skillsList[0].recommendedlevel
       .replace(/\s/g, '')
@@ -407,13 +399,11 @@ function renderSkillOrder(heroObj) {
       .map(i => parseInt(i, 10));
     skillOrderArr = order;
   }
-  // Se não houver, mostra ordem padrão
   if (!skillOrderArr.length && skillsList.length) {
     skillOrderArr = skillsList.map((_, i) => i + 1);
   }
 
   if (skillOrderArr.length) {
-    // Mapeia índice para nome/ícone
     const nodeList = [];
     for (let i = 0; i < skillOrderArr.length; i++) {
       const idx = skillOrderArr[i] - 1;
@@ -436,7 +426,6 @@ function renderSkillOrder(heroObj) {
   }
 }
 
-// Counters para o modal detalhado
 async function showHeroCounters(heroId) {
   const res = await fetch(`https://mlbb-proxy.vercel.app/api/hero-counter?id=${heroId}`);
   const json = await res.json();
@@ -463,7 +452,6 @@ async function showHeroCounters(heroId) {
   }
 }
 
-// Clicks dos cards: modal detalhado
 function setupHeroCardClicks() {
   document.querySelectorAll('.card').forEach(card => {
     if (card._detailsBound) return;
@@ -476,21 +464,17 @@ function setupHeroCardClicks() {
   });
 }
 
-// DOMContentLoaded
 document.addEventListener('DOMContentLoaded', function () {
-  // Tema inicial
   let theme = localStorage.getItem('theme');
   if (!theme) {
     theme = window.matchMedia('(prefers-color-scheme: dark)').matches ? "dark" : "light";
   }
   setTheme(theme);
 
-  // Idioma inicial
   let lang = localStorage.getItem('lang');
   if (!lang) lang = navigator.language === "en-US" ? "en-US" : "pt-BR";
   setLanguage(lang);
 
-  // Carrega a tierlist
   carregarTierList();
 
   document.getElementById('rank').addEventListener('change', carregarTierList);
@@ -508,7 +492,6 @@ document.addEventListener('DOMContentLoaded', function () {
   document.getElementById('flagBR').addEventListener('click', function () { setLanguage('pt-BR'); showFlagDropdown(false); carregarTierList(); });
   document.getElementById('flagUS').addEventListener('click', function () { setLanguage('en-US'); showFlagDropdown(false); carregarTierList(); });
 
-  // Modal close
   document.querySelector('.hero-modal-close').onclick = function () {
     const modal = document.getElementById('heroModal');
     modal.classList.remove('show');
@@ -516,14 +499,12 @@ document.addEventListener('DOMContentLoaded', function () {
       modal.classList.add('hidden');
     }, 300);
   };
-  // Fecha modal ao clicar fora do conteúdo
   document.getElementById('heroModal').addEventListener('click', function (e) {
     if (e.target === this) {
       this.classList.remove('show');
       setTimeout(() => this.classList.add('hidden'), 300);
     }
   });
-  // Fecha dropdown idioma ao clicar fora
   document.body.addEventListener('click', function () {
     showFlagDropdown(false);
   });
