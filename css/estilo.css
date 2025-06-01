@@ -733,3 +733,66 @@ body[data-theme=dark] .hero-modal-skill-hover-desc { color: #bfbff5; }
   .hero-modal-skill-hover-pop { min-width:180px; max-width:98vw; font-size:.98em;}
   .hero-modal-skill-inline { min-width: 56px; }
 }
+.hero-modal-skill-extra-toggle {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 56px;
+}
+.hero-modal-skill-extra-btn {
+  width: 48px;
+  height: 48px;
+  background: linear-gradient(135deg,#6366f1 60%,#7e22ce 100%);
+  color: #fff;
+  font-size: 2.1em;
+  font-weight: 900;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 12px;
+  cursor: pointer;
+  box-shadow: 0 2px 8px #6366f122;
+  border: 2.5px solid #fff;
+  transition: background 0.18s, transform 0.14s;
+  outline: none;
+  margin-bottom: 2px;
+}
+.hero-modal-skill-extra-btn:hover, .hero-modal-skill-extra-btn:focus {
+  background: linear-gradient(135deg,#7e22ce 60%,#6366f1 100%);
+  transform: scale(1.07);
+}
+.hero-modal-skill-extra-pop {
+  display: flex;
+  flex-direction: row;
+  gap: 19px;
+  position: absolute;
+  z-index: 11111;
+  left: 50%; top: 110%;
+  background: #fff;
+  color: #23272f;
+  border-radius: 16px;
+  box-shadow: 0 8px 32px #23272f44, 0 1.5px 5px #23272f11;
+  padding: 13px 19px 11px 19px;
+  min-width: 180px;
+  max-width: 360px;
+  transition: opacity 0.18s;
+  opacity: 1;
+}
+.hero-modal-skill-extra-pop.hidden {
+  opacity: 0 !important;
+  pointer-events: none !important;
+  z-index: -1;
+}
+body[data-theme=dark] .hero-modal-skill-extra-pop {
+  background: #23252c;
+  color: #e4e7ef;
+  box-shadow: 0 8px 32px #0009, 0 1.5px 5px #0002;
+}
+.hero-modal-skill-label-EX {
+  background: #f5e0ff;
+  color: #a022ce;
+}
+.hero-modal-skill-inline-extra {
+  min-width: 62px;
+  margin-right: 2px;
+}
