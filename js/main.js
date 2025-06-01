@@ -190,8 +190,24 @@ function carregarTierList() {
       records.forEach(entry => {
         const hero = entry.data.main_hero.data;
         const winRate = (entry.data.main_hero_win_rate * 100).toFixed(1);
-        const heroId = heroNameToId[hero.name];
-        if (!heroId || idSet.has(heroId)) return;
+
+        // Robust heroId match
+        let heroId = heroNameToId[hero.name];
+        if (!heroId) {
+          const tryName = hero.name.normalize('NFD').replace(/[\u0300-\u036f]/g, "").toLowerCase();
+          for (const [name, id] of Object.entries(heroNameToId)) {
+            const normName = name.normalize('NFD').replace(/[\u0300-\u036f]/g, "").toLowerCase();
+            if (normName === tryName) {
+              heroId = id;
+              break;
+            }
+          }
+        }
+        if (!heroId) {
+          console.warn('HeroId não encontrado para', hero.name);
+          return;
+        }
+        if (idSet.has(heroId)) return;
         idSet.add(heroId);
 
         const info = heroExtraInfo[heroId] || {};
@@ -289,17 +305,17 @@ async function showHeroModal(heroId) {
   modal.classList.remove('hidden');
   modal.classList.remove('show');
   document.querySelector('.hero-modal-body').innerHTML = '<div style="padding:40px;text-align:center;">Carregando...</div>';
-
   try {
-    // DEBUG: veja heroId e dados
-    // console.log("heroId:", heroId);
+    // Para debug, descomente:
+    // alert('ID enviado para showHeroModal: ' + heroId);
 
     const [detailsData, statsData] = await Promise.all([
       getHeroDetails(heroId),
       getHeroStats(heroId)
     ]);
-    // console.log("detailsData", detailsData);
-    // console.log("statsData", statsData);
+    // Para debug, descomente:
+    // console.log('detailsData', detailsData);
+    // console.log('statsData', statsData);
 
     const heroObj = detailsData?.data?.records?.[0]?.data?.hero?.data || {};
     const heroData = detailsData?.data?.records?.[0]?.data || {};
@@ -379,6 +395,7 @@ async function showHeroModal(heroId) {
     }, 5);
 
   } catch (e) {
+    console.error('Erro ao carregar detalhes:', e);
     document.querySelector('.hero-modal-body').innerHTML = '<div style="padding:40px;text-align:center;color:red;">Erro ao carregar detalhes do herói.</div>';
     modal.classList.add('show');
   }
