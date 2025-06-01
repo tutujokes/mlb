@@ -383,3 +383,104 @@ document.addEventListener('DOMContentLoaded', function () {
     }
   });
 });
+// ... [código anterior igual] ...
+
+// Modal de Counter + Skills
+async function showHeroCounterModal(heroId, heroName, heroImg) {
+  const modal = document.getElementById("heroModal");
+  const body = modal.querySelector(".hero-modal-body");
+
+  // Fetch hero details (skills)
+  let skillHtml = '';
+  let detailsData = null;
+  try {
+    const res = await fetch(`https://mlbb-proxy.vercel.app/api/hero-detail?hero_id=${heroId}`);
+    detailsData = await res.json();
+  } catch (e) {}
+
+  // Render skills section
+  if (
+    detailsData &&
+    detailsData.data &&
+    detailsData.data.records &&
+    detailsData.data.records[0] &&
+    detailsData.data.records[0].data &&
+    detailsData.data.records[0].data.hero &&
+    detailsData.data.records[0].data.hero.data &&
+    detailsData.data.records[0].data.hero.data.heroskilllist &&
+    detailsData.data.records[0].data.hero.data.heroskilllist[0] &&
+    detailsData.data.records[0].data.hero.data.heroskilllist[0].skilllist
+  ) {
+    const skilllist = detailsData.data.records[0].data.hero.data.heroskilllist[0].skilllist;
+    skillHtml = `
+      <div class="hero-modal-skills-section">
+        <div class="hero-modal-skills-title">Skills</div>
+        <div class="hero-modal-skills-list">
+          ${skilllist.map(skill => `
+            <div class="hero-modal-skill">
+              <div class="hero-modal-skill-header">
+                <img src="${skill.skillicon}" alt="${skill.skillname}" class="hero-modal-skill-icon">
+                <div class="hero-modal-skill-info">
+                  <div class="hero-modal-skill-name">${skill.skillname}</div>
+                  <div class="hero-modal-skill-desc">${skill.desc || skill.skilldesc || ""}</div>
+                </div>
+              </div>
+              <div class="hero-modal-skill-tags">
+                ${skill.skilltag ? `<span class="hero-modal-skill-tag">${skill.skilltag}</span>` : ""}
+                ${skill.cost ? `<span class="hero-modal-skill-cost">${skill.cost}</span>` : ""}
+              </div>
+            </div>
+          `).join("")}
+        </div>
+      </div>
+    `;
+  } else {
+    skillHtml = `
+      <div class="hero-modal-skills-section">
+        <div class="hero-modal-skills-title">Skills</div>
+        <div class="hero-modal-skills-list">Nenhuma habilidade encontrada.</div>
+      </div>
+    `;
+  }
+
+  body.innerHTML = `
+    <div class="hero-modal-header">
+      <img src="${heroImg}" alt="${heroName}" class="hero-modal-portrait">
+      <div class="hero-modal-title">${heroName}</div>
+    </div>
+    ${skillHtml}
+    <div class="hero-modal-counters-title">Counters</div>
+    <div class="hero-modal-counters-loading">Carregando...</div>
+    <div class="hero-modal-counters-list"></div>
+  `;
+  modal.classList.remove("hidden");
+  setTimeout(() => modal.classList.add("show"), 5);
+
+  // Fetch counters
+  const data = await fetchHeroCounters(heroId);
+
+  const list = body.querySelector(".hero-modal-counters-list");
+  const loading = body.querySelector(".hero-modal-counters-loading");
+  loading.style.display = "none";
+  let counters = [];
+  if (data) {
+    counters = (data.sub_hero_last && data.sub_hero_last.length) ? data.sub_hero_last
+             : (data.sub_hero && data.sub_hero.length) ? data.sub_hero
+             : [];
+  }
+  if (counters.length) {
+    list.innerHTML = counters.map(sh => `
+      <div class="counter-img-wrap">
+        <img src="${sh.hero.data.head}" 
+             title="Winrate: ${(sh.hero_win_rate*100).toFixed(1)}%" 
+             alt="Counter"
+             class="hero-modal-counter-img">
+        <span class="counter-badge">${(sh.hero_win_rate*100).toFixed(1)}%</span>
+      </div>
+    `).join('');
+  } else {
+    list.innerHTML = `<div class="hero-modal-counters-empty">Nenhum counter encontrado.</div>`;
+  }
+}
+
+// ... [restante do código igual] ...
