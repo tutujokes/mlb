@@ -384,13 +384,11 @@ document.addEventListener('DOMContentLoaded', function () {
   });
 });
 
-// ...código anterior...
-
 async function showHeroCounterModal(heroId, heroName, heroImg) {
   const modal = document.getElementById("heroModal");
   const body = modal.querySelector(".hero-modal-body");
 
-  // Fetch hero details (skills)
+  // Fetch hero details (skills + label)
   let skillHtml = '';
   let detailsData = null;
   try {
@@ -398,6 +396,23 @@ async function showHeroCounterModal(heroId, heroName, heroImg) {
     detailsData = await res.json();
   } catch (e) {}
 
+  // Pega label/descrição curta
+  let descricaoHeroi = "";
+  if (
+    detailsData &&
+    detailsData.data &&
+    detailsData.data.records &&
+    detailsData.data.records[0] &&
+    detailsData.data.records[0].data &&
+    detailsData.data.records[0].data.hero &&
+    detailsData.data.records[0].data.hero.data &&
+    detailsData.data.records[0].data.hero.data.label
+  ) {
+    descricaoHeroi = detailsData.data.records[0].data.hero.data.label;
+  }
+
+  // ... (skills slice como antes)
+  let skills = [];
   if (
     detailsData &&
     detailsData.data &&
@@ -408,101 +423,97 @@ async function showHeroCounterModal(heroId, heroName, heroImg) {
     detailsData.data.records[0].data.hero.data &&
     detailsData.data.records[0].data.hero.data.heroskilllist
   ) {
-    const skills = detailsData.data.records[0].data.hero.data.heroskilllist.flatMap(s => s.skilllist);
+    skills = detailsData.data.records[0].data.hero.data.heroskilllist.flatMap(s => s.skilllist);
+  }
+  const skillLabels = ["P", "1", "2", "ULT"];
+  const labelNames = ["Passiva", "Skill 1", "Skill 2", "Ultimate"];
+  const mainSkills = skills.slice(0, 4);
+  const extraSkills = skills.slice(4);
 
-    const skillLabels = ["P", "1", "2", "ULT"];
-    const labelNames = ["Passiva", "Skill 1", "Skill 2", "Ultimate"];
-
-    // Skills principais
-    const mainSkills = skills.slice(0, 4);
-    const extraSkills = skills.slice(4);
-
-    // Render main skills
-    let skillsRowHtml = mainSkills.map((skill, i) => {
-      const tags = Array.isArray(skill.skilltag)
-        ? skill.skilltag.map(tag =>
-            `<span class="hero-modal-skill-tag" style="background:rgb(${tag.tagrgb});">${tag.tagname}</span>`
-          ).join(' ')
-        : '';
-      const cost = skill["skillcd&cost"] ? `<div class="hero-modal-skill-cost">${skill["skillcd&cost"]}</div>` : '';
-      const label = skillLabels[i] || "";
-      const labelName = labelNames[i] || "";
-      return `
-        <div class="hero-modal-skill-inline">
-          <div class="hero-modal-skill-icon-wrap" tabindex="0">
-            <img src="${skill.skillicon}" alt="${skill.skillname}" class="hero-modal-skill-icon">
-            <div class="hero-modal-skill-hover-pop hidden">
-              <div class="hero-modal-skill-hover-title">${skill.skillname}</div>
-              <div class="hero-modal-skill-hover-desc">${skill.desc || skill.skilldesc || ""}</div>
-              <div class="hero-modal-skill-hover-tags">${tags}</div>
-              ${cost}
-            </div>
-          </div>
-          <div class="hero-modal-skill-label hero-modal-skill-label-${label}">
-            (${label})<span class="hero-modal-skill-label-name">${labelName}</span>
+  // Main skills
+  let skillsRowHtml = mainSkills.map((skill, i) => {
+    const tags = Array.isArray(skill.skilltag)
+      ? skill.skilltag.map(tag =>
+          `<span class="hero-modal-skill-tag" style="background:rgb(${tag.tagrgb});">${tag.tagname}</span>`
+        ).join(' ')
+      : '';
+    const cost = skill["skillcd&cost"] ? `<div class="hero-modal-skill-cost">${skill["skillcd&cost"]}</div>` : '';
+    const label = skillLabels[i] || "";
+    const labelName = labelNames[i] || "";
+    return `
+      <div class="hero-modal-skill-inline">
+        <div class="hero-modal-skill-icon-wrap" tabindex="0">
+          <img src="${skill.skillicon}" alt="${skill.skillname}" class="hero-modal-skill-icon">
+          <div class="hero-modal-skill-hover-pop hidden">
+            <div class="hero-modal-skill-hover-title">${skill.skillname}</div>
+            <div class="hero-modal-skill-hover-desc">${skill.desc || skill.skilldesc || ""}</div>
+            <div class="hero-modal-skill-hover-tags">${tags}</div>
+            ${cost}
           </div>
         </div>
-      `;
-    }).join("");
-
-    // Render extra skills (só mostra se houver)
-    let extraHtml = "";
-    if (extraSkills.length > 0) {
-      extraHtml = `
-        <div class="hero-modal-skill-inline hero-modal-skill-extra-toggle" tabindex="0">
-          <div class="hero-modal-skill-extra-btn" id="extraSkillsBtn" aria-label="Mostrar habilidades extras" title="Habilidades extras" tabindex="0">+</div>
-          <div class="hero-modal-skill-extra-pop hidden" id="extraSkillsPopover">
-            ${extraSkills.map((skill, idx) => {
-              const tags = Array.isArray(skill.skilltag)
-                ? skill.skilltag.map(tag =>
-                    `<span class="hero-modal-skill-tag" style="background:rgb(${tag.tagrgb});">${tag.tagname}</span>`
-                  ).join(' ')
-                : '';
-              const cost = skill["skillcd&cost"] ? `<div class="hero-modal-skill-cost">${skill["skillcd&cost"]}</div>` : '';
-              return `
-                <div class="hero-modal-skill-inline hero-modal-skill-inline-extra">
-                  <div class="hero-modal-skill-icon-wrap" tabindex="0">
-                    <img src="${skill.skillicon}" alt="${skill.skillname}" class="hero-modal-skill-icon">
-                    <div class="hero-modal-skill-hover-pop hidden">
-                      <div class="hero-modal-skill-hover-title">${skill.skillname}</div>
-                      <div class="hero-modal-skill-hover-desc">${skill.desc || skill.skilldesc || ""}</div>
-                      <div class="hero-modal-skill-hover-tags">${tags}</div>
-                      ${cost}
-                    </div>
-                  </div>
-                  <div class="hero-modal-skill-label hero-modal-skill-label-EX">
-                    (EX${idx+1})<span class="hero-modal-skill-label-name">Extra</span>
-                  </div>
-                </div>
-              `;
-            }).join("")}
-          </div>
-        </div>
-      `;
-    }
-
-    skillHtml = `
-      <div class="hero-modal-skills-section">
-        <div class="hero-modal-skills-title">Skills</div>
-        <div class="hero-modal-skills-row">
-          ${skillsRowHtml}
-          ${extraHtml}
+        <div class="hero-modal-skill-label hero-modal-skill-label-${label}">
+          (${label})<span class="hero-modal-skill-label-name">${labelName}</span>
         </div>
       </div>
     `;
-  } else {
-    skillHtml = `
-      <div class="hero-modal-skills-section">
-        <div class="hero-modal-skills-title">Skills</div>
-        <div class="hero-modal-skills-row">Nenhuma habilidade encontrada.</div>
+  }).join("");
+
+  // Extra skills
+  let extraHtml = "";
+  if (extraSkills.length > 0) {
+    extraHtml = `
+      <div class="hero-modal-skill-inline hero-modal-skill-extra-toggle" tabindex="0">
+        <div class="hero-modal-skill-extra-btn" id="extraSkillsBtn" aria-label="Mostrar habilidades extras" title="Habilidades extras" tabindex="0">+</div>
+        <div class="hero-modal-skill-extra-pop hidden" id="extraSkillsPopover">
+          ${extraSkills.map((skill, idx) => {
+            const tags = Array.isArray(skill.skilltag)
+              ? skill.skilltag.map(tag =>
+                  `<span class="hero-modal-skill-tag" style="background:rgb(${tag.tagrgb});">${tag.tagname}</span>`
+                ).join(' ')
+              : '';
+            const cost = skill["skillcd&cost"] ? `<div class="hero-modal-skill-cost">${skill["skillcd&cost"]}</div>` : '';
+            return `
+              <div class="hero-modal-skill-inline hero-modal-skill-inline-extra">
+                <div class="hero-modal-skill-icon-wrap" tabindex="0">
+                  <img src="${skill.skillicon}" alt="${skill.skillname}" class="hero-modal-skill-icon">
+                  <div class="hero-modal-skill-hover-pop hidden">
+                    <div class="hero-modal-skill-hover-title">${skill.skillname}</div>
+                    <div class="hero-modal-skill-hover-desc">${skill.desc || skill.skilldesc || ""}</div>
+                    <div class="hero-modal-skill-hover-tags">${tags}</div>
+                    ${cost}
+                  </div>
+                </div>
+                <div class="hero-modal-skill-label hero-modal-skill-label-EX">
+                  (EX${idx+1})<span class="hero-modal-skill-label-name">Extra</span>
+                </div>
+              </div>
+            `;
+          }).join("")}
+        </div>
       </div>
     `;
   }
 
+  skillHtml = `
+    <div class="hero-modal-skills-section">
+      <div class="hero-modal-skills-title">Skills</div>
+      <div class="hero-modal-skills-row">
+        ${skillsRowHtml}
+        ${extraHtml}
+      </div>
+    </div>
+  `;
+
+  // Cabeçalho com nome + descrição curta
   body.innerHTML = `
     <div class="hero-modal-header">
       <img src="${heroImg}" alt="${heroName}" class="hero-modal-portrait">
-      <div class="hero-modal-title">${heroName}</div>
+      <div class="hero-modal-title-wrap">
+        <div class="hero-modal-title">
+          ${heroName}
+          ${descricaoHeroi ? `<span class="hero-modal-desc-label">${descricaoHeroi}</span>` : ''}
+        </div>
+      </div>
     </div>
     ${skillHtml}
     <div class="hero-modal-counters-title">Counters</div>
@@ -560,6 +571,7 @@ async function showHeroCounterModal(heroId, heroName, heroImg) {
     const extraBtn = document.getElementById('extraSkillsBtn');
     const extraPopover = document.getElementById('extraSkillsPopover');
     let extraPopperInstance = null;
+    let closeExtraPopover;
     if (extraBtn && extraPopover) {
       function showExtra() {
         extraPopover.classList.remove('hidden');
@@ -571,6 +583,23 @@ async function showHeroCounterModal(heroId, heroName, heroImg) {
             { name: 'offset', options: { offset: [0, 8] } },
           ]
         });
+        // Fecha só clicando fora ou ESC
+        closeExtraPopover = function(ev) {
+          if (!extraBtn.contains(ev.target) && !extraPopover.contains(ev.target)) {
+            hideExtra();
+            document.removeEventListener('mousedown', closeExtraPopover, true);
+            document.removeEventListener('keydown', escCloseExtraPopover, true);
+          }
+        };
+        escCloseExtraPopover = function(ev) {
+          if (ev.key === "Escape") {
+            hideExtra();
+            document.removeEventListener('mousedown', closeExtraPopover, true);
+            document.removeEventListener('keydown', escCloseExtraPopover, true);
+          }
+        };
+        document.addEventListener('mousedown', closeExtraPopover, true);
+        document.addEventListener('keydown', escCloseExtraPopover, true);
       }
       function hideExtra() {
         extraPopover.classList.add('hidden');
@@ -585,17 +614,9 @@ async function showHeroCounterModal(heroId, heroName, heroImg) {
           hideExtra();
         }
       });
-      extraBtn.addEventListener('mouseenter', showExtra);
-      extraBtn.addEventListener('mouseleave', hideExtra);
       extraBtn.addEventListener('focus', showExtra);
       extraBtn.addEventListener('blur', hideExtra);
-
-      // Fecha ao clicar fora
-      document.body.addEventListener('click', function closeExtraPopper(ev){
-        if (!extraBtn.contains(ev.target) && !extraPopover.contains(ev.target)) {
-          hideExtra();
-        }
-      });
+      // NÃO fecha ao mouseleave!
     }
   }, 400);
 
