@@ -1,5 +1,5 @@
 // ======================
-// MLB Tier List - main.dynamic.js (parte dinâmica e volátil)
+// MLB Tier List - main.dynamic.js (parte dinâmica e volátil) - CORRIGIDO
 // ======================
 
 // Dados dinâmicos e caches
@@ -189,12 +189,25 @@ async function showHeroModal(heroId) {
       getHeroStats(heroId)
     ]);
 
-    const heroObj = detailsData?.data?.records?.[0]?.data?.hero?.data || {};
-    const heroData = detailsData?.data?.records?.[0]?.data || {};
+    // LOG PARA DEPURAÇÃO - pode remover depois
+    console.log('detailsData:', detailsData);
+    console.log('statsData:', statsData);
+
+    // Verifica se veio o registro esperado
+    const record = detailsData?.data?.records?.[0];
+    if (!record || !record.data || !record.data.hero || !record.data.hero.data) {
+      if (modalBody) {
+        modalBody.innerHTML = '<div style="padding:40px;text-align:center;color:red;">Detalhes do herói indisponíveis.</div>';
+      }
+      return;
+    }
+
+    const heroObj = record.data.hero.data;
+    const heroData = record.data;
     const statsObj = statsData?.data?.records?.[0]?.data || {};
 
-    // Validação do heroObj para evitar erros
-    if (!heroObj || !heroObj.name) {
+    // Se faltar nome, mostrar erro
+    if (!heroObj.name) {
       if (modalBody) {
         modalBody.innerHTML = '<div style="padding:40px;text-align:center;color:red;">Detalhes do herói indisponíveis.</div>';
       }
