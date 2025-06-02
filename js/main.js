@@ -278,22 +278,6 @@ function filtrarTierList() {
   setupHeroCardClicks();
 }
 
-// Modal de Counter
-async function showHeroCounterModal(heroId, heroName, heroImg) {
-  const modal = document.getElementById("heroModal");
-  const body = modal.querySelector(".hero-modal-body");
-  body.innerHTML = `
-    <div class="hero-modal-header">
-      <img src="${heroImg}" alt="${heroName}" class="hero-modal-portrait">
-      <div class="hero-modal-title">${heroName}</div>
-    </div>
-    <div class="hero-modal-counters-title">Counters</div>
-    <div class="hero-modal-counters-loading">Carregando...</div>
-    <div class="hero-modal-counters-list"></div>
-  `;
-  modal.classList.remove("hidden");
-  setTimeout(() => modal.classList.add("show"), 5);
-
   // Fetch data
   const data = await fetchHeroCounters(heroId);
 
