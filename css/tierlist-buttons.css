@@ -23,6 +23,18 @@
   transform: scale(1.08);
   box-shadow: 0 4px 18px 0 #23272f22;
 }
+.tierlist-buttons-wrapper {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  background: var(--bg-main, #fff);
+  padding-top: 8px;
+  padding-bottom: 8px;
+  /* Pequena sombra para separação visual */
+  box-shadow: 0 2px 8px #23272f08;
+  transition: background 0.33s;
+}
+
 @media (max-width: 700px) {
   .tierlist-buttons-wrapper {
     flex-direction: column;
@@ -30,6 +42,9 @@
     margin-bottom: 16px;
     margin-top: 7px;
     align-items: center;
+    top: 56px; /* desce um pouco para não cobrir o header em telas pequenas */
+    padding-top: 7px;
+    padding-bottom: 7px;
   }
   .tier-btn {
     width: 92vw;
