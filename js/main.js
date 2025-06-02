@@ -360,20 +360,16 @@ async function showHeroCounterModal(heroId, heroName, heroImg) {
 
   // Pega label/descrição curta
   let descricaoHeroi = "";
-  if (
-    detailsData &&
-    detailsData.data &&
-    detailsData.data.records &&
-    detailsData.data.records[0] &&
-    detailsData.data.records[0].data &&
-    detailsData.data.records[0].data.hero &&
-    detailsData.data.records[0].data.hero.data &&
-    detailsData.data.records[0].data.hero.data.desc
-  ) {
-    descricaoHeroi = detailsData.data.records[0].data.hero.data.label;
-  }
-  // Debug: veja o que retorna
-  console.log("Descrição curta:", descricaoHeroi);
+if (
+  detailsData?.data?.records?.[0]?.data?.hero?.data?.desc
+) {
+  descricaoHeroi = detailsData.data.records[0].data.hero.data.desc;
+} else if (
+  detailsData?.data?.records?.[0]?.data?.desc
+) {
+  descricaoHeroi = detailsData.data.records[0].data.desc;
+}
+ 
 
   // Skills
   let skills = [];
