@@ -814,18 +814,11 @@ body[data-theme=dark] .hero-modal-skill-extra-pop {
   flex-wrap: wrap;
 }
 .hero-modal-desc-label {
-  font-size: 1.01em;
-  color: #8a8fa6;
-  font-weight: 500;
-  margin-left: 14px;
-  padding: 3px 12px;
-  background: #f3f4f6;
-  border-radius: 8px;
-  font-family: 'Inter', 'Arial', sans-serif;
-  max-width: 260px;
-  text-overflow: ellipsis;
-  overflow: hidden;
-  white-space: nowrap;
+  max-width: 360px;
+  white-space: normal;
+  overflow: visible;
+  text-overflow: unset;
+  word-break: break-word;
 }
 @media (max-width: 700px) {
   .hero-modal-title-wrap {
