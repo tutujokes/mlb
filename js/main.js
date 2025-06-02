@@ -101,10 +101,12 @@ function updateI18n() {
 function setTheme(theme) {
   document.body.setAttribute('data-theme', theme);
   let icon = document.getElementById('themeIcon');
-  if (theme === "dark") {
-    icon.className = "fa-solid fa-sun";
-  } else {
-    icon.className = "fa-solid fa-moon";
+  if (icon) {
+    if (theme === "dark") {
+      icon.className = "fa-solid fa-sun";
+    } else {
+      icon.className = "fa-solid fa-moon";
+    }
   }
   localStorage.setItem('theme', theme);
 }
@@ -118,10 +120,13 @@ function setLanguage(lang) {
   currentLang = lang;
   document.documentElement.lang = lang;
   updateI18n();
-  document.getElementById('langFlag').style.backgroundImage =
-    lang === "pt-BR"
-      ? "url('https://cdn.jsdelivr.net/gh/hjnilsson/country-flags/svg/br.svg')"
-      : "url('https://cdn.jsdelivr.net/gh/hjnilsson/country-flags/svg/us.svg')";
+  const langFlag = document.getElementById('langFlag');
+  if (langFlag) {
+    langFlag.style.backgroundImage =
+      lang === "pt-BR"
+        ? "url('https://cdn.jsdelivr.net/gh/hjnilsson/country-flags/svg/br.svg')"
+        : "url('https://cdn.jsdelivr.net/gh/hjnilsson/country-flags/svg/us.svg')";
+  }
   document.getElementById('flagBR').classList.toggle('selected', lang === "pt-BR");
   document.getElementById('flagUS').classList.toggle('selected', lang === "en-US");
   localStorage.setItem('lang', lang);
@@ -367,7 +372,7 @@ async function showHeroCounterModal(heroId, heroName, heroImg) {
   ) {
     descricaoHeroi = detailsData.data.records[0].data.hero.data.label;
   }
-  // Exibe no console para debug
+  // Debug: veja o que retorna
   console.log("Descrição curta:", descricaoHeroi);
 
   // Skills
@@ -482,7 +487,7 @@ async function showHeroCounterModal(heroId, heroName, heroImg) {
   modal.classList.remove("hidden");
   setTimeout(() => modal.classList.add("show"), 5);
 
-  // Popper para skills principais e extras (A ORDEM IMPORTA!)
+  // Popper para skills principais e extras
   setTimeout(() => {
     document.querySelectorAll('.hero-modal-skill-icon-wrap').forEach((wrap) => {
       const icon = wrap.querySelector('.hero-modal-skill-icon');
@@ -536,7 +541,6 @@ async function showHeroCounterModal(heroId, heroName, heroImg) {
       extraPopover.addEventListener('mousedown', function(ev) {
         ev.stopPropagation();
       });
-
       function showExtra() {
         extraPopover.classList.remove('hidden');
         extraPopperInstance = Popper.createPopper(extraBtn, extraPopover, {
@@ -547,3 +551,65 @@ async function showHeroCounterModal(heroId, heroName, heroImg) {
             { name: 'offset', options: { offset: [0, 8] } },
           ]
         });
+        // Fecha só clicando fora ou ESC
+        closeExtraPopover = function(ev) {
+          if (!extraBtn.contains(ev.target) && !extraPopover.contains(ev.target)) {
+            hideExtra();
+            document.removeEventListener('mousedown', closeExtraPopover, true);
+            document.removeEventListener('keydown', escCloseExtraPopover, true);
+          }
+        };
+        escCloseExtraPopover = function(ev) {
+          if (ev.key === "Escape") {
+            hideExtra();
+            document.removeEventListener('mousedown', closeExtraPopover, true);
+            document.removeEventListener('keydown', escCloseExtraPopover, true);
+          }
+        };
+        document.addEventListener('mousedown', closeExtraPopover, true);
+        document.addEventListener('keydown', escCloseExtraPopover, true);
+      }
+      function hideExtra() {
+        extraPopover.classList.add('hidden');
+        if (extraPopperInstance) extraPopperInstance.destroy();
+        extraPopperInstance = null;
+      }
+      extraBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        if (extraPopover.classList.contains('hidden')) {
+          showExtra();
+        } else {
+          hideExtra();
+        }
+      });
+      extraBtn.addEventListener('focus', showExtra);
+      extraBtn.addEventListener('blur', hideExtra);
+      // NÃO fecha ao mouseleave!
+    }
+  }, 400);
+
+  // Fetch counters
+  const data = await fetchHeroCounters(heroId);
+  const list = body.querySelector(".hero-modal-counters-list");
+  const loading = body.querySelector(".hero-modal-counters-loading");
+  loading.style.display = "none";
+  let counters = [];
+  if (data) {
+    counters = (data.sub_hero_last && data.sub_hero_last.length) ? data.sub_hero_last
+             : (data.sub_hero && data.sub_hero.length) ? data.sub_hero
+             : [];
+  }
+  if (counters.length) {
+    list.innerHTML = counters.map(sh => `
+      <div class="counter-img-wrap">
+        <img src="${sh.hero.data.head}" 
+             title="Winrate: ${(sh.hero_win_rate*100).toFixed(1)}%" 
+             alt="Counter"
+             class="hero-modal-counter-img">
+        <span class="counter-badge">${(sh.hero_win_rate*100).toFixed(1)}%</span>
+      </div>
+    `).join('');
+  } else {
+    list.innerHTML = `<div class="hero-modal-counters-empty">Nenhum counter encontrado.</div>`;
+  }
+    }
