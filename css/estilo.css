@@ -835,3 +835,36 @@ body[data-theme=dark] .hero-modal-skill-extra-pop {
   min-width: 62px;
   margin-right: 2px;
 }
+@media (max-width: 700px) {
+  .tier-box {
+    padding-top: 48px; /* espaço para a label por cima */
+    padding-left: 12px; /* reduz padding lateral */
+  }
+  .tier-label {
+    position: absolute;
+    left: 12px;
+    top: 0;
+    right: 12px;
+    bottom: auto;
+    width: auto;
+    height: 38px;
+    min-width: unset;
+    max-width: unset;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+    font-size: 1.2rem;
+    writing-mode: unset;
+    text-orientation: unset;
+    border-radius: 12px 12px 0 0;
+    background: linear-gradient(135deg, #6366f1 60%, #7e22ce 100%);
+    margin-bottom: 0;
+    z-index: 10;
+    box-shadow: 0 1px 4px #23272f11;
+    padding: 0 18px;
+  }
+  .tier-label.ss { background: linear-gradient(135deg, #6366f1 60%, #7e22ce 100%);}
+  .tier-label.s { background: linear-gradient(135deg, #7e22ce 30%, #6366f1 90%);}
+  .tier-label.a { background: #ffb74d; color: #fff !important;}
+}
