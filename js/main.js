@@ -181,6 +181,51 @@ async function fetchHeroCounters(heroId) {
   return null;
 }
 
+// Render cards utilitário
+function renderTierCards(heroes, tierId) {
+  const container = document.getElementById(tierId);
+  if (!container) return;
+  heroes.forEach(entry => {
+    const hero = entry.data.main_hero.data;
+    const winRate = (entry.data.main_hero_win_rate * 100).toFixed(1);
+    const heroId = heroNameToId[hero.name];
+    const info = heroExtraInfo[heroId] || {};
+
+    let roadsortTitles = [];
+    let iconCount = 0;
+    let roadsortHtml = '';
+    if (Array.isArray(info.roadsort) && info.roadsort.length > 0) {
+      roadsortTitles = info.roadsort.map(rs =>
+        (rs.data && rs.data.road_sort_title) ? rs.data.road_sort_title : ''
+      ).filter(Boolean);
+      iconCount = info.roadsort.length;
+      roadsortHtml = info.roadsort.map(rs => {
+        const data = rs.data || {};
+        return data.road_sort_icon
+          ? `<span class="hero-route"><img src="${data.road_sort_icon}" alt="" title="${data.road_sort_title}" width="60" height="60"></span>`
+          : '';
+      }).join('');
+    }
+
+    const el = document.createElement('div');
+    el.className = 'card';
+    el.setAttribute('data-role', (info.role || '').toLowerCase());
+    el.setAttribute('data-routes', roadsortTitles.join('|').toLowerCase());
+    el.setAttribute('data-id', heroId || '');
+    el.setAttribute('data-name', hero.name);
+
+    el.innerHTML = `
+      <img src="${hero.head}" alt="Retrato do herói ${hero.name}" loading="lazy">
+      <div class="hero-name">${hero.name}</div>
+      <div class="hero-meta">${winRate}% WR</div>
+      <div class="hero-routes ${iconCount === 1 ? 'single' : ''}">${roadsortHtml}</div>
+    `;
+
+    tierCards.push(el);
+    container.appendChild(el);
+  });
+}
+
 // Renderiza Tier List
 function carregarTierList() {
   const myToken = ++tierListRequestToken;
@@ -201,7 +246,11 @@ function carregarTierList() {
       if (myToken !== tierListRequestToken) return;
       const records = json.data.records || [];
       tierRecords = records;
-      let count = {ss:0,s:0,a:0};
+
+      // Separe os heróis por tier
+      const ssHeroes = [];
+      const sHeroes  = [];
+      const aHeroes  = [];
       let idSet = new Set();
 
       records.forEach(entry => {
@@ -211,50 +260,21 @@ function carregarTierList() {
         if (!heroId || idSet.has(heroId)) return;
         idSet.add(heroId);
 
-        const info = heroExtraInfo[heroId] || {};
-        let roadsortTitles = [];
-        let iconCount = 0;
-        let roadsortHtml = '';
-
-        if (Array.isArray(info.roadsort) && info.roadsort.length > 0) {
-          roadsortTitles = info.roadsort.map(rs =>
-            (rs.data && rs.data.road_sort_title) ? rs.data.road_sort_title : ''
-          ).filter(Boolean);
-          iconCount = info.roadsort.length;
-          roadsortHtml = info.roadsort.map(rs => {
-            const data = rs.data || {};
-            return data.road_sort_icon
-              ? `<span class="hero-route"><img src="${data.road_sort_icon}" alt="" title="${data.road_sort_title}" width="60" height="60"></span>`
-              : '';
-          }).join('');
-        }
-
-        const el = document.createElement('div');
-        el.className = 'card';
-        el.setAttribute('data-role', (info.role || '').toLowerCase());
-        el.setAttribute('data-routes', roadsortTitles.join('|').toLowerCase());
-        el.setAttribute('data-id', heroId || '');
-        el.setAttribute('data-name', hero.name);
-
-        el.innerHTML = `
-          <img src="${hero.head}" alt="Retrato do herói ${hero.name}" loading="lazy">
-          <div class="hero-name">${hero.name}</div>
-          <div class="hero-meta">${winRate}% WR</div>
-          <div class="hero-routes ${iconCount === 1 ? 'single' : ''}">${roadsortHtml}</div>
-        `;
-
-        tierCards.push(el);
-
-        if (winRate >= 54) {
-          document.getElementById('tier-ss').appendChild(el); count.ss++;
-        } else if (winRate >= 51) {
-          document.getElementById('tier-s').appendChild(el); count.s++;
-        } else {
-          document.getElementById('tier-a').appendChild(el); count.a++;
-        }
+        if (winRate >= 54) ssHeroes.push(entry);
+        else if (winRate >= 51) sHeroes.push(entry);
+        else aHeroes.push(entry);
       });
 
-      if (!count.ss && !count.s && !count.a) {
+      // Renderize SS primeiro
+      renderTierCards(ssHeroes, 'tier-ss');
+
+      // Aguarde um pouco após o SS (pode ser 0 para apenas jogar na próxima "frame" do navegador)
+      setTimeout(() => {
+        renderTierCards(sHeroes, 'tier-s');
+        renderTierCards(aHeroes, 'tier-a');
+      }, 0);
+
+      if (!ssHeroes.length && !sHeroes.length && !aHeroes.length) {
         document.getElementById('noResults').classList.remove('hidden');
       }
       filtrarTierList();
