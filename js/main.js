@@ -358,7 +358,7 @@ async function showHeroCounterModal(heroId, heroName, heroImg) {
     detailsData = await res.json();
   } catch (e) {}
 
-  // Pega descrição curta (desc)
+  // Pega descrição curta (desc) ou usa story como fallback
   let descricaoHeroi = "";
   if (
     detailsData &&
@@ -367,13 +367,11 @@ async function showHeroCounterModal(heroId, heroName, heroImg) {
     detailsData.data.records[0] &&
     detailsData.data.records[0].data &&
     detailsData.data.records[0].data.hero &&
-    detailsData.data.records[0].data.hero.data &&
-    detailsData.data.records[0].data.hero.data.desc
+    detailsData.data.records[0].data.hero.data
   ) {
-    descricaoHeroi = detailsData.data.records[0].data.hero.data.desc;
+    const heroData = detailsData.data.records[0].data.hero.data;
+    descricaoHeroi = heroData.desc || heroData.story || "";
   }
-  // Debug: veja o que retorna
-  // console.log("Descrição curta:", descricaoHeroi);
 
   // Skills
   let skills = [];
@@ -468,7 +466,7 @@ async function showHeroCounterModal(heroId, heroName, heroImg) {
     </div>
   `;
 
-  // Cabeçalho com nome + descrição curta
+  // Cabeçalho com nome + descrição curta (ou story)
   body.innerHTML = `
     <div class="hero-modal-header">
       <img src="${heroImg}" alt="${heroName}" class="hero-modal-portrait">
