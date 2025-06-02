@@ -368,7 +368,7 @@ async function showHeroCounterModal(heroId, heroName, heroImg) {
     detailsData.data.records[0].data &&
     detailsData.data.records[0].data.hero &&
     detailsData.data.records[0].data.hero.data &&
-    detailsData.data.records[0].data.hero.data.label
+    detailsData.data.records[0].data.hero.data.desc
   ) {
     descricaoHeroi = detailsData.data.records[0].data.hero.data.label;
   }
