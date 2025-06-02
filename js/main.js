@@ -482,6 +482,13 @@ async function showHeroCounterModal(heroId, heroName, heroImg) {
 
   // Popper para skills principais
   setTimeout(() => {
+    // Dentro do setTimeout que inicializa o Popper das extras:
+if (extraPopover) {
+  // Impede que o clique dentro do popover feche ele
+  extraPopover.addEventListener('mousedown', function(ev) {
+    ev.stopPropagation();
+  });
+}
     document.querySelectorAll('.hero-modal-skill-icon-wrap').forEach((wrap) => {
       const icon = wrap.querySelector('.hero-modal-skill-icon');
       const popover = wrap.querySelector('.hero-modal-skill-hover-pop');
