@@ -547,4 +547,3 @@ async function showHeroCounterModal(heroId, heroName, heroImg) {
             { name: 'offset', options: { offset: [0, 8] } },
           ]
         });
-        // Fecha 
