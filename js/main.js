@@ -76,7 +76,6 @@ let heroExtraInfo = {};
 let tierCards = [];
 let tierRecords = [];
 let currentLang = 'pt-BR';
-
 let tierListRequestToken = 0;
 
 // Funções utilitárias
@@ -341,6 +340,7 @@ document.addEventListener('DOMContentLoaded', function () {
   });
 });
 
+// MODAL DO HERÓI
 async function showHeroCounterModal(heroId, heroName, heroImg) {
   const modal = document.getElementById("heroModal");
   const body = modal.querySelector(".hero-modal-body");
@@ -367,8 +367,10 @@ async function showHeroCounterModal(heroId, heroName, heroImg) {
   ) {
     descricaoHeroi = detailsData.data.records[0].data.hero.data.label;
   }
+  // Exibe no console para debug
+  console.log("Descrição curta:", descricaoHeroi);
 
-  // ... (skills slice como antes)
+  // Skills
   let skills = [];
   if (
     detailsData &&
@@ -480,15 +482,8 @@ async function showHeroCounterModal(heroId, heroName, heroImg) {
   modal.classList.remove("hidden");
   setTimeout(() => modal.classList.add("show"), 5);
 
-  // Popper para skills principais
+  // Popper para skills principais e extras (A ORDEM IMPORTA!)
   setTimeout(() => {
-    // Dentro do setTimeout que inicializa o Popper das extras:
-if (extraPopover) {
-  // Impede que o clique dentro do popover feche ele
-  extraPopover.addEventListener('mousedown', function(ev) {
-    ev.stopPropagation();
-  });
-}
     document.querySelectorAll('.hero-modal-skill-icon-wrap').forEach((wrap) => {
       const icon = wrap.querySelector('.hero-modal-skill-icon');
       const popover = wrap.querySelector('.hero-modal-skill-hover-pop');
@@ -537,6 +532,11 @@ if (extraPopover) {
     let extraPopperInstance = null;
     let closeExtraPopover;
     if (extraBtn && extraPopover) {
+      // Impede que clique dentro do popover feche ele
+      extraPopover.addEventListener('mousedown', function(ev) {
+        ev.stopPropagation();
+      });
+
       function showExtra() {
         extraPopover.classList.remove('hidden');
         extraPopperInstance = Popper.createPopper(extraBtn, extraPopover, {
@@ -547,65 +547,4 @@ if (extraPopover) {
             { name: 'offset', options: { offset: [0, 8] } },
           ]
         });
-        // Fecha só clicando fora ou ESC
-        closeExtraPopover = function(ev) {
-          if (!extraBtn.contains(ev.target) && !extraPopover.contains(ev.target)) {
-            hideExtra();
-            document.removeEventListener('mousedown', closeExtraPopover, true);
-            document.removeEventListener('keydown', escCloseExtraPopover, true);
-          }
-        };
-        escCloseExtraPopover = function(ev) {
-          if (ev.key === "Escape") {
-            hideExtra();
-            document.removeEventListener('mousedown', closeExtraPopover, true);
-            document.removeEventListener('keydown', escCloseExtraPopover, true);
-          }
-        };
-        document.addEventListener('mousedown', closeExtraPopover, true);
-        document.addEventListener('keydown', escCloseExtraPopover, true);
-      }
-      function hideExtra() {
-        extraPopover.classList.add('hidden');
-        if (extraPopperInstance) extraPopperInstance.destroy();
-        extraPopperInstance = null;
-      }
-      extraBtn.addEventListener('click', (e) => {
-        e.stopPropagation();
-        if (extraPopover.classList.contains('hidden')) {
-          showExtra();
-        } else {
-          hideExtra();
-        }
-      });
-      extraBtn.addEventListener('focus', showExtra);
-      extraBtn.addEventListener('blur', hideExtra);
-      // NÃO fecha ao mouseleave!
-    }
-  }, 400);
-
-  // Fetch counters
-  const data = await fetchHeroCounters(heroId);
-  const list = body.querySelector(".hero-modal-counters-list");
-  const loading = body.querySelector(".hero-modal-counters-loading");
-  loading.style.display = "none";
-  let counters = [];
-  if (data) {
-    counters = (data.sub_hero_last && data.sub_hero_last.length) ? data.sub_hero_last
-             : (data.sub_hero && data.sub_hero.length) ? data.sub_hero
-             : [];
-  }
-  if (counters.length) {
-    list.innerHTML = counters.map(sh => `
-      <div class="counter-img-wrap">
-        <img src="${sh.hero.data.head}" 
-             title="Winrate: ${(sh.hero_win_rate*100).toFixed(1)}%" 
-             alt="Counter"
-             class="hero-modal-counter-img">
-        <span class="counter-badge">${(sh.hero_win_rate*100).toFixed(1)}%</span>
-      </div>
-    `).join('');
-  } else {
-    list.innerHTML = `<div class="hero-modal-counters-empty">Nenhum counter encontrado.</div>`;
-  }
-}
+        // Fecha 
