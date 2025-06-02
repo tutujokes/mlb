@@ -278,33 +278,6 @@ function filtrarTierList() {
   setupHeroCardClicks();
 }
 
-  // Fetch data
-  const data = await fetchHeroCounters(heroId);
-
-  const list = body.querySelector(".hero-modal-counters-list");
-  const loading = body.querySelector(".hero-modal-counters-loading");
-  loading.style.display = "none";
-  let counters = [];
-  if (data) {
-    counters = (data.sub_hero_last && data.sub_hero_last.length) ? data.sub_hero_last
-             : (data.sub_hero && data.sub_hero.length) ? data.sub_hero
-             : [];
-  }
-  if (counters.length) {
-    list.innerHTML = counters.map(sh => `
-      <div class="counter-img-wrap">
-        <img src="${sh.hero.data.head}" 
-             title="Winrate: ${(sh.hero_win_rate*100).toFixed(1)}%" 
-             alt="Counter"
-             class="hero-modal-counter-img">
-        <span class="counter-badge">${(sh.hero_win_rate*100).toFixed(1)}%</span>
-      </div>
-    `).join('');
-  } else {
-    list.innerHTML = `<div class="hero-modal-counters-empty">Nenhum counter encontrado.</div>`;
-  }
-}
-
 function setupHeroCardClicks() {
   document.querySelectorAll('.card').forEach(card => {
     if (card._counterBound) return;
