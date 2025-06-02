@@ -350,7 +350,7 @@ async function showHeroCounterModal(heroId, heroName, heroImg) {
   const modal = document.getElementById("heroModal");
   const body = modal.querySelector(".hero-modal-body");
 
-  // Fetch hero details (skills + label)
+  // Fetch hero details (skills + desc)
   let skillHtml = '';
   let detailsData = null;
   try {
@@ -358,18 +358,22 @@ async function showHeroCounterModal(heroId, heroName, heroImg) {
     detailsData = await res.json();
   } catch (e) {}
 
-  // Pega label/descrição curta
+  // Pega descrição curta (desc)
   let descricaoHeroi = "";
-if (
-  detailsData?.data?.records?.[0]?.data?.hero?.data?.desc
-) {
-  descricaoHeroi = detailsData.data.records[0].data.hero.data.desc;
-} else if (
-  detailsData?.data?.records?.[0]?.data?.desc
-) {
-  descricaoHeroi = detailsData.data.records[0].data.desc;
-}
- 
+  if (
+    detailsData &&
+    detailsData.data &&
+    detailsData.data.records &&
+    detailsData.data.records[0] &&
+    detailsData.data.records[0].data &&
+    detailsData.data.records[0].data.hero &&
+    detailsData.data.records[0].data.hero.data &&
+    detailsData.data.records[0].data.hero.data.desc
+  ) {
+    descricaoHeroi = detailsData.data.records[0].data.hero.data.desc;
+  }
+  // Debug: veja o que retorna
+  // console.log("Descrição curta:", descricaoHeroi);
 
   // Skills
   let skills = [];
@@ -608,4 +612,4 @@ if (
   } else {
     list.innerHTML = `<div class="hero-modal-counters-empty">Nenhum counter encontrado.</div>`;
   }
-    }
+}
