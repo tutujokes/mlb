@@ -408,8 +408,8 @@ async function showHeroCounterModal(heroId, heroName, heroImg) {
     fetchHeroCounters(heroId).then(data => {
       countersLoading.style.display = 'none';
       // Counters (quem countera este herói) - lógica antiga
-      if (data && Array.isArray(data.countered_hero) && data.countered_hero.length > 0) {
-        countersList.innerHTML = data.countered_hero.map(h => `
+      if (data && Array.isArray(data.sub_hero) && data.sub_hero.length > 0) {
+        countersList.innerHTML = data.sub_hero.map(h => `
           <div class="counter-img-wrap" title="${h.data.hero_name}">
             <img class="hero-modal-counter-img" src="${h.data.hero_head}" alt="${h.data.hero_name}">
             <div class="counter-badge">${(h.data.win_rate * 100).toFixed(1)}%</div>
@@ -419,8 +419,8 @@ async function showHeroCounterModal(heroId, heroName, heroImg) {
         countersList.innerHTML = '<div class="hero-modal-counters-empty">Nenhuma informação disponível.</div>';
       }
       // Forte contra (quem este herói é forte contra) - mesma lógica
-      if (data && Array.isArray(data.strong_hero) && data.strong_hero.length > 0) {
-        strongList.innerHTML = data.strong_hero.map(h => `
+      if (data && Array.isArray(data.sub_hero_last) && data.sub_hero_last.length > 0) {
+        strongList.innerHTML = data.sub_hero_last.map(h => `
           <div class="counter-img-wrap" title="${h.data.hero_name}">
             <img class="hero-modal-counter-img" src="${h.data.hero_head}" alt="${h.data.hero_name}">
             <div class="counter-badge">${(h.data.win_rate * 100).toFixed(1)}%</div>
