@@ -893,3 +893,57 @@ body[data-theme=dark] .hero-modal-skill-extra-pop {
   color: #22c55e;
   border-color: #22c55e22;
 }
+.counter-img-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+}
+.counter-badge {
+  position: absolute;
+  bottom: -16px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 0.85rem;
+  font-weight: 700;
+  padding: 1px 7px;
+  border-radius: 9px;
+  box-shadow: 0 1px 4px #23272f22;
+  margin-top: 3px;
+  font-variant-numeric: tabular-nums;
+  z-index: 3;
+}
+.counter-badge-red {
+  background: #fff;
+  color: #d32f2f;
+  border: 1.5px solid #d32f2f22;
+}
+.counter-badge-green {
+  background: #e6fbe6;
+  color: #1aaa1a;
+  border: 1.5px solid #1aaa1a55;
+}
+.counter-hover-name {
+  display: none;
+  position: absolute;
+  background: #23272fe6;
+  color: #fff;
+  font-size: 1em;
+  padding: 4px 12px;
+  border-radius: 7px;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: 64px;
+  white-space: nowrap;
+  pointer-events: none;
+  z-index: 4;
+  font-weight: 600;
+  box-shadow: 0 2px 16px #23272f33;
+  opacity: 0.97;
+  transition: opacity 0.13s;
+}
+.counter-img-wrap:hover .counter-hover-name,
+.counter-img-wrap:focus .counter-hover-name,
+.counter-hover-name.show {
+  display: block;
+}
