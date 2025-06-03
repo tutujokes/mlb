@@ -1,4 +1,3 @@
-// Traduções
 const translations = {
   'pt-BR': {
     title: "Tier List - Mobile Legends",
@@ -280,7 +279,6 @@ document.addEventListener('DOMContentLoaded', function () {
     }
   });
 });
-// MODAL DO HERÓI
 async function showHeroCounterModal(heroId, heroName, heroImg) {
   const modal = document.getElementById("heroModal");
   const body = modal.querySelector(".hero-modal-body");
@@ -407,23 +405,21 @@ async function showHeroCounterModal(heroId, heroName, heroImg) {
     strongList.innerHTML = '';
     fetchHeroCounters(heroId).then(data => {
       countersLoading.style.display = 'none';
-      // Counters (quem countera este herói) - lógica antiga
       if (data && Array.isArray(data.sub_hero) && data.sub_hero.length > 0) {
         countersList.innerHTML = data.sub_hero.map(h => `
-          <div class="counter-img-wrap" title="${h.data.hero_name}">
-            <img class="hero-modal-counter-img" src="${h.data.hero_head}" alt="${h.data.hero_name}">
-            <div class="counter-badge">${(h.data.win_rate * 100).toFixed(1)}%</div>
+          <div class="counter-img-wrap" title="${h.hero.data.name}">
+            <img class="hero-modal-counter-img" src="${h.hero.data.head}" alt="${h.hero.data.name}">
+            <div class="counter-badge">${(h.hero_win_rate * 100).toFixed(1)}%</div>
           </div>
         `).join('');
       } else {
         countersList.innerHTML = '<div class="hero-modal-counters-empty">Nenhuma informação disponível.</div>';
       }
-      // Forte contra (quem este herói é forte contra) - mesma lógica
       if (data && Array.isArray(data.sub_hero_last) && data.sub_hero_last.length > 0) {
         strongList.innerHTML = data.sub_hero_last.map(h => `
-          <div class="counter-img-wrap" title="${h.data.hero_name}">
-            <img class="hero-modal-counter-img" src="${h.data.hero_head}" alt="${h.data.hero_name}">
-            <div class="counter-badge">${(h.data.win_rate * 100).toFixed(1)}%</div>
+          <div class="counter-img-wrap" title="${h.hero.data.name}">
+            <img class="hero-modal-counter-img" src="${h.hero.data.head}" alt="${h.hero.data.name}">
+            <div class="counter-badge">${(h.hero_win_rate * 100).toFixed(1)}%</div>
           </div>
         `).join('');
       } else {
