@@ -504,6 +504,47 @@ async function showHeroCounterModal(heroId, heroName, heroImg) {
     <div class="hero-modal-strong-title">Forte contra</div>
     <div class="hero-modal-strong-list"></div>
   `;
+
+  // CORREÇÃO: buscar e exibir Counters e Forte Contra
+  const countersLoading = body.querySelector('.hero-modal-counters-loading');
+  const countersList = body.querySelector('.hero-modal-counters-list');
+  const strongList = body.querySelector('.hero-modal-strong-list');
+  if (countersLoading && countersList && strongList) {
+    countersLoading.style.display = '';
+    countersList.innerHTML = '';
+    strongList.innerHTML = '';
+    fetchHeroCounters(heroId).then(data => {
+      countersLoading.style.display = 'none';
+      if (!data) {
+        countersList.innerHTML = '<div class="hero-modal-counters-empty">Nenhuma informação disponível.</div>';
+        strongList.innerHTML = '<div class="hero-modal-counters-empty">Nenhuma informação disponível.</div>';
+        return;
+      }
+      // Counters (quem countera este herói)
+      if (Array.isArray(data.countered_hero) && data.countered_hero.length > 0) {
+        countersList.innerHTML = data.countered_hero.map(h => `
+          <div class="counter-img-wrap" title="${h.data.hero_name}">
+            <img class="hero-modal-counter-img" src="${h.data.hero_head}" alt="${h.data.hero_name}">
+            <div class="counter-badge">${(h.data.win_rate * 100).toFixed(1)}%</div>
+          </div>
+        `).join('');
+      } else {
+        countersList.innerHTML = '<div class="hero-modal-counters-empty">Nenhuma informação disponível.</div>';
+      }
+      // Forte contra (quem este herói é forte contra)
+      if (Array.isArray(data.strong_hero) && data.strong_hero.length > 0) {
+        strongList.innerHTML = data.strong_hero.map(h => `
+          <div class="counter-img-wrap" title="${h.data.hero_name}">
+            <img class="hero-modal-counter-img" src="${h.data.hero_head}" alt="${h.data.hero_name}">
+            <div class="counter-badge">${(h.data.win_rate * 100).toFixed(1)}%</div>
+          </div>
+        `).join('');
+      } else {
+        strongList.innerHTML = '<div class="hero-modal-counters-empty">Nenhuma informação disponível.</div>';
+      }
+    });
+  }
+
   modal.classList.remove("hidden");
   setTimeout(() => modal.classList.add("show"), 5);
 
