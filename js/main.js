@@ -30,7 +30,7 @@ const translations = {
     lane_gold: "Ouro",
     lane_exp: "EXP",
     lane_jungle: "Selva",
-    lane_roam: "Rotação",
+    lane_roam: "Roteação",
     all_lanes: "Todas",
     no_heroes: "Nenhum herói encontrado."
   },
@@ -507,7 +507,7 @@ async function showHeroCounterModal(heroId, heroName, heroImg) {
   modal.classList.remove("hidden");
   setTimeout(() => modal.classList.add("show"), 5);
 
-  // Popper para skills principais e extras
+  // Popper para skills principais e extras (se necessário)
   setTimeout(() => {
     document.querySelectorAll('.hero-modal-skill-icon-wrap').forEach((wrap) => {
       const icon = wrap.querySelector('.hero-modal-skill-icon');
@@ -558,4 +558,39 @@ async function showHeroCounterModal(heroId, heroName, heroImg) {
     let closeExtraPopover;
     let escCloseExtraPopover;
     if (extraBtn && extraPopover) {
-  
+      function showPopover() {
+        extraPopover.classList.remove('hidden');
+        extraPopperInstance = Popper.createPopper(extraBtn, extraPopover, {
+          placement: 'bottom',
+          modifiers: [
+            { name: 'preventOverflow', options: { boundary: document.body, padding: 8 } },
+            { name: 'flip', options: { fallbackPlacements: ['top', 'right', 'left'] } },
+            { name: 'offset', options: { offset: [0, 8] } },
+          ],
+        });
+        closeExtraPopover = function(ev) {
+          if (!extraPopover.contains(ev.target) && ev.target !== extraBtn) {
+            hidePopover();
+          }
+        };
+        escCloseExtraPopover = function(ev) {
+          if (ev.key === 'Escape') hidePopover();
+        };
+        document.body.addEventListener('mousedown', closeExtraPopover);
+        document.addEventListener('keydown', escCloseExtraPopover);
+      }
+      function hidePopover() {
+        extraPopover.classList.add('hidden');
+        if (extraPopperInstance) extraPopperInstance.destroy();
+        extraPopperInstance = null;
+        document.body.removeEventListener('mousedown', closeExtraPopover);
+        document.removeEventListener('keydown', escCloseExtraPopover);
+      }
+      extraBtn.addEventListener('click', function(e) {
+        e.stopPropagation();
+        if (extraPopover.classList.contains('hidden')) showPopover();
+        else hidePopover();
+      });
+    }
+  }, 10);
+}
