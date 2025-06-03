@@ -165,17 +165,19 @@ function fetchAllHeroPositions() {
     });
 }
 
-// Busca Counter
-async function fetchHeroCounters(heroId) {
-  try {
-    const res = await fetch(`https://mlbb-proxy.vercel.app/api/hero-counter?id=${heroId}`);
-    const json = await res.json();
-    if (json && json.data && json.data.records && json.data.records[0] && json.data.records[0].data) {
-      return json.data.records[0].data;
-    }
-  } catch(e) {}
-  return null;
-}
+fetchHeroCounters(heroId).then(data => {
+  const countersList = body.querySelector('.hero-modal-counters-list');
+  if (data && Array.isArray(data.countered_hero) && data.countered_hero.length > 0) {
+    countersList.innerHTML = data.countered_hero.map(h => `
+      <div class="counter-img-wrap" title="${h.data.hero_name}">
+        <img class="hero-modal-counter-img" src="${h.data.hero_head}" alt="${h.data.hero_name}">
+        <div class="counter-badge">${(h.data.win_rate * 100).toFixed(1)}%</div>
+      </div>
+    `).join('');
+  } else {
+    countersList.innerHTML = '<div class="hero-modal-counters-empty">Nenhuma informação disponível.</div>';
+  }
+});
 
 // Render cards utilitário
 function renderTierCards(heroes, tierId) {
