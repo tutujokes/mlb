@@ -501,6 +501,8 @@ async function showHeroCounterModal(heroId, heroName, heroImg) {
     <div class="hero-modal-counters-title">Counters</div>
     <div class="hero-modal-counters-loading">Carregando...</div>
     <div class="hero-modal-counters-list"></div>
+    <div class="hero-modal-strong-title">Forte contra</div>
+    <div class="hero-modal-strong-list"></div>
   `;
   modal.classList.remove("hidden");
   setTimeout(() => modal.classList.add("show"), 5);
@@ -554,80 +556,6 @@ async function showHeroCounterModal(heroId, heroName, heroImg) {
     const extraPopover = document.getElementById('extraSkillsPopover');
     let extraPopperInstance = null;
     let closeExtraPopover;
+    let escCloseExtraPopover;
     if (extraBtn && extraPopover) {
-      // Impede que clique dentro do popover feche ele
-      extraPopover.addEventListener('mousedown', function(ev) {
-        ev.stopPropagation();
-      });
-      function showExtra() {
-        extraPopover.classList.remove('hidden');
-        extraPopperInstance = Popper.createPopper(extraBtn, extraPopover, {
-          placement: 'bottom',
-          modifiers: [
-            { name: 'preventOverflow', options: { boundary: document.body, padding: 12 } },
-            { name: 'flip', options: { fallbackPlacements: ['top','left','right'] } },
-            { name: 'offset', options: { offset: [0, 8] } },
-          ]
-        });
-        // Fecha só clicando fora ou ESC
-        closeExtraPopover = function(ev) {
-          if (!extraBtn.contains(ev.target) && !extraPopover.contains(ev.target)) {
-            hideExtra();
-            document.removeEventListener('mousedown', closeExtraPopover, true);
-            document.removeEventListener('keydown', escCloseExtraPopover, true);
-          }
-        };
-        escCloseExtraPopover = function(ev) {
-          if (ev.key === "Escape") {
-            hideExtra();
-            document.removeEventListener('mousedown', closeExtraPopover, true);
-            document.removeEventListener('keydown', escCloseExtraPopover, true);
-          }
-        };
-        document.addEventListener('mousedown', closeExtraPopover, true);
-        document.addEventListener('keydown', escCloseExtraPopover, true);
-      }
-      function hideExtra() {
-        extraPopover.classList.add('hidden');
-        if (extraPopperInstance) extraPopperInstance.destroy();
-        extraPopperInstance = null;
-      }
-      extraBtn.addEventListener('click', (e) => {
-        e.stopPropagation();
-        if (extraPopover.classList.contains('hidden')) {
-          showExtra();
-        } else {
-          hideExtra();
-        }
-      });
-      extraBtn.addEventListener('focus', showExtra);
-      extraBtn.addEventListener('blur', hideExtra);
-      // NÃO fecha ao mouseleave!
-    }
-  }, 400);
-
-  // Fetch counters
-  const data = await fetchHeroCounters(heroId);
-  const list = body.querySelector(".hero-modal-counters-list");
-  const loading = body.querySelector(".hero-modal-counters-loading");
-  loading.style.display = "none";
-  let counters = [];
-  if (data) {
-    counters = (data.sub_hero_last && data.sub_hero_last.length) ? data.sub_hero_last
-             : (data.sub_hero && data.sub_hero.length) ? data.sub_hero
-             : [];
-  }
-  if (counters.length) {
-    list.innerHTML = counters.map(sh => `
-      <div class="counter-img-wrap">
-        <img src="${sh.hero.data.head}" 
-             title="Winrate: ${(sh.hero_win_rate*100).toFixed(1)}%" 
-             alt="Counter"
-             class="hero-modal-counter-img">
-        <span class="counter-badge">${(sh.hero_win_rate*100).toFixed(1)}%</span>
-      </div>
-    `).join('');
-  } else {
-    list.innerHTML = `<div class="hero-modal-counters-empty">Nenhum counter encontrado.</div>`;
-  }
-}
+  
