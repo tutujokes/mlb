@@ -69,7 +69,6 @@ const translations = {
     no_heroes: "No heroes found."
   }
 };
-
 let heroIdToName = {};
 let heroNameToId = {};
 let heroExtraInfo = {};
@@ -77,75 +76,46 @@ let tierCards = [];
 let tierRecords = [];
 let currentLang = 'pt-BR';
 let tierListRequestToken = 0;
-
-// Funções utilitárias
-function translate(key) {
-  return translations[currentLang][key] || key;
-}
+function translate(key) { return translations[currentLang][key] || key; }
 function updateI18n() {
   document.querySelectorAll('[data-i18n]').forEach(el => {
     const key = el.getAttribute('data-i18n');
-    if (translations[currentLang][key]) {
-      el.textContent = translations[currentLang][key];
-    }
+    if (translations[currentLang][key]) el.textContent = translations[currentLang][key];
   });
   document.querySelectorAll('option[data-i18n]').forEach(opt => {
     const key = opt.getAttribute('data-i18n');
-    if (translations[currentLang][key]) {
-      opt.textContent = translations[currentLang][key];
-    }
+    if (translations[currentLang][key]) opt.textContent = translations[currentLang][key];
   });
 }
-
-// Tema
 function setTheme(theme) {
   document.body.setAttribute('data-theme', theme);
   let icon = document.getElementById('themeIcon');
-  if (icon) {
-    icon.className = theme === "dark" ? "fa-solid fa-sun" : "fa-solid fa-moon";
-  }
+  if (icon) icon.className = theme === "dark" ? "fa-solid fa-sun" : "fa-solid fa-moon";
   localStorage.setItem('theme', theme);
 }
-function toggleTheme() {
-  const newTheme = document.body.getAttribute('data-theme') === "dark" ? "light" : "dark";
-  setTheme(newTheme);
-}
-
-// Idioma
+function toggleTheme() { setTheme(document.body.getAttribute('data-theme') === "dark" ? "light" : "dark"); }
 function setLanguage(lang) {
   currentLang = lang;
   document.documentElement.lang = lang;
   updateI18n();
   const langFlag = document.getElementById('langFlag');
-  if (langFlag) {
-    langFlag.style.backgroundImage =
-      lang === "pt-BR"
-        ? "url('https://cdn.jsdelivr.net/gh/hjnilsson/country-flags/svg/br.svg')"
-        : "url('https://cdn.jsdelivr.net/gh/hjnilsson/country-flags/svg/us.svg')";
-  }
+  if (langFlag) langFlag.style.backgroundImage = lang === "pt-BR"
+    ? "url('https://cdn.jsdelivr.net/gh/hjnilsson/country-flags/svg/br.svg')"
+    : "url('https://cdn.jsdelivr.net/gh/hjnilsson/country-flags/svg/us.svg')";
   document.getElementById('flagBR').classList.toggle('selected', lang === "pt-BR");
   document.getElementById('flagUS').classList.toggle('selected', lang === "en-US");
   localStorage.setItem('lang', lang);
 }
-
-// Modal
-function showFlagDropdown(show) {
-  document.getElementById('flagDropdown').classList.toggle('hidden', !show);
-}
-
-// Busca heróis
+function showFlagDropdown(show) { document.getElementById('flagDropdown').classList.toggle('hidden', !show); }
 function fetchHeroMap() {
   return fetch('https://mlbb-proxy.vercel.app/api/hero-list')
     .then(res => res.json())
     .then(map => {
       heroIdToName = map;
       heroNameToId = {};
-      Object.entries(map).forEach(([id, name]) => {
-        heroNameToId[name] = id;
-      });
+      Object.entries(map).forEach(([id, name]) => { heroNameToId[name] = id; });
     });
 }
-
 function fetchAllHeroPositions() {
   return fetch('https://mlbb-proxy.vercel.app/api/hero-position?role=all&lane=all&size=128&index=1')
     .then(res => res.json())
@@ -164,22 +134,16 @@ function fetchAllHeroPositions() {
       });
     });
 }
-
-fetchHeroCounters(heroId).then(data => {
-  const countersList = body.querySelector('.hero-modal-counters-list');
-  if (data && Array.isArray(data.countered_hero) && data.countered_hero.length > 0) {
-    countersList.innerHTML = data.countered_hero.map(h => `
-      <div class="counter-img-wrap" title="${h.data.hero_name}">
-        <img class="hero-modal-counter-img" src="${h.data.hero_head}" alt="${h.data.hero_name}">
-        <div class="counter-badge">${(h.data.win_rate * 100).toFixed(1)}%</div>
-      </div>
-    `).join('');
-  } else {
-    countersList.innerHTML = '<div class="hero-modal-counters-empty">Nenhuma informação disponível.</div>';
-  }
-});
-
-// Render cards utilitário
+async function fetchHeroCounters(heroId) {
+  try {
+    const res = await fetch(`https://mlbb-proxy.vercel.app/api/hero-counter?id=${heroId}`);
+    const json = await res.json();
+    if (json && json.data && json.data.records && json.data.records[0] && json.data.records[0].data) {
+      return json.data.records[0].data;
+    }
+  } catch(e) {}
+  return null;
+}
 function renderTierCards(heroes, tierId) {
   const container = document.getElementById(tierId);
   if (!container) return;
@@ -188,7 +152,6 @@ function renderTierCards(heroes, tierId) {
     const winRate = (entry.data.main_hero_win_rate * 100).toFixed(1);
     const heroId = heroNameToId[hero.name];
     const info = heroExtraInfo[heroId] || {};
-
     let roadsortTitles = [];
     let iconCount = 0;
     let roadsortHtml = '';
@@ -204,85 +167,60 @@ function renderTierCards(heroes, tierId) {
           : '';
       }).join('');
     }
-
     const el = document.createElement('div');
     el.className = 'card';
     el.setAttribute('data-role', (info.role || '').toLowerCase());
     el.setAttribute('data-routes', roadsortTitles.join('|').toLowerCase());
     el.setAttribute('data-id', heroId || '');
     el.setAttribute('data-name', hero.name);
-
     el.innerHTML = `
       <img src="${hero.head}" alt="Retrato do herói ${hero.name}" loading="lazy">
       <div class="hero-name">${hero.name}</div>
       <div class="hero-meta">${winRate}% WR</div>
       <div class="hero-routes ${iconCount === 1 ? 'single' : ''}">${roadsortHtml}</div>
     `;
-
     tierCards.push(el);
     container.appendChild(el);
   });
 }
-
-// Renderiza Tier List
 function carregarTierList() {
   const myToken = ++tierListRequestToken;
-
   const rank = document.getElementById('rank').value;
   const days = document.getElementById('days').value;
   const url = `https://mlbb-proxy.vercel.app/api/hero-rank?source=rank&days=${days}&rank=${rank}&size=130&sort_field=win_rate&sort_order=desc`;
-
   document.getElementById('tier-ss').innerHTML = '';
   document.getElementById('tier-s').innerHTML = '';
   document.getElementById('tier-a').innerHTML = '';
   document.getElementById('noResults').classList.add('hidden');
-  tierCards = [];
-  tierRecords = [];
-
+  tierCards = []; tierRecords = [];
   Promise.all([fetchHeroMap(), fetchAllHeroPositions(), fetch(url).then(res => res.json())])
     .then(([_, __, json]) => {
       if (myToken !== tierListRequestToken) return;
       const records = json.data.records || [];
       tierRecords = records;
-
-      // Separe os heróis por tier
-      const ssHeroes = [];
-      const sHeroes  = [];
-      const aHeroes  = [];
+      const ssHeroes = [], sHeroes = [], aHeroes = [];
       let idSet = new Set();
-
       records.forEach(entry => {
         const hero = entry.data.main_hero.data;
         const winRate = (entry.data.main_hero_win_rate * 100).toFixed(1);
         const heroId = heroNameToId[hero.name];
         if (!heroId || idSet.has(heroId)) return;
         idSet.add(heroId);
-
         if (winRate >= 54) ssHeroes.push(entry);
         else if (winRate >= 51) sHeroes.push(entry);
         else aHeroes.push(entry);
       });
-
-      // Renderize SS primeiro
       renderTierCards(ssHeroes, 'tier-ss');
-
-      // Aguarde um pouco após o SS (pode ser 0 para apenas jogar na próxima "frame" do navegador)
       setTimeout(() => {
         renderTierCards(sHeroes, 'tier-s');
         renderTierCards(aHeroes, 'tier-a');
       }, 0);
-
-      if (!ssHeroes.length && !sHeroes.length && !aHeroes.length) {
-        document.getElementById('noResults').classList.remove('hidden');
-      }
+      if (!ssHeroes.length && !sHeroes.length && !aHeroes.length) document.getElementById('noResults').classList.remove('hidden');
       filtrarTierList();
       setupHeroCardClicks();
     })
-    .catch(err => {
-      document.getElementById('noResults').classList.remove('hidden');
-    });
+    .catch(err => { document.getElementById('noResults').classList.remove('hidden'); });
 }
-
 function filtrarTierList() {
   const role = document.getElementById('role').value.toLowerCase();
   const lane = document.getElementById('lane').value.toLowerCase();
@@ -299,7 +237,6 @@ function filtrarTierList() {
   document.getElementById('noResults').classList.toggle('hidden', visible !== 0);
   setupHeroCardClicks();
 }
-
 function setupHeroCardClicks() {
   document.querySelectorAll('.card').forEach(card => {
     if (card._counterBound) return;
@@ -313,47 +250,28 @@ function setupHeroCardClicks() {
     };
   });
 }
-
-// DOMContentLoaded
 document.addEventListener('DOMContentLoaded', function () {
-  // Tema inicial
   let theme = localStorage.getItem('theme');
-  if (!theme) {
-    theme = window.matchMedia('(prefers-color-scheme: dark)').matches ? "dark" : "light";
-  }
+  if (!theme) theme = window.matchMedia('(prefers-color-scheme: dark)').matches ? "dark" : "light";
   setTheme(theme);
-
-  // Idioma inicial
   let lang = localStorage.getItem('lang');
   if (!lang) lang = navigator.language === "en-US" ? "en-US" : "pt-BR";
   setLanguage(lang);
-
-  // Carrega a tierlist
   carregarTierList();
-
   document.getElementById('rank').addEventListener('change', carregarTierList);
   document.getElementById('days').addEventListener('change', carregarTierList);
   document.getElementById('role').addEventListener('change', filtrarTierList);
   document.getElementById('lane').addEventListener('change', filtrarTierList);
-
   document.getElementById('themeSwitch').addEventListener('click', toggleTheme);
-
   const langSwitch = document.getElementById('langSwitch');
-  langSwitch.addEventListener('click', function(e) {
-    showFlagDropdown(true);
-    e.stopPropagation();
-  });
+  langSwitch.addEventListener('click', function(e) { showFlagDropdown(true); e.stopPropagation(); });
   document.getElementById('flagBR').addEventListener('click', function() { setLanguage('pt-BR'); showFlagDropdown(false); carregarTierList(); });
   document.getElementById('flagUS').addEventListener('click', function() { setLanguage('en-US'); showFlagDropdown(false); carregarTierList(); });
   document.addEventListener('click', function(e) {
-    if (!document.getElementById('flagDropdown').contains(e.target) && e.target !== langSwitch) {
-      showFlagDropdown(false);
-    }
+    if (!document.getElementById('flagDropdown').contains(e.target) && e.target !== langSwitch) showFlagDropdown(false);
   });
   document.getElementById('flagBR').addEventListener('keypress', function(e){ if(e.key==='Enter'){setLanguage('pt-BR'); showFlagDropdown(false); carregarTierList();} });
   document.getElementById('flagUS').addEventListener('keypress', function(e){ if(e.key==='Enter'){setLanguage('en-US'); showFlagDropdown(false); carregarTierList();} });
-
-  // Modal close
   const modal = document.getElementById("heroModal");
   modal.addEventListener("click", function(e) {
     if (e.target === modal || e.target.classList.contains("hero-modal-close")) {
@@ -362,45 +280,30 @@ document.addEventListener('DOMContentLoaded', function () {
     }
   });
 });
-
 // MODAL DO HERÓI
 async function showHeroCounterModal(heroId, heroName, heroImg) {
   const modal = document.getElementById("heroModal");
   const body = modal.querySelector(".hero-modal-body");
-
-  // Fetch hero details (skills + desc)
   let skillHtml = '';
   let detailsData = null;
   try {
     const res = await fetch(`https://mlbb-proxy.vercel.app/api/hero-detail?hero_id=${heroId}`);
     detailsData = await res.json();
   } catch (e) {}
-
-  // Pega descrição curta (desc) ou usa story como fallback
   let descricaoHeroi = "";
   if (
-    detailsData &&
-    detailsData.data &&
-    detailsData.data.records &&
-    detailsData.data.records[0] &&
-    detailsData.data.records[0].data &&
-    detailsData.data.records[0].data.hero &&
-    detailsData.data.records[0].data.hero.data
+    detailsData && detailsData.data && detailsData.data.records &&
+    detailsData.data.records[0] && detailsData.data.records[0].data &&
+    detailsData.data.records[0].data.hero && detailsData.data.records[0].data.hero.data
   ) {
     const heroData = detailsData.data.records[0].data.hero.data;
     descricaoHeroi = heroData.desc || heroData.story || "";
   }
-
-  // Skills
   let skills = [];
   if (
-    detailsData &&
-    detailsData.data &&
-    detailsData.data.records &&
-    detailsData.data.records[0] &&
-    detailsData.data.records[0].data &&
-    detailsData.data.records[0].data.hero &&
-    detailsData.data.records[0].data.hero.data &&
+    detailsData && detailsData.data && detailsData.data.records &&
+    detailsData.data.records[0] && detailsData.data.records[0].data &&
+    detailsData.data.records[0].data.hero && detailsData.data.records[0].data.hero.data &&
     detailsData.data.records[0].data.hero.data.heroskilllist
   ) {
     skills = detailsData.data.records[0].data.hero.data.heroskilllist.flatMap(s => s.skilllist);
@@ -409,8 +312,6 @@ async function showHeroCounterModal(heroId, heroName, heroImg) {
   const labelNames = ["Passiva", "Skill 1", "Skill 2", "Ultimate"];
   const mainSkills = skills.slice(0, 4);
   const extraSkills = skills.slice(4);
-
-  // Main skills
   let skillsRowHtml = mainSkills.map((skill, i) => {
     const tags = Array.isArray(skill.skilltag)
       ? skill.skilltag.map(tag =>
@@ -437,8 +338,6 @@ async function showHeroCounterModal(heroId, heroName, heroImg) {
       </div>
     `;
   }).join("");
-
-  // Extra skills
   let extraHtml = "";
   if (extraSkills.length > 0) {
     extraHtml = `
@@ -473,7 +372,6 @@ async function showHeroCounterModal(heroId, heroName, heroImg) {
       </div>
     `;
   }
-
   skillHtml = `
     <div class="hero-modal-skills-section">
       <div class="hero-modal-skills-title">Skills</div>
@@ -483,8 +381,6 @@ async function showHeroCounterModal(heroId, heroName, heroImg) {
       </div>
     </div>
   `;
-
-  // Cabeçalho com nome + descrição curta (ou story)
   body.innerHTML = `
     <div class="hero-modal-header">
       <img src="${heroImg}" alt="${heroName}" class="hero-modal-portrait">
@@ -502,8 +398,6 @@ async function showHeroCounterModal(heroId, heroName, heroImg) {
     <div class="hero-modal-strong-title">Forte contra</div>
     <div class="hero-modal-strong-list"></div>
   `;
-
-  // Busca e exibe Counters e Forte Contra
   const countersLoading = body.querySelector('.hero-modal-counters-loading');
   const countersList = body.querySelector('.hero-modal-counters-list');
   const strongList = body.querySelector('.hero-modal-strong-list');
@@ -513,19 +407,9 @@ async function showHeroCounterModal(heroId, heroName, heroImg) {
     strongList.innerHTML = '';
     fetchHeroCounters(heroId).then(data => {
       countersLoading.style.display = 'none';
-      // Tenta ser tolerante a vários formatos de resposta
-      let countersArr = [];
-      if (data) {
-        if (Array.isArray(data.countered_hero)) {
-          countersArr = data.countered_hero;
-        } else if (Array.isArray(data.counter_hero)) {
-          countersArr = data.counter_hero;
-        } else if (typeof data.countered_hero === "object" && data.countered_hero !== null) {
-          countersArr = Object.values(data.countered_hero);
-        }
-      }
-      if (countersArr.length > 0) {
-        countersList.innerHTML = countersArr.map(h => `
+      // Counters (quem countera este herói) - lógica antiga
+      if (data && Array.isArray(data.countered_hero) && data.countered_hero.length > 0) {
+        countersList.innerHTML = data.countered_hero.map(h => `
           <div class="counter-img-wrap" title="${h.data.hero_name}">
             <img class="hero-modal-counter-img" src="${h.data.hero_head}" alt="${h.data.hero_name}">
             <div class="counter-badge">${(h.data.win_rate * 100).toFixed(1)}%</div>
@@ -534,17 +418,9 @@ async function showHeroCounterModal(heroId, heroName, heroImg) {
       } else {
         countersList.innerHTML = '<div class="hero-modal-counters-empty">Nenhuma informação disponível.</div>';
       }
-
-      let strongArr = [];
-      if (data) {
-        if (Array.isArray(data.strong_hero)) {
-          strongArr = data.strong_hero;
-        } else if (typeof data.strong_hero === "object" && data.strong_hero !== null) {
-          strongArr = Object.values(data.strong_hero);
-        }
-      }
-      if (strongArr.length > 0) {
-        strongList.innerHTML = strongArr.map(h => `
+      // Forte contra (quem este herói é forte contra) - mesma lógica
+      if (data && Array.isArray(data.strong_hero) && data.strong_hero.length > 0) {
+        strongList.innerHTML = data.strong_hero.map(h => `
           <div class="counter-img-wrap" title="${h.data.hero_name}">
             <img class="hero-modal-counter-img" src="${h.data.hero_head}" alt="${h.data.hero_name}">
             <div class="counter-badge">${(h.data.win_rate * 100).toFixed(1)}%</div>
@@ -555,11 +431,8 @@ async function showHeroCounterModal(heroId, heroName, heroImg) {
       }
     });
   }
-
   modal.classList.remove("hidden");
   setTimeout(() => modal.classList.add("show"), 5);
-
-  // Popper para skills principais e extras (se necessário)
   setTimeout(() => {
     document.querySelectorAll('.hero-modal-skill-icon-wrap').forEach((wrap) => {
       const icon = wrap.querySelector('.hero-modal-skill-icon');
@@ -571,10 +444,7 @@ async function showHeroCounterModal(heroId, heroName, heroImg) {
         popperInstance = Popper.createPopper(icon, popover, {
           placement: 'bottom',
           modifiers: [
-            {
-              name: 'preventOverflow',
-              options: { boundary: document.body, padding: 8 },
-            },
+            { name: 'preventOverflow', options: { boundary: document.body, padding: 8 } },
             { name: 'flip', options: { fallbackPlacements: ['top', 'right', 'left'] } },
             { name: 'offset', options: { offset: [0, 8] } },
           ],
@@ -602,8 +472,6 @@ async function showHeroCounterModal(heroId, heroName, heroImg) {
         }
       });
     });
-
-    // Popper para skills extras (+)
     const extraBtn = document.getElementById('extraSkillsBtn');
     const extraPopover = document.getElementById('extraSkillsPopover');
     let extraPopperInstance = null;
@@ -621,13 +489,9 @@ async function showHeroCounterModal(heroId, heroName, heroImg) {
           ],
         });
         closeExtraPopover = function(ev) {
-          if (!extraPopover.contains(ev.target) && ev.target !== extraBtn) {
-            hidePopover();
-          }
+          if (!extraPopover.contains(ev.target) && ev.target !== extraBtn) hidePopover();
         };
-        escCloseExtraPopover = function(ev) {
-          if (ev.key === 'Escape') hidePopover();
-        };
+        escCloseExtraPopover = function(ev) { if (ev.key === 'Escape') hidePopover(); };
         document.body.addEventListener('mousedown', closeExtraPopover);
         document.addEventListener('keydown', escCloseExtraPopover);
       }
