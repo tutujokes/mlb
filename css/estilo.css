@@ -947,3 +947,143 @@ body[data-theme=dark] .hero-modal-skill-extra-pop {
 .counter-hover-name.show {
   display: block;
 }
+/* ======= CORREÇÕES MODAL - COLAR AO FINAL DE estilo.css ======= */
+
+/* 1. Hierarquia visual e separação entre Skills e Counters */
+.hero-modal-skills-section {
+  border-bottom: 1px solid var(--bg-alt);
+  margin: 0 0 18px 0 !important;
+  padding-bottom: 14px !important;
+}
+.hero-modal-counters-title,
+.hero-modal-strong-title {
+  margin-top: 18px !important;
+  padding-top: 12px !important;
+  border-top: 1px solid var(--bg-alt) !important;
+}
+
+/* 2. Espaçamento entre ícones de skills e legenda */
+.hero-modal-skills-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px 10px !important;
+  justify-content: flex-start;
+  align-items: stretch;
+  padding-bottom: 8px !important;
+}
+.hero-modal-skill-inline {
+  margin-bottom: 0 !important;
+}
+.hero-modal-skill-label {
+  padding-bottom: 8px !important;
+}
+
+/* 3. Visual dos counters: ícone + winrate centralizado e compacto */
+.hero-modal-counters-list, .hero-modal-strong-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px 12px !important;
+  justify-content: center;
+  margin-top: 10px !important;
+}
+.hero-modal-counter-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  max-width: 70px;
+  min-width: 48px;
+  background: #f9fafd;
+  border-radius: 10px;
+  padding: 7px 3px 6px 3px;
+  box-shadow: 0 1px 4px #0001;
+}
+.hero-modal-counter-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  object-fit: cover;
+  background: #fff;
+  border: 1.5px solid #e5e7eb;
+  margin-bottom: 3px;
+}
+.hero-modal-counter-winrate {
+  font-size: 12px !important;
+  line-height: 1.1 !important;
+  text-align: center !important;
+  margin-top: 2px !important;
+  color: #b00020 !important;
+  font-weight: 600 !important;
+}
+
+/* 4. Header alinhado e centralizado */
+.hero-modal-header {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  padding-bottom: 14px !important;
+  border-bottom: 1px solid #ececec !important;
+}
+.hero-modal-title-wrap {
+  flex: 1;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+.hero-modal-title {
+  font-size: 1.25rem !important;
+  font-weight: bold !important;
+  text-align: center !important;
+  margin: 0 auto !important;
+}
+
+/* 5. Responsividade */
+@media (max-width: 600px) {
+  .hero-modal-content {
+    padding: 8px 2vw !important;
+  }
+  .hero-modal-counters-list, .hero-modal-strong-list, .hero-modal-skills-row {
+    flex-wrap: wrap !important;
+  }
+  .hero-modal-counter-item { max-width: 54px; min-width: 38px; }
+  .hero-modal-counter-icon { width: 28px; height: 28px; }
+  .hero-modal-skills-row { gap: 10px 7px !important; }
+}
+
+/* 6. Contraste e acessibilidade */
+.hero-modal-counter-winrate {
+  color: #b00020 !important;
+}
+.hero-modal-counter-winrate.winrate-high {
+  color: #388e3c !important;
+}
+
+/* 7. Scrollbar para listas grandes */
+.hero-modal-counters-list, .hero-modal-skills-row {
+  max-height: 156px;
+  overflow-y: auto;
+}
+.hero-modal-counters-list::-webkit-scrollbar,
+.hero-modal-skills-row::-webkit-scrollbar {
+  width: 6px;
+  background: transparent;
+}
+.hero-modal-counters-list::-webkit-scrollbar-thumb,
+.hero-modal-skills-row::-webkit-scrollbar-thumb {
+  background: #e0e0e0;
+  border-radius: 6px;
+}
+body[data-theme="dark"] .hero-modal-counter-item {
+  background: #23242c;
+  box-shadow: 0 1px 4px #0004;
+}
+body[data-theme="dark"] .hero-modal-counter-icon {
+  background: #23242c;
+  border: 1.5px solid #383a43;
+}
+body[data-theme="dark"] .hero-modal-counters-list::-webkit-scrollbar-thumb,
+body[data-theme="dark"] .hero-modal-skills-row::-webkit-scrollbar-thumb {
+  background: #2d303b;
+}
+.hero-modal-counter-winrate.winrate-high {
+  color: #6fd37b !important;
+}
