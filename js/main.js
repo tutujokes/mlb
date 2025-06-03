@@ -409,7 +409,8 @@ async function showHeroCounterModal(heroId, heroName, heroImg) {
         countersList.innerHTML = data.sub_hero.map(h => `
           <div class="counter-img-wrap" title="${h.hero.data.name}">
             <img class="hero-modal-counter-img" src="${h.hero.data.head}" alt="${h.hero.data.name}">
-            <div class="counter-badge">${(h.hero_win_rate * 100).toFixed(1)}%</div>
+            <div class="counter-badge counter-badge-red">${(h.hero_win_rate * 100).toFixed(1)}%</div>
+            <div class="counter-hover-name">${h.hero.data.name}</div>
           </div>
         `).join('');
       } else {
@@ -419,12 +420,30 @@ async function showHeroCounterModal(heroId, heroName, heroImg) {
         strongList.innerHTML = data.sub_hero_last.map(h => `
           <div class="counter-img-wrap" title="${h.hero.data.name}">
             <img class="hero-modal-counter-img" src="${h.hero.data.head}" alt="${h.hero.data.name}">
-            <div class="counter-badge">${(h.hero_win_rate * 100).toFixed(1)}%</div>
+            <div class="counter-badge counter-badge-green">${(h.hero_win_rate * 100).toFixed(1)}%</div>
+            <div class="counter-hover-name">${h.hero.data.name}</div>
           </div>
         `).join('');
       } else {
         strongList.innerHTML = '<div class="hero-modal-counters-empty">Nenhuma informação disponível.</div>';
       }
+      setTimeout(() => {
+        document.querySelectorAll('.counter-img-wrap').forEach(wrap => {
+          const name = wrap.querySelector('.counter-hover-name');
+          wrap.addEventListener('mouseenter', () => {
+            if (name) name.classList.add('show');
+          });
+          wrap.addEventListener('mouseleave', () => {
+            if (name) name.classList.remove('show');
+          });
+          wrap.addEventListener('focus', () => {
+            if (name) name.classList.add('show');
+          });
+          wrap.addEventListener('blur', () => {
+            if (name) name.classList.remove('show');
+          });
+        });
+      }, 1);
     });
   }
   modal.classList.remove("hidden");
