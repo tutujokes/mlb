@@ -102,11 +102,7 @@ function setTheme(theme) {
   document.body.setAttribute('data-theme', theme);
   let icon = document.getElementById('themeIcon');
   if (icon) {
-    if (theme === "dark") {
-      icon.className = "fa-solid fa-sun";
-    } else {
-      icon.className = "fa-solid fa-moon";
-    }
+    icon.className = theme === "dark" ? "fa-solid fa-sun" : "fa-solid fa-moon";
   }
   localStorage.setItem('theme', theme);
 }
@@ -505,7 +501,7 @@ async function showHeroCounterModal(heroId, heroName, heroImg) {
     <div class="hero-modal-strong-list"></div>
   `;
 
-  // CORREÇÃO: buscar e exibir Counters e Forte Contra
+  // Busca e exibe Counters e Forte Contra
   const countersLoading = body.querySelector('.hero-modal-counters-loading');
   const countersList = body.querySelector('.hero-modal-counters-list');
   const strongList = body.querySelector('.hero-modal-strong-list');
@@ -515,14 +511,19 @@ async function showHeroCounterModal(heroId, heroName, heroImg) {
     strongList.innerHTML = '';
     fetchHeroCounters(heroId).then(data => {
       countersLoading.style.display = 'none';
-      if (!data) {
-        countersList.innerHTML = '<div class="hero-modal-counters-empty">Nenhuma informação disponível.</div>';
-        strongList.innerHTML = '<div class="hero-modal-counters-empty">Nenhuma informação disponível.</div>';
-        return;
+      // Tenta ser tolerante a vários formatos de resposta
+      let countersArr = [];
+      if (data) {
+        if (Array.isArray(data.countered_hero)) {
+          countersArr = data.countered_hero;
+        } else if (Array.isArray(data.counter_hero)) {
+          countersArr = data.counter_hero;
+        } else if (typeof data.countered_hero === "object" && data.countered_hero !== null) {
+          countersArr = Object.values(data.countered_hero);
+        }
       }
-      // Counters (quem countera este herói)
-      if (Array.isArray(data.countered_hero) && data.countered_hero.length > 0) {
-        countersList.innerHTML = data.countered_hero.map(h => `
+      if (countersArr.length > 0) {
+        countersList.innerHTML = countersArr.map(h => `
           <div class="counter-img-wrap" title="${h.data.hero_name}">
             <img class="hero-modal-counter-img" src="${h.data.hero_head}" alt="${h.data.hero_name}">
             <div class="counter-badge">${(h.data.win_rate * 100).toFixed(1)}%</div>
@@ -531,9 +532,17 @@ async function showHeroCounterModal(heroId, heroName, heroImg) {
       } else {
         countersList.innerHTML = '<div class="hero-modal-counters-empty">Nenhuma informação disponível.</div>';
       }
-      // Forte contra (quem este herói é forte contra)
-      if (Array.isArray(data.strong_hero) && data.strong_hero.length > 0) {
-        strongList.innerHTML = data.strong_hero.map(h => `
+
+      let strongArr = [];
+      if (data) {
+        if (Array.isArray(data.strong_hero)) {
+          strongArr = data.strong_hero;
+        } else if (typeof data.strong_hero === "object" && data.strong_hero !== null) {
+          strongArr = Object.values(data.strong_hero);
+        }
+      }
+      if (strongArr.length > 0) {
+        strongList.innerHTML = strongArr.map(h => `
           <div class="counter-img-wrap" title="${h.data.hero_name}">
             <img class="hero-modal-counter-img" src="${h.data.hero_head}" alt="${h.data.hero_name}">
             <div class="counter-badge">${(h.data.win_rate * 100).toFixed(1)}%</div>
