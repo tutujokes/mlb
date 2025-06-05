@@ -758,3 +758,23 @@ body[data-theme=dark] .hero-modal-skill-hover-desc { color: #bfbff5; }
   .hero-modal-skill-hover-pop { min-width:180px; max-width:98vw; font-size:.98em;}
   .hero-modal-skill-inline { min-width: 56px; }
 }
+.hero-modal-header-bg {
+  position: relative;
+  overflow: hidden;
+}
+.hero-modal-header-bg::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background-image: var(--modal-bg-url);
+  background-size: cover;
+  background-position: center;
+  opacity: 0.15;
+  pointer-events: none;
+  transition: opacity 0.4s;
+}
+.hero-modal-header-bg > * {
+  position: relative;
+  z-index: 1;
+}
