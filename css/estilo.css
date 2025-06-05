@@ -484,9 +484,9 @@ body[data-theme="dark"] .filters-row select {
   border: 1.5px solid #d32f2f22;
 }
 .counter-badge-green {
-  color: #fff !important;
-  background: #388e3c !important;
-  border: 1.5px solid #388e3c22;
+  color: #388e3c !important;
+  background: #e8f5e9 !important; /* Verde bem claro, suave */
+  border: 1.5px solid #388e3c33;
 }
 .hero-modal-counter-winrate {
   font-size: 14.4px !important; /* 20% maior que 12px */
