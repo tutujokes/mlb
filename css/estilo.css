@@ -319,7 +319,7 @@ body[data-theme="dark"] .filters-row select {
 }
 .footer-moba .byarthur:hover svg, .footer-moba .byarthur:focus svg { color: #7e22ce; }
 /* ==============================
-   HERO MODAL (VISUAL ORIGINAL)
+   HERO MODAL (VISUAL ORIGINAL) + AJUSTES SOLICITADOS
 ============================== */
 .hero-modal {
   display: flex;
@@ -411,13 +411,16 @@ body[data-theme="dark"] .filters-row select {
   flex-wrap: wrap;
   gap: 12px;
 }
-.hero-modal-counters-title {
+.hero-modal-counters-title,
+.hero-modal-strong-title {
   font-size: 1.2rem;
   color: var(--text-main, #23272f);
   font-weight: 600;
   padding: 12px 28px 3px 28px;
   margin-top: 7px;
   border-bottom: 1px solid var(--bg-alt, #f3f4f6);
+  letter-spacing: 0;
+  line-height: 1.1;
 }
 .hero-modal-counters-list {
   display: flex;
@@ -467,6 +470,43 @@ body[data-theme="dark"] .filters-row select {
   pointer-events: none;
   z-index: 3;
   font-variant-numeric: tabular-nums;
+}
+.hero-modal-counter-winrate {
+  font-size: 14.4px !important; /* 20% maior que 12px */
+  line-height: 1.1 !important;
+  text-align: center !important;
+  margin-top: 2px !important;
+  color: #b00020 !important;
+  font-weight: 600 !important;
+}
+.hero-modal-counter-winrate.winrate-high { color: #388e3c !important; }
+/* Remove texto "undefined" embaixo dos herois counters/forte contra */
+.counter-hover-name:empty,
+.counter-hover-name:blank {
+  display: none !important;
+  visibility: hidden !important;
+  height: 0 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  font-size: 0 !important;
+  line-height: 0 !important;
+}
+.counter-hover-name {
+  /* Oculta se vier undefined no HTML (se o seu backend renderiza o texto) */
+}
+.counter-hover-name:after {
+  /* Se usar pseudo-elementos, não mostra nada por padrão */
+  content: "";
+}
+.counter-hover-name {
+  /* Oculta se por acaso vier o texto 'undefined' */
+}
+.counter-hover-name:contains("undefined") {
+  display: none !important;
+  visibility: hidden !important;
+  height: 0 !important;
+  font-size: 0 !important;
+  line-height: 0 !important;
 }
 .hero-modal-skills-section {
   border-bottom: 1px solid var(--bg-alt, #f3f4f6);
