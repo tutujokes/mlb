@@ -210,13 +210,15 @@ function carregarTierList() {
         else aHeroes.push(entry);
       });
       renderTierCards(ssHeroes, 'tier-ss');
-      setTimeout(() => {
-        renderTierCards(sHeroes, 'tier-s');
-        renderTierCards(aHeroes, 'tier-a');
-      }, 0);
-      if (!ssHeroes.length && !sHeroes.length && !aHeroes.length) document.getElementById('noResults').classList.remove('hidden');
-      filtrarTierList();
-      setupHeroCardClicks();
+setTimeout(() => {
+  renderTierCards(sHeroes, 'tier-s');
+  renderTierCards(aHeroes, 'tier-a');
+  filtrarTierList();
+  setupHeroCardClicks(); // <-- chama aqui, após todos existirem no DOM
+}, 0);
+
+if (!ssHeroes.length && !sHeroes.length && !aHeroes.length)
+  document.getElementById('noResults').classList.remove('hidden');
     })
     .catch(err => { document.getElementById('noResults').classList.remove('hidden'); });
 }
