@@ -318,6 +318,8 @@ body[data-theme="dark"] .filters-row select {
   transition: color 0.2s;
 }
 .footer-moba .byarthur:hover svg, .footer-moba .byarthur:focus svg { color: #7e22ce; }
+
+
 /* ==============================
    HERO MODAL (VISUAL ORIGINAL) + AJUSTES SOLICITADOS
 ============================== */
@@ -431,6 +433,10 @@ body[data-theme="dark"] .filters-row select {
   min-height: 58px;
   padding: 16px 28px 0 28px;
 }
+.counter-img-wrap {
+  position: relative;
+  display: inline-block;
+}
 .hero-modal-counter-img {
   width: 54px; height: 54px; border-radius: 50%;
   object-fit: cover;
@@ -440,6 +446,42 @@ body[data-theme="dark"] .filters-row select {
   transition: transform 0.2s;
 }
 .hero-modal-counter-img:hover { transform: scale(1.12); }
+/* Nome do herói: hover tooltip */
+.counter-hover-name {
+  display: none;
+  position: absolute;
+  left: 50%;
+  top: 100%;
+  transform: translateX(-50%);
+  background: #23272f;
+  color: #fff;
+  padding: 4px 10px;
+  border-radius: 7px;
+  font-size: 1em;
+  white-space: nowrap;
+  margin-top: 7px;
+  z-index: 15;
+  box-shadow: 0 2px 8px #23272f1a;
+  pointer-events: none;
+}
+/* Exibe só no hover */
+.counter-img-wrap:hover .counter-hover-name {
+  display: block;
+}
+/* Oculta se vazio */
+.counter-hover-name:empty {
+  display: none !important;
+}
+/* Winrate maior */
+.hero-modal-counter-winrate {
+  font-size: 14.4px !important; /* 20% maior que 12px */
+  line-height: 1.1 !important;
+  text-align: center !important;
+  margin-top: 2px !important;
+  color: #b00020 !important;
+  font-weight: 600 !important;
+}
+.hero-modal-counter-winrate.winrate-high { color: #388e3c !important; }
 .hero-modal-counters-empty {
   color: #c026d3;
   font-size: 1rem;
@@ -449,10 +491,6 @@ body[data-theme="dark"] .filters-row select {
   color: var(--text-muted, #6366f1);
   font-size: 1rem;
   padding: 20px 28px 0 28px;
-}
-.counter-img-wrap {
-  position: relative;
-  display: inline-block;
 }
 .counter-badge {
   position: absolute;
@@ -470,43 +508,6 @@ body[data-theme="dark"] .filters-row select {
   pointer-events: none;
   z-index: 3;
   font-variant-numeric: tabular-nums;
-}
-.hero-modal-counter-winrate {
-  font-size: 14.4px !important; /* 20% maior que 12px */
-  line-height: 1.1 !important;
-  text-align: center !important;
-  margin-top: 2px !important;
-  color: #b00020 !important;
-  font-weight: 600 !important;
-}
-.hero-modal-counter-winrate.winrate-high { color: #388e3c !important; }
-/* Remove texto "undefined" embaixo dos herois counters/forte contra */
-.counter-hover-name:empty,
-.counter-hover-name:blank {
-  display: none !important;
-  visibility: hidden !important;
-  height: 0 !important;
-  margin: 0 !important;
-  padding: 0 !important;
-  font-size: 0 !important;
-  line-height: 0 !important;
-}
-.counter-hover-name {
-  /* Oculta se vier undefined no HTML (se o seu backend renderiza o texto) */
-}
-.counter-hover-name:after {
-  /* Se usar pseudo-elementos, não mostra nada por padrão */
-  content: "";
-}
-.counter-hover-name {
-  /* Oculta se por acaso vier o texto 'undefined' */
-}
-.counter-hover-name:contains("undefined") {
-  display: none !important;
-  visibility: hidden !important;
-  height: 0 !important;
-  font-size: 0 !important;
-  line-height: 0 !important;
 }
 .hero-modal-skills-section {
   border-bottom: 1px solid var(--bg-alt, #f3f4f6);
