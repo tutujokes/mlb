@@ -380,16 +380,19 @@ async function showHeroCounterModal(heroId, heroName, heroImg) {
     </div>
   `;
   body.innerHTML = `
-    <div class="hero-modal-header">
+  <div class="hero-modal-header">
+    <span class="hero-modal-portrait-wrap">
       <img src="${heroImg}" alt="${heroName}" class="hero-modal-portrait">
-      <div class="hero-modal-title-wrap">
-        <div class="hero-modal-title">
-          ${heroName}
-          ${descricaoHeroi ? `<span class="hero-modal-desc-label">${descricaoHeroi}</span>` : ''}
-        </div>
+      <span class="hero-modal-portrait-tooltip">${heroName}</span>
+    </span>
+    <div class="hero-modal-title-wrap">
+      <div class="hero-modal-title">
+        ${heroName}
+        ${descricaoHeroi ? `<span class="hero-modal-desc-label">${descricaoHeroi}</span>` : ''}
       </div>
     </div>
-    ${skillHtml}
+  </div>
+  ${skillHtml}
     <div class="hero-modal-counters-title">Counters</div>
     <div class="hero-modal-counters-loading">Carregando...</div>
     <div class="hero-modal-counters-list"></div>
