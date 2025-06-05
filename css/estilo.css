@@ -375,6 +375,36 @@ body[data-theme="dark"] .filters-row select {
   border: 3px solid #6366f1;
   object-fit: cover;
 }
+.hero-modal-portrait-wrap {
+  position: relative;
+  display: inline-block;
+}
+.hero-modal-portrait-tooltip {
+  display: none;
+  position: absolute;
+  left: 50%;
+  bottom: -10px;
+  transform: translateX(-50%) translateY(100%);
+  background: #23272f;
+  color: #fff;
+  padding: 5px 15px;
+  border-radius: 8px;
+  font-size: 1rem;
+  white-space: nowrap;
+  z-index: 20;
+  box-shadow: 0 2px 8px #23272f1a;
+  pointer-events: none;
+}
+.hero-modal-portrait-wrap:hover .hero-modal-portrait-tooltip,
+.hero-modal-portrait-wrap:focus-within .hero-modal-portrait-tooltip {
+  display: block;
+}
+.hero-modal-title-wrap {
+  display: flex;
+  align-items: flex-end;
+  flex-wrap: wrap;
+  gap: 12px;
+}
 .hero-modal-title {
   font-size: 2rem;
   font-family: 'Montserrat', 'Inter', sans-serif;
@@ -405,12 +435,6 @@ body[data-theme="dark"] .filters-row select {
   text-overflow: unset;
   word-break: break-word;
   line-height: 1.1;
-}
-.hero-modal-title-wrap {
-  display: flex;
-  align-items: flex-end;
-  flex-wrap: wrap;
-  gap: 12px;
 }
 .hero-modal-counters-title,
 .hero-modal-strong-title {
@@ -485,11 +509,11 @@ body[data-theme="dark"] .filters-row select {
 }
 .counter-badge-green {
   color: #388e3c !important;
-  background: #e8f5e9 !important; /* Verde bem claro, suave */
+  background: #e8f5e9 !important;
   border: 1.5px solid #388e3c33;
 }
 .hero-modal-counter-winrate {
-  font-size: 14.4px !important; /* 20% maior que 12px */
+  font-size: 14.4px !important;
   line-height: 1.1 !important;
   text-align: center !important;
   margin-top: 2px !important;
@@ -497,7 +521,6 @@ body[data-theme="dark"] .filters-row select {
   font-weight: 600 !important;
 }
 .hero-modal-counter-winrate.winrate-high { color: #388e3c !important; }
-/* Remove texto "undefined" embaixo dos herois counters/forte contra */
 .counter-hover-name:empty,
 .counter-hover-name:blank {
   display: none !important;
@@ -508,29 +531,26 @@ body[data-theme="dark"] .filters-row select {
   font-size: 0 !important;
   line-height: 0 !important;
 }
-/* Nome do herói: hover tooltip */
+/* Tooltip do nome do herói nos counters e forte contra */
 .counter-hover-name {
   display: none;
   position: absolute;
   left: 50%;
-  top: 100%;
-  transform: translateX(-50%);
+  bottom: -10px;
+  transform: translateX(-50%) translateY(100%);
   background: #23272f;
   color: #fff;
-  padding: 4px 10px;
-  border-radius: 7px;
-  font-size: 1em;
+  padding: 5px 15px;
+  border-radius: 8px;
+  font-size: 1rem;
   white-space: nowrap;
-  margin-top: 7px;
-  z-index: 15;
+  z-index: 20;
   box-shadow: 0 2px 8px #23272f1a;
   pointer-events: none;
 }
-.counter-img-wrap:hover .counter-hover-name {
+.counter-img-wrap:hover .counter-hover-name,
+.counter-img-wrap:focus-within .counter-hover-name {
   display: block;
-}
-.counter-hover-name:empty {
-  display: none !important;
 }
 .hero-modal-skills-section {
   border-bottom: 1px solid var(--bg-alt, #f3f4f6);
@@ -737,30 +757,4 @@ body[data-theme=dark] .hero-modal-skill-hover-desc { color: #bfbff5; }
   .hero-modal-skills-row { flex-wrap: wrap; gap: 13px 7px; padding: 7px 5px;}
   .hero-modal-skill-hover-pop { min-width:180px; max-width:98vw; font-size:.98em;}
   .hero-modal-skill-inline { min-width: 56px; }
-}
-.hero-modal-portrait-wrap {
-  position: relative;
-  display: inline-block;
-}
-
-.hero-modal-portrait-tooltip {
-  display: none;
-  position: absolute;
-  left: 50%;
-  bottom: -10px;
-  transform: translateX(-50%) translateY(100%);
-  background: #23272f;
-  color: #fff;
-  padding: 5px 15px;
-  border-radius: 8px;
-  font-size: 1rem;
-  white-space: nowrap;
-  z-index: 20;
-  box-shadow: 0 2px 8px #23272f1a;
-  pointer-events: none;
-}
-
-.hero-modal-portrait-wrap:hover .hero-modal-portrait-tooltip,
-.hero-modal-portrait-wrap:focus-within .hero-modal-portrait-tooltip {
-  display: block;
 }
