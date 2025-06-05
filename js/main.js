@@ -136,7 +136,7 @@ function fetchAllHeroPositions() {
             ? heroData.hero.data.sortid[0].data.sort_title.toLowerCase() : "",
           roadsort: (heroData.hero && heroData.hero.data && heroData.hero.data.roadsort)
             ? heroData.hero.data.roadsort : [],
-          small_map: heroData.smallmap || ""
+          small_map: heroData.hero && heroData.hero.data && heroData.hero.data.smallmap ? heroData.hero.data.smallmap : ""
         };
       });
     });
@@ -429,7 +429,7 @@ async function showHeroCounterModal(heroId, heroName, heroImg) {
       countersLoading.style.display = 'none';
       if (data && Array.isArray(data.sub_hero) && data.sub_hero.length > 0) {
         countersList.innerHTML = data.sub_hero.map(h => {
-          const heroName = h?.hero?.data?.name || h?.hero?.name || h?.name || "Desconhecido";
+          const heroName = (h && h.hero && h.hero.data && h.hero.data.name) ? h.hero.data.name : "";
           const counterWinrate = h.hero_win_rate * 100;
           const lolitaWinrate = (100 - counterWinrate).toFixed(1);
           return `
@@ -445,7 +445,7 @@ async function showHeroCounterModal(heroId, heroName, heroImg) {
       }
       if (data && Array.isArray(data.sub_hero_last) && data.sub_hero_last.length > 0) {
         strongList.innerHTML = data.sub_hero_last.map(h => {
-          const heroName = h?.hero?.data?.name || h?.hero?.name || h?.name || "Desconhecido";
+          const heroName = (h && h.hero && h.hero.data && h.hero.data.name) ? h.hero.data.name : "";
           return `
             <div class="counter-img-wrap" title="${heroName}">
               <img class="hero-modal-counter-img" src="${h.hero.data.head}" alt="${heroName}">
