@@ -714,3 +714,26 @@ body[data-theme=dark] .hero-modal-skill-hover-desc { color: #bfbff5; }
   .hero-modal-skill-hover-pop { min-width:180px; max-width:98vw; font-size:.98em;}
   .hero-modal-skill-inline { min-width: 56px; }
 }
+.hero-modal-counters-list,
+.hero-modal-strong-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 11px 13px;
+  justify-content: flex-start;
+  align-items: center;
+  min-height: 58px;
+  padding: 16px 28px 0 28px;
+  /* O padding e gap são idênticos para ambas as seções */
+  box-sizing: border-box;
+}
+
+/* Responsivo: mantém o alinhamento igual nas duas seções */
+@media (max-width: 700px) {
+  .hero-modal-counters-list,
+  .hero-modal-strong-list {
+    padding-left: 12px;
+    padding-right: 12px;
+    gap: 10px 8px;
+    max-height: 120px;
+  }
+}
