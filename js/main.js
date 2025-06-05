@@ -1,4 +1,3 @@
-```javascript name=js/main.js
 const translations = {
   'pt-BR': {
     title: "Tier List - Mobile Legends",
@@ -72,7 +71,7 @@ const translations = {
 
 let heroIdToName = {};
 let heroNameToId = {};
-let heroExtraInfo = {}; // Inclui o smallmap agora
+let heroExtraInfo = {}; // Inclui o small_map agora
 let tierCards = [];
 let tierRecords = [];
 let currentLang = 'pt-BR';
@@ -430,13 +429,14 @@ async function showHeroCounterModal(heroId, heroName, heroImg) {
       countersLoading.style.display = 'none';
       if (data && Array.isArray(data.sub_hero) && data.sub_hero.length > 0) {
         countersList.innerHTML = data.sub_hero.map(h => {
+          const heroName = h?.hero?.data?.name || h?.hero?.name || h?.name || "Desconhecido";
           const counterWinrate = h.hero_win_rate * 100;
           const lolitaWinrate = (100 - counterWinrate).toFixed(1);
           return `
-            <div class="counter-img-wrap" title="${h.hero.data.name}">
-              <img class="hero-modal-counter-img" src="${h.hero.data.head}" alt="${h.hero.data.name}">
+            <div class="counter-img-wrap" title="${heroName}">
+              <img class="hero-modal-counter-img" src="${h.hero.data.head}" alt="${heroName}">
               <div class="counter-badge counter-badge-red">${lolitaWinrate}%</div>
-              <div class="counter-hover-name">${h.hero.data.name}</div>
+              <div class="counter-hover-name">${heroName}</div>
             </div>
           `;
         }).join('');
@@ -444,13 +444,16 @@ async function showHeroCounterModal(heroId, heroName, heroImg) {
         countersList.innerHTML = '<div class="hero-modal-counters-empty">Nenhuma informação disponível.</div>';
       }
       if (data && Array.isArray(data.sub_hero_last) && data.sub_hero_last.length > 0) {
-        strongList.innerHTML = data.sub_hero_last.map(h => `
-          <div class="counter-img-wrap" title="${h.hero.data.name}">
-            <img class="hero-modal-counter-img" src="${h.hero.data.head}" alt="${h.hero.data.name}">
-            <div class="counter-badge counter-badge-green">${(h.hero_win_rate * 100).toFixed(1)}%</div>
-            <div class="counter-hover-name">${h.hero.data.name}</div>
-          </div>
-        `).join('');
+        strongList.innerHTML = data.sub_hero_last.map(h => {
+          const heroName = h?.hero?.data?.name || h?.hero?.name || h?.name || "Desconhecido";
+          return `
+            <div class="counter-img-wrap" title="${heroName}">
+              <img class="hero-modal-counter-img" src="${h.hero.data.head}" alt="${heroName}">
+              <div class="counter-badge counter-badge-green">${(h.hero_win_rate * 100).toFixed(1)}%</div>
+              <div class="counter-hover-name">${heroName}</div>
+            </div>
+          `;
+        }).join('');
       } else {
         strongList.innerHTML = '<div class="hero-modal-counters-empty">Nenhuma informação disponível.</div>';
       }
@@ -552,4 +555,3 @@ async function showHeroCounterModal(heroId, heroName, heroImg) {
     }
   }, 10);
 }
-```
