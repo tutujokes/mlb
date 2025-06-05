@@ -407,10 +407,10 @@ async function showHeroCounterModal(heroId, heroName, heroImg) {
       countersLoading.style.display = 'none';
       if (data && Array.isArray(data.sub_hero) && data.sub_hero.length > 0) {
         countersList.innerHTML = data.sub_hero.map(h => `
-          <div class="counter-img-wrap" title="${h.hero.data.name}">
-            <img class="hero-modal-counter-img" src="${h.hero.data.head}" alt="${h.hero.data.name}">
+          <div class="counter-img-wrap" title="${h.hero.data.name || ""}">
+            <img class="hero-modal-counter-img" src="${h.hero.data.head}" alt="${h.hero.data.name || ""}">
             <div class="counter-badge counter-badge-red">${(h.hero_win_rate * 100).toFixed(1)}%</div>
-            <div class="counter-hover-name">${h.hero.data.name}</div>
+            <div class="counter-hover-name">${h.hero.data.name || ""}</div>
           </div>
         `).join('');
       } else {
@@ -418,10 +418,10 @@ async function showHeroCounterModal(heroId, heroName, heroImg) {
       }
       if (data && Array.isArray(data.sub_hero_last) && data.sub_hero_last.length > 0) {
         strongList.innerHTML = data.sub_hero_last.map(h => `
-          <div class="counter-img-wrap" title="${h.hero.data.name}">
-            <img class="hero-modal-counter-img" src="${h.hero.data.head}" alt="${h.hero.data.name}">
+          <div class="counter-img-wrap" title="${h.hero.data.name || ""}">
+            <img class="hero-modal-counter-img" src="${h.hero.data.head}" alt="${h.hero.data.name || ""}">
             <div class="counter-badge counter-badge-green">${(h.hero_win_rate * 100).toFixed(1)}%</div>
-            <div class="counter-hover-name">${h.hero.data.name}</div>
+            <div class="counter-hover-name">${h.hero.data.name || ""}</div>
           </div>
         `).join('');
       } else {
