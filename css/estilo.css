@@ -334,59 +334,79 @@ body[data-theme="dark"] .filters-row select {
 .footer-moba .byarthur:hover svg, .footer-moba .byarthur:focus svg { color: #7e22ce; }
 
 /* ==============================
-   HERO MODAL (Agrupamento)
+   HERO MODAL (CORRIGIDO)
 ============================== */
-.hero-modal,
-.hero-modal-content,
-.hero-modal-skill-hover-pop,
-.hero-modal-skill-extra-pop {
-  border-radius: var(--radius-xl);
-  transition: background-color 0.33s, color 0.33s;
-}
 .hero-modal {
-  display: flex; align-items: center; justify-content: center;
-  position: fixed; z-index: 1100; left: 0; top: 0; right: 0; bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: fixed;
+  z-index: 1100;
+  left: 0; top: 0; right: 0; bottom: 0;
   background: rgba(30,35,60,0.65);
-  opacity: 0; visibility: hidden;
   transition: opacity 0.22s cubic-bezier(.47,1.64,.41,.8), visibility 0.24s;
+  opacity: 0;
+  visibility: hidden;
 }
-.hero-modal.show { opacity: 1; visibility: visible; }
+.hero-modal.show {
+  opacity: 1;
+  visibility: visible;
+}
 .hero-modal-content {
   background: var(--card-bg);
   color: var(--text-main);
-  min-width: 320px; max-width: 96vw; max-height: 88vh; width: 420px;
+  border-radius: 16px;
+  min-width: 320px;
+  max-width: 98vw;
+  max-height: 92vh;
+  width: 420px;
   box-shadow: 0 8px 32px #23272f55;
-  padding: 0 0 22px 0; position: relative;
-  display: flex; flex-direction: column;
-  animation: fadeInCard 0.33s;
+  padding: 0 0 22px 0;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
 }
 .hero-modal-close {
-  position: absolute; top: 12px; right: 18px;
-  background: none; border: none;
-  color: var(--text-muted);
-  font-size: 2rem; font-weight: 700;
-  cursor: pointer; opacity: 0.75;
-  z-index: 2;
+  position: absolute;
+  top: 12px; right: 18px;
+  background: none;
+  border: none;
+  color: #6366f1;
+  font-size: 2rem;
+  font-weight: 700;
+  cursor: pointer;
+  opacity: 0.75;
   transition: color 0.23s, opacity 0.23s;
+  z-index: 2;
 }
 .hero-modal-close:hover { color: #d32f2f; opacity: 1; }
+
+/* Header */
 .hero-modal-header {
-  display: flex; align-items: center; gap: 18px;
+  display: flex;
+  align-items: center;
+  gap: 18px;
   padding: 30px 28px 8px 28px;
 }
 .hero-modal-portrait {
   width: 72px; height: 72px; border-radius: 50%;
-  border: 3px solid var(--text-muted);
+  border: 3px solid #6366f1;
   object-fit: cover;
 }
+
+/* Title and Description */
 .hero-modal-title {
   font-size: 2rem;
   font-family: 'Montserrat', 'Inter', sans-serif;
   font-weight: 700;
-  color: var(--text-muted);
+  color: #6366f1;
   text-shadow: 0 1px 6px #23272f12;
   letter-spacing: -1px;
-  display: flex; flex-direction: column; align-items: flex-start; gap: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0;
 }
 .hero-modal-desc-label {
   display: block;
@@ -408,9 +428,15 @@ body[data-theme="dark"] .filters-row select {
   line-height: 1.1;
 }
 .hero-modal-title-wrap {
-  display: flex; align-items: flex-end; flex-wrap: wrap; gap: 12px;
+  display: flex;
+  align-items: flex-end;
+  flex-wrap: wrap;
+  gap: 12px;
 }
-.hero-modal-counters-title, .hero-modal-strong-title {
+
+/* Counters (Heróis fortes contra) */
+.hero-modal-counters-title,
+.hero-modal-strong-title {
   font-size: 1.2rem;
   color: var(--text-main);
   font-weight: 600;
@@ -418,112 +444,81 @@ body[data-theme="dark"] .filters-row select {
   margin-top: 7px;
   border-bottom: 1px solid var(--bg-alt);
 }
-.hero-modal-counters-list, .hero-modal-strong-list {
-  display: flex; flex-wrap: wrap; gap: 11px 13px;
-  justify-content: flex-start; align-items: center;
-  min-height: 58px; padding: 16px 28px 0 28px;
+
+/* Corrigido: Counters e Strong List dentro do modal, horizontal, responsivo e com overflow-y */
+.hero-modal-counters-list,
+.hero-modal-strong-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 11px 13px;
+  justify-content: flex-start;
+  align-items: center;
+  min-height: 58px;
+  max-height: 120px;
+  overflow-y: auto;
+  padding: 16px 28px 0 28px;
+  box-sizing: border-box;
 }
-.hero-modal-counter-img {
-  width: 54px; height: 54px; border-radius: 50%;
+.hero-modal-counter-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  max-width: 70px;
+  min-width: 48px;
+  background: #f9fafd;
+  border-radius: 10px;
+  padding: 7px 3px 6px 3px;
+  box-shadow: 0 1px 4px #0001;
+}
+body[data-theme="dark"] .hero-modal-counter-item {
+  background: #23242c;
+  box-shadow: 0 1px 4px #0004;
+}
+.hero-modal-counter-icon {
+  width: 36px; height: 36px;
+  border-radius: 50%;
   object-fit: cover;
-  border: 2.7px solid var(--text-muted);
-  box-shadow: 0 2px 8px #23272f1a;
   background: #fff;
-  transition: transform 0.2s;
+  border: 1.5px solid #e5e7eb;
+  margin-bottom: 3px;
 }
-.hero-modal-counter-img:hover { transform: scale(1.12); }
-.hero-modal-counters-empty { color: #c026d3; font-size: 1rem; padding: 18px 0; }
-.hero-modal-counters-loading { color: var(--text-muted); font-size: 1rem; padding: 20px 28px 0 28px; }
-.counter-img-wrap { position: relative; display: inline-block; }
-.counter-badge {
-  position: absolute; bottom: -2px; right: 4px;
-  background: #fff;
-  color: #d32f2f;
-  font-size: 8px;
-  font-family: inherit;
+body[data-theme="dark"] .hero-modal-counter-icon {
+  background: #23242c;
+  border: 1.5px solid #383a43;
+}
+.hero-modal-counter-winrate {
+  font-size: 12px;
+  line-height: 1.1;
+  text-align: center;
+  margin-top: 2px;
+  color: #b00020;
   font-weight: 600;
-  border-radius: var(--radius-md);
-  padding: 1px 7px 1px 7px;
-  box-shadow: 0 1px 6px #6366f122;
-  border: 1.5px solid #d32f2f22;
-  pointer-events: none;
-  z-index: 3;
-  font-variant-numeric: tabular-nums;
+}
+.hero-modal-counter-winrate.winrate-high { color: #388e3c; }
+
+/* Skills em linha, horizontal, wrap se passar do limite */
+.hero-modal-skills-row {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 18px 12px;
+  justify-content: flex-start;
+  align-items: stretch;
+  padding: 8px 22px 8px 22px;
+  box-sizing: border-box;
+  max-height: 140px;
+  overflow-y: auto;
+}
+.hero-modal-skill-inline {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 64px;
+  margin-bottom: 4px;
 }
 
-/* ==============================
-   SEÇÃO DE SKILLS MODAL
-============================== */
-.hero-modal-skills-section {
-  border-bottom: 1px solid var(--bg-alt);
-  margin: 0 0 8px 0;
-  padding-bottom: 8px;
-}
-.hero-modal-skills-title {
-  font-size: 1.2rem;
-  color: var(--text-main);
-  font-weight: 600;
-  padding: 10px 28px 2px 28px;
-  margin-top: 7px; margin-bottom: 7px;
-}
-.hero-modal-skills-list { display: flex; flex-direction: column; gap: 12px; padding: 0 24px; }
-.hero-modal-skill {
-  background: var(--bg-alt);
-  border-radius: var(--radius-lg);
-  padding: 8px 12px;
-}
-.hero-modal-skill-header { display: flex; align-items: flex-start; gap: 13px; }
-.hero-modal-skill-icon {
-  width: 38px; height: 38px; border-radius: var(--radius-md); margin-top: 2px; background: #222;
-}
-.hero-modal-skill-info { flex: 1; }
-.hero-modal-skill-name { font-weight: bold; font-size: 1.07em; margin-bottom: 3px; }
-.hero-modal-skill-desc { font-size: .97em; color: #444; margin-bottom: 2px; }
-.hero-modal-skill-tags { display: flex; gap: 8px; margin-top: 5px; font-size: .95em; }
-.hero-modal-skill-tag {
-  display: inline-block;
-  background: var(--text-muted);
-  color: #fff;
-  border-radius: var(--radius-md);
-  padding: 2px 10px;
-  font-size: .93em;
-  font-weight: 600;
-  margin-right: 2px; margin-bottom: 2px;
-  white-space: nowrap;
-}
-.hero-modal-skill-cost {
-  display: inline-block;
-  background: #ffc107;
-  color: #23272f;
-  border-radius: var(--radius-md);
-  padding: 2px 10px;
-  font-size: .93em;
-  font-weight: 600;
-  margin-bottom: 2px; margin-top: 4px;
-}
-.hero-modal-skill-label {
-  margin-top: 6px;
-  font-size: 1.12em;
-  font-family: 'Montserrat', 'Inter', 'Arial', sans-serif;
-  font-weight: 700;
-  letter-spacing: .2px;
-  border-radius: var(--radius-md);
-  padding: 2px 10px;
-  background: #f3f4f6;
-  color: var(--text-muted);
-  box-shadow: 0 1px 6px #6366f122;
-  display: inline-block; text-align: center; min-width: 44px;
-}
-.hero-modal-skill-label-P    { background: #ffe9ec; color: #d32f2f;}
-.hero-modal-skill-label-1    { background: #e4f2ff; color: #1e88e5;}
-.hero-modal-skill-label-2    { background: #eafbe9; color: #388e3c;}
-.hero-modal-skill-label-ULT  { background: #fff3e0; color: #ff9800;}
-.hero-modal-skill-label-EX   { background: #f5e0ff; color: #a022ce;}
-.hero-modal-skill-label-name { font-size: .77em; color: #888; display: block; font-weight: 400; margin-top: 2px; letter-spacing: 0.04em; }
-
-/* ==============================
-   MEDIA QUERIES
-============================== */
+/* Responsividade para modal */
 @media (max-width: 700px) {
   .main-moba { padding: 0 2px; }
   .header-moba { padding: 12px 8px 10px 8px; font-size: 1rem;}
@@ -535,14 +530,30 @@ body[data-theme="dark"] .filters-row select {
   .filters-row { flex-direction: column; gap: 14px 0; padding: 10px 4px;}
   .filter-group { width: 100%; justify-content: flex-start;}
   .main-title { font-size: 1.7rem; }
-  .hero-modal-content { min-width: 0; width: 97vw; padding-bottom: 10px;}
-  .hero-modal-header, .hero-modal-counters-title, .hero-modal-counters-list { padding-left: 12px; padding-right: 12px;}
-  .hero-modal-counters-list {padding-bottom: 0;}
-  .hero-modal-title { font-size: 1.4rem; }
-  .hero-modal-desc-label { font-size: 0.7rem; padding: 0 2px; margin-left: 0; margin-top: 2px; max-width: 92vw; white-space: normal; }
-  .hero-modal-skills-row { flex-wrap: wrap; gap: 13px 7px; padding: 7px 5px;}
-  .hero-modal-skill-hover-pop { min-width:180px; max-width:98vw; font-size:.98em;}
-  .hero-modal-skill-inline { min-width: 56px; }
+  .hero-modal-content {
+    min-width: 0;
+    width: 97vw;
+    max-height: 96vh;
+    padding-bottom: 10px;
+  }
+  .hero-modal-header,
+  .hero-modal-counters-title,
+  .hero-modal-counters-list,
+  .hero-modal-strong-list,
+  .hero-modal-skills-row {
+    padding-left: 8px !important;
+    padding-right: 8px !important;
+  }
+  .hero-modal-title { font-size: 1.3rem; }
+  .hero-modal-skills-row,
+  .hero-modal-counters-list,
+  .hero-modal-strong-list {
+    gap: 10px 8px;
+    max-height: 120px;
+  }
+  .hero-modal-counter-item { max-width: 54px; min-width: 38px; }
+  .hero-modal-counter-icon { width: 28px; height: 28px; }
+  .hero-modal-skill-inline { min-width: 48px; }
 }
 
 /* ==============================
