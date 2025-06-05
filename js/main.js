@@ -389,9 +389,8 @@ async function showHeroCounterModal(heroId, heroName, heroImg) {
     </span>
     <div class="hero-modal-title-wrap">
       <div class="hero-modal-title">
-        ${heroName}
-        ${descricaoHeroi ? `<span class="hero-modal-desc-label">${descricaoHeroi}</span>` : ''}
-      </div>
+  ${descricaoHeroi ? `<span class="hero-modal-desc-label">${descricaoHeroi}</span>` : ''}
+</div>
     </div>
   </div>
   ${skillHtml}
