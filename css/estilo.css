@@ -474,6 +474,9 @@ body[data-theme="dark"] .filters-row select {
   pointer-events: none;
   z-index: 3;
   font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  display: inline-block;
+  min-width: unset;
 }
 .counter-badge-red {
   color: #d32f2f;
