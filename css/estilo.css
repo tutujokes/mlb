@@ -1,6 +1,3 @@
-/* ==============================
-   VARIÁVEIS E TEMA
-============================== */
 :root {
   --bg-main: #fff;
   --bg-alt: #f3f4f6;
@@ -32,10 +29,6 @@ body[data-theme="dark"] {
   background: var(--bg-main);
   color: var(--text-main);
 }
-
-/* ==============================
-   RESET E UTILITÁRIOS
-============================== */
 * { box-sizing: border-box; }
 html, body {
   font-family: 'Inter', system-ui, sans-serif;
@@ -57,7 +50,6 @@ html, body {
 .shadow-md { box-shadow: var(--shadow-md) !important; }
 .shadow-lg { box-shadow: var(--shadow-lg) !important; }
 .text-accent { color: var(--text-muted) !important; }
-
 /* ==============================
    HEADER
 ============================== */
@@ -75,7 +67,6 @@ html, body {
 }
 .logo-moba { font-size: 2rem; font-weight: bold; letter-spacing: -1px; }
 .header-actions { display: flex; align-items: center; gap: 14px; }
-
 /* ==============================
    SWITCHERS E DROPDOWNS
 ============================== */
@@ -139,7 +130,6 @@ body[data-theme="dark"] .flag-dropdown { background: #2d2f37; border: 1px solid 
   transition: border 0.15s, background-color 0.33s;
 }
 .flag-option.selected, .flag-option:focus { border-color: var(--text-muted); }
-
 /* ==============================
    MAIN E FILTROS
 ============================== */
@@ -190,7 +180,6 @@ body[data-theme="dark"] .filters-row select {
   border: 1.5px solid #32343c;
 }
 .filters-row select:focus { border: 1.5px solid var(--text-muted); outline: none; }
-
 /* ==============================
    TIERS E CARDS
 ============================== */
@@ -232,7 +221,6 @@ body[data-theme="dark"] .filters-row select {
   gap: 18px 24px; padding: 24px 0 4px;
   min-height: 40px; position: relative;
 }
-
 /* ==============================
    CARD DE HEROI
 ============================== */
@@ -281,7 +269,6 @@ body[data-theme="dark"] .filters-row select {
   transition: background 0.33s;
 }
 .hero-route span, .hero-route .route-name { display: none !important; }
-
 /* ==============================
    COMPONENTES COMUNS
 ============================== */
@@ -299,7 +286,6 @@ body[data-theme="dark"] .filters-row select {
   animation: fadeInCard 0.4s;
   transition: background-color 0.33s, color 0.33s;
 }
-
 /* ==============================
    FOOTER
 ============================== */
@@ -332,9 +318,8 @@ body[data-theme="dark"] .filters-row select {
   transition: color 0.2s;
 }
 .footer-moba .byarthur:hover svg, .footer-moba .byarthur:focus svg { color: #7e22ce; }
-
 /* ==============================
-   HERO MODAL (CORRIGIDO)
+   HERO MODAL (CORRIGIDO E AJUSTADO)
 ============================== */
 .hero-modal {
   display: flex;
@@ -381,8 +366,6 @@ body[data-theme="dark"] .filters-row select {
   z-index: 2;
 }
 .hero-modal-close:hover { color: #d32f2f; opacity: 1; }
-
-/* Header */
 .hero-modal-header {
   display: flex;
   align-items: center;
@@ -394,8 +377,6 @@ body[data-theme="dark"] .filters-row select {
   border: 3px solid #6366f1;
   object-fit: cover;
 }
-
-/* Title and Description */
 .hero-modal-title {
   font-size: 2rem;
   font-family: 'Montserrat', 'Inter', sans-serif;
@@ -433,8 +414,6 @@ body[data-theme="dark"] .filters-row select {
   flex-wrap: wrap;
   gap: 12px;
 }
-
-/* Counters (Heróis fortes contra) */
 .hero-modal-counters-title,
 .hero-modal-strong-title {
   font-size: 1.2rem;
@@ -444,8 +423,6 @@ body[data-theme="dark"] .filters-row select {
   margin-top: 7px;
   border-bottom: 1px solid var(--bg-alt);
 }
-
-/* Corrigido: Counters e Strong List dentro do modal, horizontal, responsivo e com overflow-y */
 .hero-modal-counters-list,
 .hero-modal-strong-list {
   display: flex;
@@ -475,7 +452,8 @@ body[data-theme="dark"] .hero-modal-counter-item {
   box-shadow: 0 1px 4px #0004;
 }
 .hero-modal-counter-icon {
-  width: 36px; height: 36px;
+  width: 28px;
+  height: 28px;
   border-radius: 50%;
   object-fit: cover;
   background: #fff;
@@ -495,8 +473,6 @@ body[data-theme="dark"] .hero-modal-counter-icon {
   font-weight: 600;
 }
 .hero-modal-counter-winrate.winrate-high { color: #388e3c; }
-
-/* Skills em linha, horizontal, wrap se passar do limite */
 .hero-modal-skills-row {
   display: flex;
   flex-direction: row;
@@ -517,8 +493,13 @@ body[data-theme="dark"] .hero-modal-counter-icon {
   min-width: 64px;
   margin-bottom: 4px;
 }
-
-/* Responsividade para modal */
+.hero-modal-skill-icon {
+  width: 38px;
+  height: 38px;
+  border-radius: 7px;
+  margin-top: 2px;
+  background: #222;
+}
 @media (max-width: 700px) {
   .main-moba { padding: 0 2px; }
   .header-moba { padding: 12px 8px 10px 8px; font-size: 1rem;}
@@ -553,19 +534,6 @@ body[data-theme="dark"] .hero-modal-counter-icon {
   }
   .hero-modal-counter-item { max-width: 54px; min-width: 38px; }
   .hero-modal-counter-icon { width: 28px; height: 28px; }
+  .hero-modal-skill-icon { width: 38px; height: 38px; }
   .hero-modal-skill-inline { min-width: 48px; }
 }
-
-/* ==============================
-   BOAS PRÁTICAS
-============================== */
-/*
-- Use variáveis CSS para manter consistência de cor, espaçamento, sombra.
-- Agrupe seletores que compartilham propriedades idênticas.
-- Utilize classes utilitárias para espaçamentos e padrões recorrentes.
-- Prefira custom properties para temas claro/escuro, reduzindo duplicidade.
-- Centralize transições e resets globais.
-- Mantenha media queries organizadas e agrupadas.
-- Use comentários para facilitar manutenção.
-- Teste cobertura de CSS com DevTools para remover código morto.
-*/
