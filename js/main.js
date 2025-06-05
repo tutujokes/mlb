@@ -68,6 +68,7 @@ const translations = {
     no_heroes: "No heroes found."
   }
 };
+
 let heroIdToName = {};
 let heroNameToId = {};
 let heroExtraInfo = {};
@@ -75,7 +76,9 @@ let tierCards = [];
 let tierRecords = [];
 let currentLang = 'pt-BR';
 let tierListRequestToken = 0;
+
 function translate(key) { return translations[currentLang][key] || key; }
+
 function updateI18n() {
   document.querySelectorAll('[data-i18n]').forEach(el => {
     const key = el.getAttribute('data-i18n');
@@ -86,6 +89,7 @@ function updateI18n() {
     if (translations[currentLang][key]) opt.textContent = translations[currentLang][key];
   });
 }
+
 function setTheme(theme) {
   document.body.setAttribute('data-theme', theme);
   let icon = document.getElementById('themeIcon');
@@ -93,6 +97,7 @@ function setTheme(theme) {
   localStorage.setItem('theme', theme);
 }
 function toggleTheme() { setTheme(document.body.getAttribute('data-theme') === "dark" ? "light" : "dark"); }
+
 function setLanguage(lang) {
   currentLang = lang;
   document.documentElement.lang = lang;
@@ -106,6 +111,7 @@ function setLanguage(lang) {
   localStorage.setItem('lang', lang);
 }
 function showFlagDropdown(show) { document.getElementById('flagDropdown').classList.toggle('hidden', !show); }
+
 function fetchHeroMap() {
   return fetch('https://mlbb-proxy.vercel.app/api/hero-list')
     .then(res => res.json())
@@ -210,15 +216,15 @@ function carregarTierList() {
         else aHeroes.push(entry);
       });
       renderTierCards(ssHeroes, 'tier-ss');
-setTimeout(() => {
-  renderTierCards(sHeroes, 'tier-s');
-  renderTierCards(aHeroes, 'tier-a');
-  filtrarTierList();
-  setupHeroCardClicks(); // <-- chama aqui, após todos existirem no DOM
-}, 0);
+      setTimeout(() => {
+        renderTierCards(sHeroes, 'tier-s');
+        renderTierCards(aHeroes, 'tier-a');
+        filtrarTierList();
+        setupHeroCardClicks(); // Importante: garantir que todos os cards tenham click
+      }, 0);
 
-if (!ssHeroes.length && !sHeroes.length && !aHeroes.length)
-  document.getElementById('noResults').classList.remove('hidden');
+      if (!ssHeroes.length && !sHeroes.length && !aHeroes.length)
+        document.getElementById('noResults').classList.remove('hidden');
     })
     .catch(err => { document.getElementById('noResults').classList.remove('hidden'); });
 }
@@ -236,7 +242,6 @@ function filtrarTierList() {
     if (mostra) visible++;
   });
   document.getElementById('noResults').classList.toggle('hidden', visible !== 0);
-  setupHeroCardClicks();
 }
 function setupHeroCardClicks() {
   document.querySelectorAll('.card').forEach(card => {
@@ -382,18 +387,18 @@ async function showHeroCounterModal(heroId, heroName, heroImg) {
     </div>
   `;
   body.innerHTML = `
-  <div class="hero-modal-header">
-    <span class="hero-modal-portrait-wrap">
-      <img src="${heroImg}" alt="${heroName}" class="hero-modal-portrait">
-      <span class="hero-modal-portrait-tooltip">${heroName}</span>
-    </span>
-    <div class="hero-modal-title-wrap">
-      <div class="hero-modal-title">
-  ${descricaoHeroi ? `<span class="hero-modal-desc-label">${descricaoHeroi}</span>` : ''}
-</div>
+    <div class="hero-modal-header">
+      <span class="hero-modal-portrait-wrap">
+        <img src="${heroImg}" alt="${heroName}" class="hero-modal-portrait">
+        <span class="hero-modal-portrait-tooltip">${heroName}</span>
+      </span>
+      <div class="hero-modal-title-wrap">
+        <div class="hero-modal-title">
+          ${descricaoHeroi ? `<span class="hero-modal-desc-label">${descricaoHeroi}</span>` : ''}
+        </div>
+      </div>
     </div>
-  </div>
-  ${skillHtml}
+    ${skillHtml}
     <div class="hero-modal-counters-title">Counters</div>
     <div class="hero-modal-counters-loading">Carregando...</div>
     <div class="hero-modal-counters-list"></div>
@@ -410,22 +415,26 @@ async function showHeroCounterModal(heroId, heroName, heroImg) {
     fetchHeroCounters(heroId).then(data => {
       countersLoading.style.display = 'none';
       if (data && Array.isArray(data.sub_hero) && data.sub_hero.length > 0) {
-        countersList.innerHTML = data.sub_hero.map(h => `
-          <div class="counter-img-wrap" title="${h.hero.data.name || ""}">
-            <img class="hero-modal-counter-img" src="${h.hero.data.head}" alt="${h.hero.data.name || ""}">
-            <div class="counter-badge counter-badge-red">${(h.hero_win_rate * 100).toFixed(1)}% WR</div>
-            <div class="counter-hover-name">${h.hero.data.name || ""}</div>
-          </div>
-        `).join('');
+        countersList.innerHTML = data.sub_hero.map(h => {
+          const counterWinrate = h.hero_win_rate * 100;
+          const lolitaWinrate = (100 - counterWinrate).toFixed(1);
+          return `
+            <div class="counter-img-wrap" title="${h.hero.data.name}">
+              <img class="hero-modal-counter-img" src="${h.hero.data.head}" alt="${h.hero.data.name}">
+              <div class="counter-badge counter-badge-red">${lolitaWinrate}%</div>
+              <div class="counter-hover-name">${h.hero.data.name}</div>
+            </div>
+          `;
+        }).join('');
       } else {
         countersList.innerHTML = '<div class="hero-modal-counters-empty">Nenhuma informação disponível.</div>';
       }
       if (data && Array.isArray(data.sub_hero_last) && data.sub_hero_last.length > 0) {
         strongList.innerHTML = data.sub_hero_last.map(h => `
-          <div class="counter-img-wrap" title="${h.hero.data.name || ""}">
-            <img class="hero-modal-counter-img" src="${h.hero.data.head}" alt="${h.hero.data.name || ""}">
-            <div class="counter-badge counter-badge-green">${(100 - h.hero_win_rate * 100).toFixed(1)}% WR</div>
-            <div class="counter-hover-name">${h.hero.data.name || ""}</div>
+          <div class="counter-img-wrap" title="${h.hero.data.name}">
+            <img class="hero-modal-counter-img" src="${h.hero.data.head}" alt="${h.hero.data.name}">
+            <div class="counter-badge counter-badge-green">${(h.hero_win_rate * 100).toFixed(1)}%</div>
+            <div class="counter-hover-name">${h.hero.data.name}</div>
           </div>
         `).join('');
       } else {
