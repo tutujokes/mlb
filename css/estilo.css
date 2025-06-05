@@ -738,3 +738,29 @@ body[data-theme=dark] .hero-modal-skill-hover-desc { color: #bfbff5; }
   .hero-modal-skill-hover-pop { min-width:180px; max-width:98vw; font-size:.98em;}
   .hero-modal-skill-inline { min-width: 56px; }
 }
+.hero-modal-portrait-wrap {
+  position: relative;
+  display: inline-block;
+}
+
+.hero-modal-portrait-tooltip {
+  display: none;
+  position: absolute;
+  left: 50%;
+  bottom: -10px;
+  transform: translateX(-50%) translateY(100%);
+  background: #23272f;
+  color: #fff;
+  padding: 5px 15px;
+  border-radius: 8px;
+  font-size: 1rem;
+  white-space: nowrap;
+  z-index: 20;
+  box-shadow: 0 2px 8px #23272f1a;
+  pointer-events: none;
+}
+
+.hero-modal-portrait-wrap:hover .hero-modal-portrait-tooltip,
+.hero-modal-portrait-wrap:focus-within .hero-modal-portrait-tooltip {
+  display: block;
+}
