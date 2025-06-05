@@ -409,7 +409,7 @@ async function showHeroCounterModal(heroId, heroName, heroImg) {
         countersList.innerHTML = data.sub_hero.map(h => `
           <div class="counter-img-wrap" title="${h.hero.data.name || ""}">
             <img class="hero-modal-counter-img" src="${h.hero.data.head}" alt="${h.hero.data.name || ""}">
-            <div class="counter-badge counter-badge-red">${(h.hero_win_rate * 100).toFixed(1)}%</div>
+            <div class="counter-badge counter-badge-red">${(h.hero_win_rate * 100).toFixed(1)}% WR</div>
             <div class="counter-hover-name">${h.hero.data.name || ""}</div>
           </div>
         `).join('');
@@ -420,7 +420,7 @@ async function showHeroCounterModal(heroId, heroName, heroImg) {
         strongList.innerHTML = data.sub_hero_last.map(h => `
           <div class="counter-img-wrap" title="${h.hero.data.name || ""}">
             <img class="hero-modal-counter-img" src="${h.hero.data.head}" alt="${h.hero.data.name || ""}">
-            <div class="counter-badge counter-badge-green">${(h.hero_win_rate * 100).toFixed(1)}%</div>
+            <div class="counter-badge counter-badge-green">${(100 - h.hero_win_rate * 100).toFixed(1)}% WR</div>
             <div class="counter-hover-name">${h.hero.data.name || ""}</div>
           </div>
         `).join('');
