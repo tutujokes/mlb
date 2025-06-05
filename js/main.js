@@ -1,3 +1,4 @@
+```javascript name=js/main.js
 const translations = {
   'pt-BR': {
     title: "Tier List - Mobile Legends",
@@ -71,7 +72,7 @@ const translations = {
 
 let heroIdToName = {};
 let heroNameToId = {};
-let heroExtraInfo = {};
+let heroExtraInfo = {}; // Inclui o smallmap agora
 let tierCards = [];
 let tierRecords = [];
 let currentLang = 'pt-BR';
@@ -121,6 +122,7 @@ function fetchHeroMap() {
       Object.entries(map).forEach(([id, name]) => { heroNameToId[name] = id; });
     });
 }
+
 function fetchAllHeroPositions() {
   return fetch('https://mlbb-proxy.vercel.app/api/hero-position?role=all&lane=all&size=128&index=1')
     .then(res => res.json())
@@ -134,11 +136,13 @@ function fetchAllHeroPositions() {
             heroData.hero.data.sortid[0].data && heroData.hero.data.sortid[0].data.sort_title)
             ? heroData.hero.data.sortid[0].data.sort_title.toLowerCase() : "",
           roadsort: (heroData.hero && heroData.hero.data && heroData.hero.data.roadsort)
-            ? heroData.hero.data.roadsort : []
+            ? heroData.hero.data.roadsort : [],
+          small_map: heroData.smallmap || ""
         };
       });
     });
 }
+
 async function fetchHeroCounters(heroId) {
   try {
     const res = await fetch(`https://mlbb-proxy.vercel.app/api/hero-counter?id=${heroId}`);
@@ -149,6 +153,7 @@ async function fetchHeroCounters(heroId) {
   } catch(e) {}
   return null;
 }
+
 function renderTierCards(heroes, tierId) {
   const container = document.getElementById(tierId);
   if (!container) return;
@@ -188,6 +193,7 @@ function renderTierCards(heroes, tierId) {
     container.appendChild(el);
   });
 }
+
 function carregarTierList() {
   const myToken = ++tierListRequestToken;
   const rank = document.getElementById('rank').value;
@@ -220,7 +226,7 @@ function carregarTierList() {
         renderTierCards(sHeroes, 'tier-s');
         renderTierCards(aHeroes, 'tier-a');
         filtrarTierList();
-        setupHeroCardClicks(); // Importante: garantir que todos os cards tenham click
+        setupHeroCardClicks();
       }, 0);
 
       if (!ssHeroes.length && !sHeroes.length && !aHeroes.length)
@@ -228,6 +234,7 @@ function carregarTierList() {
     })
     .catch(err => { document.getElementById('noResults').classList.remove('hidden'); });
 }
+
 function filtrarTierList() {
   const role = document.getElementById('role').value.toLowerCase();
   const lane = document.getElementById('lane').value.toLowerCase();
@@ -243,6 +250,7 @@ function filtrarTierList() {
   });
   document.getElementById('noResults').classList.toggle('hidden', visible !== 0);
 }
+
 function setupHeroCardClicks() {
   document.querySelectorAll('.card').forEach(card => {
     if (card._counterBound) return;
@@ -256,6 +264,7 @@ function setupHeroCardClicks() {
     };
   });
 }
+
 document.addEventListener('DOMContentLoaded', function () {
   let theme = localStorage.getItem('theme');
   if (!theme) theme = window.matchMedia('(prefers-color-scheme: dark)').matches ? "dark" : "light";
@@ -286,6 +295,7 @@ document.addEventListener('DOMContentLoaded', function () {
     }
   });
 });
+
 async function showHeroCounterModal(heroId, heroName, heroImg) {
   const modal = document.getElementById("heroModal");
   const body = modal.querySelector(".hero-modal-body");
@@ -386,12 +396,16 @@ async function showHeroCounterModal(heroId, heroName, heroImg) {
       </div>
     </div>
   `;
+
+  // --- BUSCA O SMALLMAP PARA BG ---
+  let smallMapImg = "";
+  const heroExtra = heroExtraInfo[heroId];
+  if (heroExtra && heroExtra.small_map) {
+    smallMapImg = heroExtra.small_map;
+  }
+
   body.innerHTML = `
-    <div class="hero-modal-header">
-      <span class="hero-modal-portrait-wrap">
-        <img src="${heroImg}" alt="${heroName}" class="hero-modal-portrait">
-        <span class="hero-modal-portrait-tooltip">${heroName}</span>
-      </span>
+    <div class="hero-modal-header hero-modal-header-bg" style="${smallMapImg ? `--modal-bg-url: url('${smallMapImg}');` : ''}">
       <div class="hero-modal-title-wrap">
         <div class="hero-modal-title">
           ${descricaoHeroi ? `<span class="hero-modal-desc-label">${descricaoHeroi}</span>` : ''}
@@ -538,3 +552,4 @@ async function showHeroCounterModal(heroId, heroName, heroImg) {
     }
   }, 10);
 }
+```
