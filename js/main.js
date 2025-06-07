@@ -71,7 +71,7 @@ const translations = {
 
 let heroIdToName = {};
 let heroNameToId = {};
-let heroExtraInfo = {}; // Inclui o small_map agora
+let heroExtraInfo = {};
 let tierCards = [];
 let tierRecords = [];
 let currentLang = 'pt-BR';
@@ -403,20 +403,31 @@ async function showHeroCounterModal(heroId, heroName, heroImg) {
     smallMapImg = heroExtra.small_map;
   }
 
+  // Gera o bloco do small_map
+  const smallMapRowHtml = `
+    <div class="hero-modal-smallmap-row">
+      <div class="hero-modal-smallmap-circle" style="background-image: url('${smallMapImg}');"></div>
+      <span class="hero-modal-smallmap-name">${heroName}</span>
+    </div>
+  `;
+
+  // Corrigido: NÃO coloque o smallMap como background do header!
   body.innerHTML = `
-    <div class="hero-modal-header hero-modal-header-bg" style="${smallMapImg ? `--modal-bg-url: url('${smallMapImg}');` : ''}">
-      <div class="hero-modal-title-wrap">
-        <div class="hero-modal-title">
-          ${descricaoHeroi ? `<span class="hero-modal-desc-label">${descricaoHeroi}</span>` : ''}
-        </div>
+  <div class="hero-modal-header">
+    <div class="hero-modal-smallmap-row">
+      <div class="hero-modal-smallmap-circle" style="background-image: url('${smallMapImg}');"></div>
+      <div class="hero-modal-smallmap-info">
+        <span class="hero-modal-smallmap-name">${heroName}</span>
+        ${descricaoHeroi ? `<span class="hero-modal-smallmap-story">${descricaoHeroi}</span>` : ''}
       </div>
     </div>
-    ${skillHtml}
-    <div class="hero-modal-counters-title">Counters</div>
-    <div class="hero-modal-counters-loading">Carregando...</div>
-    <div class="hero-modal-counters-list"></div>
-    <div class="hero-modal-strong-title">Forte contra</div>
-    <div class="hero-modal-strong-list"></div>
+  </div>
+  ${skillHtml}
+  <div class="hero-modal-counters-title">Counters</div>
+  <div class="hero-modal-counters-loading">Carregando...</div>
+  <div class="hero-modal-counters-list"></div>
+  <div class="hero-modal-strong-title">Forte contra</div>
+  <div class="hero-modal-strong-list"></div>
   `;
   const countersLoading = body.querySelector('.hero-modal-counters-loading');
   const countersList = body.querySelector('.hero-modal-counters-list');
@@ -554,4 +565,37 @@ async function showHeroCounterModal(heroId, heroName, heroImg) {
       });
     }
   }, 10);
+}
+
+// --- NOVO CÓDIGO DO MODAL ---
+const heroModal = document.getElementById('heroModal');
+const closeHeroModal = document.getElementById('closeHeroModal');
+
+// Fecha ao clicar fora do conteúdo
+heroModal.addEventListener('click', (e) => {
+  if (e.target === heroModal) {
+    heroModal.classList.add('hidden');
+    document.body.style.overflow = '';
+  }
+});
+
+// Fecha ao pressionar ESC
+document.addEventListener('keydown', (e) => {
+  if (!heroModal.classList.contains('hidden') && e.key === 'Escape') {
+    heroModal.classList.add('hidden');
+    document.body.style.overflow = '';
+  }
+});
+
+// Fecha ao clicar no botão
+closeHeroModal.addEventListener('click', () => {
+  heroModal.classList.add('hidden');
+  document.body.style.overflow = '';
+});
+
+// Ao abrir o modal, bloqueie o scroll e foque no modal
+function openHeroModal() {
+  heroModal.classList.remove('hidden');
+  document.body.style.overflow = 'hidden';
+  heroModal.focus();
 }

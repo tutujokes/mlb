@@ -106,8 +106,19 @@
   <!-- MODAL DE DETALHE DO HERÓI -->
   <div id="heroModal" class="hero-modal hidden" tabindex="-1" aria-modal="true" role="dialog">
     <div class="hero-modal-content">
-      <button class="hero-modal-close" aria-label="Fechar modal">&times;</button>
-      <div class="hero-modal-body"></div>
+      <button id="closeHeroModal" class="hero-modal-close" aria-label="Fechar modal">&times;</button>
+      <div class="hero-modal-body">
+        <!-- Conteúdo do modal -->
+        <div class="hero-modal-header">
+          <div class="hero-modal-smallmap-row">
+            <div class="hero-modal-smallmap-circle" style="background-image: url('${smallMapImg}');"></div>
+            <div class="hero-modal-smallmap-info">
+              <span class="hero-modal-smallmap-name">${heroName}</span>
+              <span class="hero-modal-smallmap-story">${descricaoHeroi}</span>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 
