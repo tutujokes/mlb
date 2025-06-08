@@ -80,6 +80,22 @@
           <option value="roam" data-i18n="lane_roam">Roteação</option>
         </select>
       </div>
+      <div class="filter-group">
+        <label for="criterio" class="filter-title" style="position:relative;display:flex;align-items:center;gap:6px;">
+          Critério:
+          <span class="criterio-info-icon" tabindex="0">
+            i
+            <span class="criterio-info-popover">
+              <b>Probabilidade Bayesiana (BR):</b> Calcula o desempenho considerando o winrate, popularidade e média global, reduzindo distorções de poucos jogos.<br><br>
+              <b>Tierlist Normal (WR):</b> Usa apenas o winrate para classificar os heróis, sem ajuste por popularidade.
+            </span>
+          </span>
+        </label>
+        <select id="criterio">
+          <option value="bayes">Probabilidade Bayesiana</option>
+          <option value="normal" selected>Tierlist Normal</option>
+        </select>
+      </div>
     </div>
 
     <!-- Conteúdo principal das tiers -->

@@ -681,3 +681,74 @@ body[data-theme="dark"] .hero-modal-skills-title::before {
 .counter-img-wrap:focus .counter-badge {
   opacity: 1;
 }
+.criterio-info-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  font-size: 11px;
+  font-weight: 700;
+  font-family: 'Nunito', 'Inter', system-ui, sans-serif;
+  border-radius: 50%;
+  background: #6366f1;
+  color: #fff;
+  cursor: pointer;
+  position: relative;
+  margin-left: 2px;
+  transition: background 0.18s;
+  user-select: none;
+  box-shadow: 0 1px 4px #23272f22;
+  outline: none;
+}
+.criterio-info-icon:hover,
+.criterio-info-icon:focus {
+  background: #7e22ce;
+}
+
+.criterio-info-popover {
+  display: none;
+  position: absolute;
+  top: 22px;
+  right: 0;
+  min-width: 210px;
+  max-width: 90vw;
+  background: #23272f;
+  color: #fff;
+  font-size: 0.93em;
+  font-family: 'Nunito', 'Inter', system-ui, sans-serif;
+  border-radius: 10px;
+  box-shadow: 0 4px 18px #23272f33;
+  padding: 10px 12px;
+  z-index: 100;
+  text-align: left;
+  line-height: 1.5;
+  pointer-events: none;
+  word-break: break-word;
+  overflow-wrap: break-word;
+}
+.criterio-info-icon:hover .criterio-info-popover,
+.criterio-info-icon:focus .criterio-info-popover {
+  display: block;
+  pointer-events: auto;
+}
+
+/* Responsividade: impede que o balão ultrapasse a tela */
+@media (max-width: 500px) {
+  .criterio-info-popover {
+    left: 0;
+    right: auto;
+    min-width: 140px;
+    max-width: 98vw;
+    font-size: 0.89em;
+    padding: 8px 7px;
+  }
+}
+
+/* Cor azul para os nomes dos critérios no popover */
+.criterio-info-popover b {
+  color: #6366f1;
+  font-family: 'Nunito', 'Inter', system-ui, sans-serif;
+  font-weight: 800;
+  letter-spacing: 0.1px;
+}

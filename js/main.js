@@ -153,12 +153,13 @@ async function fetchHeroCounters(heroId) {
   return null;
 }
 
-function renderTierCards(heroes, tierId) {
+function renderTierCards(heroes, tierId, criterio) {
   const container = document.getElementById(tierId);
   if (!container) return;
   heroes.forEach(entry => {
     const hero = entry.data.main_hero.data;
     const winRate = (entry.data.main_hero_win_rate * 100).toFixed(1);
+    const bayes = entry.bayesianScore ? (entry.bayesianScore * 100).toFixed(1) : null;
     const heroId = heroNameToId[hero.name];
     const info = heroExtraInfo[heroId] || {};
     let roadsortTitles = [];
@@ -185,7 +186,7 @@ function renderTierCards(heroes, tierId) {
     el.innerHTML = `
       <img src="${hero.head}" alt="Retrato do herói ${hero.name}" loading="lazy">
       <div class="hero-name">${hero.name}</div>
-      <div class="hero-meta">${winRate}% WR</div>
+      <div class="hero-meta">${criterio === "bayes" ? `${bayes}% BR` : `${winRate}% WR`}</div>
       <div class="hero-routes ${iconCount === 1 ? 'single' : ''}">${roadsortHtml}</div>
     `;
     tierCards.push(el);
@@ -197,13 +198,22 @@ function carregarTierList() {
   const myToken = ++tierListRequestToken;
   const rank = document.getElementById('rank').value;
   const days = document.getElementById('days').value;
+  const criterio = document.getElementById('criterio').value;
   const url = `https://mlbb-proxy.vercel.app/api/hero-rank?source=rank&days=${days}&rank=${rank}&size=130&sort_field=win_rate&sort_order=desc`;
+
   document.getElementById('tier-ss').innerHTML = '';
   document.getElementById('tier-s').innerHTML = '';
   document.getElementById('tier-a').innerHTML = '';
+  document.getElementById('tier-b').innerHTML = '';
+  document.getElementById('tier-c').innerHTML = '';
   document.getElementById('noResults').classList.add('hidden');
   tierCards = []; tierRecords = [];
-  Promise.all([fetchHeroMap(), fetchAllHeroPositions(), fetch(url).then(res => res.json())])
+
+  Promise.all([
+    fetchHeroMap(),
+    fetchAllHeroPositions(),
+    fetch(url).then(res => res.json())
+  ])
     .then(([_, __, json]) => {
       if (myToken !== tierListRequestToken) return;
       const records = json.data.records || [];
@@ -211,7 +221,6 @@ function carregarTierList() {
       const ssHeroes = [], sHeroes = [], aHeroes = [], bHeroes = [], cHeroes = [];
       let idSet = new Set();
 
-      // Cálculo da média global de win_rate (C)
       const totalMatches = 100000;
       const m = 5000;
       const globalAvgWinRate = records.reduce((sum, entry) => sum + entry.data.main_hero_win_rate, 0) / records.length;
@@ -222,25 +231,34 @@ function carregarTierList() {
         if (!heroId || idSet.has(heroId)) return;
         idSet.add(heroId);
 
-        const R = entry.data.main_hero_win_rate;
-        const v = entry.data.main_hero_appearance_rate * totalMatches;
-        const C = globalAvgWinRate;
-        const bayesianScore = (v / (v + m)) * R + (m / (v + m)) * C;
-        entry.bayesianScore = bayesianScore;
+        if (criterio === "bayes") {
+          const R = entry.data.main_hero_win_rate;
+          const v = entry.data.main_hero_appearance_rate * totalMatches;
+          const C = globalAvgWinRate;
+          const bayesianScore = (v / (v + m)) * R + (m / (v + m)) * C;
+          entry.bayesianScore = bayesianScore;
 
-        // Defina o tier com base no score bayesiano
-        if (bayesianScore >= 0.507) ssHeroes.push(entry);
-else if (bayesianScore >= 0.505) sHeroes.push(entry);
-else if (bayesianScore >= 0.501) aHeroes.push(entry);
-else if (bayesianScore >= 0.495) bHeroes.push(entry);
-else cHeroes.push(entry);
+          if (bayesianScore >= 0.507) ssHeroes.push(entry);
+          else if (bayesianScore >= 0.502) sHeroes.push(entry);
+          else if (bayesianScore >= 0.50) aHeroes.push(entry);
+          else if (bayesianScore >= 0.496) bHeroes.push(entry);
+          else cHeroes.push(entry);
+        } else {
+          // Critério normal (antigo)
+          const winRate = entry.data.main_hero_win_rate * 100;
+          if (winRate >= 54) ssHeroes.push(entry);
+          else if (winRate >= 51) sHeroes.push(entry);
+          else if (winRate >= 49) aHeroes.push(entry);
+          else if (winRate >= 47) bHeroes.push(entry);
+          else cHeroes.push(entry);
+        }
       });
 
-      renderTierCards(ssHeroes, 'tier-ss');
-      renderTierCards(sHeroes, 'tier-s');
-      renderTierCards(aHeroes, 'tier-a');
-      renderTierCards(bHeroes, 'tier-b');
-      renderTierCards(cHeroes, 'tier-c');
+      renderTierCards(ssHeroes, 'tier-ss', criterio);
+      renderTierCards(sHeroes, 'tier-s', criterio);
+      renderTierCards(aHeroes, 'tier-a', criterio);
+      renderTierCards(bHeroes, 'tier-b', criterio);
+      renderTierCards(cHeroes, 'tier-c', criterio);
       filtrarTierList();
       setupHeroCardClicks();
 
@@ -288,6 +306,7 @@ document.addEventListener('DOMContentLoaded', function () {
   if (!lang) lang = navigator.language === "en-US" ? "en-US" : "pt-BR";
   setLanguage(lang);
   carregarTierList();
+  document.getElementById('criterio').addEventListener('change', carregarTierList);
   document.getElementById('rank').addEventListener('change', carregarTierList);
   document.getElementById('days').addEventListener('change', carregarTierList);
   document.getElementById('role').addEventListener('change', filtrarTierList);
@@ -615,48 +634,3 @@ function openHeroModal() {
   document.body.style.overflow = 'hidden';
   heroModal.focus();
 }
-
-// Exemplo de renderização de counter
-counters.forEach(counter => {
-  html += `
-    <div class="counter-img-wrap">
-      <img class="hero-modal-counter-img" src="${counter.img}" alt="${counter.name}">
-      ${counter.winrate ? `<span class="counter-badge ${counter.type === 'counter' ? 'counter-badge-red' : 'counter-badge-green'}">${counter.winrate}%</span>` : ''}
-    </div>
-  `;
-});
-
-// Suponha que heroes seja o array de heróis retornado da API
-const totalMatches = 100000;
-const m = 5000;
-
-// Calcule a média global de win_rate (C)
-const globalAvgWinRate = records.reduce((sum, entry) => sum + entry.data.main_hero_win_rate, 0) / records.length;
-
-records.forEach(entry => {
-  const hero = entry.data.main_hero.data;
-  const heroId = heroNameToId[hero.name];
-  if (!heroId || idSet.has(heroId)) return;
-  idSet.add(heroId);
-
-  const R = entry.data.main_hero_win_rate;
-  const v = entry.data.main_hero_appearance_rate * totalMatches;
-  const C = globalAvgWinRate;
-  const bayesianScore = (v / (v + m)) * R + (m / (v + m)) * C;
-  entry.bayesianScore = bayesianScore;
-
-  // Defina o tier com base no score bayesiano
-  if (bayesianScore >= 0.55) ssHeroes.push(entry);
-  else if (bayesianScore >= 0.52) sHeroes.push(entry);
-  else if (bayesianScore >= 0.50) aHeroes.push(entry);
-  else if (bayesianScore >= 0.48) bHeroes.push(entry);
-  else cHeroes.push(entry);
-});
-
-// Ordene os heróis pelo score bayesiano (desc)
-heroes.sort((a, b) => b.bayesianScore - a.bayesianScore);
-
-// Exemplo de exibição dos resultados
-heroes.forEach(hero => {
-  console.log(`${hero.main_heroid}: Tier ${hero.tier} | Score: ${hero.bayesianScore.toFixed(4)}`);
-});
