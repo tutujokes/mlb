@@ -211,6 +211,16 @@ body[data-theme="dark"] .filters-row select {
   color: #fff !important;
   text-shadow: 0 1px 12px #23272f42;
 }
+.tier-label.b {
+  background: #4ade80;
+  color: #fff !important;
+  text-shadow: 0 1px 12px #23272f42;
+}
+.tier-label.c {
+  background: #fbbf24;
+  color: #fff !important;
+  text-shadow: 0 1px 12px #23272f42;
+}
 .tier-container {
   display: flex; flex-wrap: wrap; justify-content: center;
   gap: 18px 24px; padding: 24px 0 4px;
@@ -567,7 +577,6 @@ body[data-theme="dark"] .hero-modal-skills-title::before {
   object-fit: cover;
   border: 2.7px solid #6366f1;
   box-shadow: 0 2px 8px #23272f1a;
-  background: #fff;
   transition: transform 0.18s, box-shadow 0.18s, border-color 0.18s;
 }
 .hero-modal-skill-icon:hover,
@@ -662,4 +671,13 @@ body[data-theme="dark"] .hero-modal-skills-title::before {
 .hero-modal-body::-webkit-scrollbar-track {
   background: #23272f22;
   border-radius: 8px;
+}
+.counter-badge {
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.18s;
+}
+.counter-img-wrap:hover .counter-badge,
+.counter-img-wrap:focus .counter-badge {
+  opacity: 1;
 }
