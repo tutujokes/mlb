@@ -31,7 +31,14 @@ const translations = {
     lane_jungle: "Selva",
     lane_roam: "Roteação",
     all_lanes: "Todas",
-    no_heroes: "Nenhum herói encontrado."
+    no_heroes: "Nenhum herói encontrado.",
+    "criterio_label": "Critério:",
+    "criterio_bayes_option": "Probabilidade Bayesiana",
+    "criterio_normal_option": "Tierlist Normal",
+    "criterio_bayes_label": "Probabilidade Bayesiana (BR):",
+    "criterio_bayes_desc": "Calcula o desempenho considerando o winrate, popularidade e média global, reduzindo distorções de poucos jogos.<br>",
+    "criterio_normal_label": "Tierlist Normal (WR):",
+    "criterio_normal_desc": "Usa apenas o winrate para classificar os heróis, sem ajuste por popularidade."
   },
   'en-US': {
     title: "Tier List - Mobile Legends",
@@ -65,7 +72,14 @@ const translations = {
     lane_jungle: "Jungle",
     lane_roam: "Roam",
     all_lanes: "All",
-    no_heroes: "No heroes found."
+    no_heroes: "No heroes found.",
+    "criterio_label": "Criterion:",
+    "criterio_bayes_option": "Bayesian Probability",
+    "criterio_normal_option": "Normal Tierlist",
+    "criterio_bayes_label": "Bayesian Probability (BR):",
+    "criterio_bayes_desc": "Calculates performance considering winrate, popularity and global average, reducing distortions from few games.<br>",
+    "criterio_normal_label": "Normal Tierlist (WR):",
+    "criterio_normal_desc": "Uses only winrate to rank heroes, without popularity adjustment."
   }
 };
 
@@ -82,7 +96,10 @@ function translate(key) { return translations[currentLang][key] || key; }
 function updateI18n() {
   document.querySelectorAll('[data-i18n]').forEach(el => {
     const key = el.getAttribute('data-i18n');
-    if (translations[currentLang][key]) el.textContent = translations[currentLang][key];
+    if (translations[currentLang][key]) {
+      // Use innerHTML para permitir tags HTML como <br>
+      el.innerHTML = translations[currentLang][key];
+    }
   });
   document.querySelectorAll('option[data-i18n]').forEach(opt => {
     const key = opt.getAttribute('data-i18n');
@@ -156,6 +173,8 @@ async function fetchHeroCounters(heroId) {
 function renderTierCards(heroes, tierId, criterio) {
   const container = document.getElementById(tierId);
   if (!container) return;
+  container.innerHTML = '';
+  // Render cards normalmente
   heroes.forEach(entry => {
     const hero = entry.data.main_hero.data;
     const winRate = (entry.data.main_hero_win_rate * 100).toFixed(1);
@@ -192,6 +211,34 @@ function renderTierCards(heroes, tierId, criterio) {
     tierCards.push(el);
     container.appendChild(el);
   });
+
+  // MOBILE: Adiciona botão de expandir se necessário
+  if (window.innerWidth <= 700 && heroes.length > 0) {
+    // Remove botão antigo se houver
+    let oldBtn = container.parentElement.querySelector('.tier-expand-btn');
+    if (oldBtn) oldBtn.remove();
+
+    // Calcula quantos cards cabem por linha
+    const cardWidth = 110; // igual ao CSS
+    const gap = 10;
+    const containerWidth = container.offsetWidth || container.parentElement.offsetWidth || 360;
+    const cardsPerRow = Math.floor((containerWidth + gap) / (cardWidth + gap));
+    if (heroes.length > cardsPerRow) {
+      // Só mostra botão se há mais de uma linha
+      let expandBtn = document.createElement('button');
+      expandBtn.className = 'tier-expand-btn';
+      expandBtn.type = 'button';
+      expandBtn.innerHTML = `<i class="fas fa-chevron-down"></i>`;
+      expandBtn.onclick = function () {
+        container.classList.toggle('expanded');
+        expandBtn.innerHTML = container.classList.contains('expanded')
+          ? `<i class="fas fa-chevron-up"></i>`
+          : `<i class="fas fa-chevron-down"></i>`;
+      };
+      // Coloca o botão logo após o container, centralizado
+      container.parentElement.appendChild(expandBtn);
+    }
+  }
 }
 
 function carregarTierList() {
@@ -358,7 +405,12 @@ async function showHeroCounterModal(heroId, heroName, heroImg) {
     skills = detailsData.data.records[0].data.hero.data.heroskilllist.flatMap(s => s.skilllist);
   }
   const skillLabels = ["P", "1", "2", "ULT"];
-  const labelNames = ["Passiva", "Skill 1", "Skill 2", "Ultimate"];
+  const labelNames = [
+    currentLang === "pt-BR" ? "Passiva" : "Passive",
+    currentLang === "pt-BR" ? "Skill 1" : "Skill 1",
+    currentLang === "pt-BR" ? "Skill 2" : "Skill 2",
+    currentLang === "pt-BR" ? "Ultimate" : "Ultimate"
+  ];
   const mainSkills = skills.slice(0, 4);
   const extraSkills = skills.slice(4);
   let skillsRowHtml = mainSkills.map((skill, i) => {
@@ -391,7 +443,7 @@ async function showHeroCounterModal(heroId, heroName, heroImg) {
   if (extraSkills.length > 0) {
     extraHtml = `
       <div class="hero-modal-skill-inline hero-modal-skill-extra-toggle" tabindex="0">
-        <div class="hero-modal-skill-extra-btn" id="extraSkillsBtn" aria-label="Mostrar habilidades extras" title="Habilidades extras" tabindex="0">+</div>
+        <div class="hero-modal-skill-extra-btn" id="extraSkillsBtn" aria-label="${currentLang === "pt-BR" ? "Mostrar habilidades extras" : "Show extra skills"}" title="${currentLang === "pt-BR" ? "Habilidades extras" : "Extra skills"}" tabindex="0">+</div>
         <div class="hero-modal-skill-extra-pop hidden" id="extraSkillsPopover">
           ${extraSkills.map((skill, idx) => {
             const tags = Array.isArray(skill.skilltag)
@@ -412,7 +464,7 @@ async function showHeroCounterModal(heroId, heroName, heroImg) {
                   </div>
                 </div>
                 <div class="hero-modal-skill-label hero-modal-skill-label-EX">
-                  (EX${idx+1})<span class="hero-modal-skill-label-name">Extra</span>
+                  (EX${idx+1})<span class="hero-modal-skill-label-name">${currentLang === "pt-BR" ? "Extra" : "Extra"}</span>
                 </div>
               </div>
             `;
@@ -423,7 +475,7 @@ async function showHeroCounterModal(heroId, heroName, heroImg) {
   }
   skillHtml = `
     <div class="hero-modal-skills-section">
-      <div class="hero-modal-skills-title">Skills</div>
+      <div class="hero-modal-skills-title">${currentLang === "pt-BR" ? "Skills" : "Skills"}</div>
       <div class="hero-modal-skills-row">
         ${skillsRowHtml}
         ${extraHtml}
@@ -458,10 +510,10 @@ async function showHeroCounterModal(heroId, heroName, heroImg) {
     </div>
   </div>
   ${skillHtml}
-  <div class="hero-modal-counters-title">Counters</div>
-  <div class="hero-modal-counters-loading">Carregando...</div>
+  <div class="hero-modal-counters-title">${currentLang === "pt-BR" ? "Counters" : "Counters"}</div>
+  <div class="hero-modal-counters-loading">${currentLang === "pt-BR" ? "Carregando..." : "Loading..."}</div>
   <div class="hero-modal-counters-list"></div>
-  <div class="hero-modal-strong-title">Forte contra</div>
+  <div class="hero-modal-strong-title">${currentLang === "pt-BR" ? "Forte contra" : "Strong against"}</div>
   <div class="hero-modal-strong-list"></div>
   `;
   const countersLoading = body.querySelector('.hero-modal-counters-loading');
@@ -487,7 +539,7 @@ async function showHeroCounterModal(heroId, heroName, heroImg) {
           `;
         }).join('');
       } else {
-        countersList.innerHTML = '<div class="hero-modal-counters-empty">Nenhuma informação disponível.</div>';
+        countersList.innerHTML = `<div class="hero-modal-counters-empty">${currentLang === "pt-BR" ? "Nenhuma informação disponível." : "No information available."}</div>`;
       }
       if (data && Array.isArray(data.sub_hero_last) && data.sub_hero_last.length > 0) {
         strongList.innerHTML = data.sub_hero_last.map(h => {
@@ -501,7 +553,7 @@ async function showHeroCounterModal(heroId, heroName, heroImg) {
           `;
         }).join('');
       } else {
-        strongList.innerHTML = '<div class="hero-modal-counters-empty">Nenhuma informação disponível.</div>';
+        strongList.innerHTML = `<div class="hero-modal-counters-empty">${currentLang === "pt-BR" ? "Nenhuma informação disponível." : "No information available."}</div>`;
       }
       setTimeout(() => {
         document.querySelectorAll('.counter-img-wrap').forEach(wrap => {
@@ -634,3 +686,41 @@ function openHeroModal() {
   document.body.style.overflow = 'hidden';
   heroModal.focus();
 }
+
+document.addEventListener('DOMContentLoaded', function () {
+  const btn = document.getElementById('criterioInfoBtn');
+  const popover = document.getElementById('criterioInfoPopover');
+  let popperInstance = null;
+
+  function showPopover() {
+    popover.classList.add('show');
+    popover.style.display = 'block';
+    popperInstance = Popper.createPopper(btn, popover, {
+      placement: 'bottom-end',
+      modifiers: [
+        { name: 'offset', options: { offset: [0, 8] } },
+        { name: 'preventOverflow', options: { boundary: document.body, padding: 8 } }
+      ]
+    });
+  }
+  function hidePopover() {
+    popover.classList.remove('show');
+    popover.style.display = 'none';
+    if (popperInstance) {
+      popperInstance.destroy();
+      popperInstance = null;
+    }
+  }
+
+  btn.addEventListener('mouseenter', showPopover);
+  btn.addEventListener('focus', showPopover);
+  btn.addEventListener('mouseleave', hidePopover);
+  btn.addEventListener('blur', hidePopover);
+
+  // Fecha ao clicar fora
+  document.addEventListener('mousedown', function (e) {
+    if (!btn.contains(e.target) && !popover.contains(e.target)) {
+      hidePopover();
+    }
+  });
+});

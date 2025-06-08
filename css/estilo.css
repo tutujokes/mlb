@@ -189,6 +189,10 @@ body[data-theme="dark"] .filters-row select {
   margin-left: auto;
   margin-right: auto;
   box-shadow: var(--shadow-sm);
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  box-sizing: border-box;
 }
 .tier-label {
   position: absolute; left: 0; top: 0; bottom: 0;
@@ -222,11 +226,58 @@ body[data-theme="dark"] .filters-row select {
   text-shadow: 0 1px 12px #23272f42;
 }
 .tier-container {
-  display: flex; flex-wrap: wrap; justify-content: center;
-  gap: 18px 24px; padding: 24px 0 4px;
-  min-height: 40px; position: relative;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+  gap: 14px 10px;
+  justify-items: center;
+  align-items: start;
+  padding: 8px 0;
 }
 
+/* --- MOBILE TIER COLLAPSE --- */
+@media (max-width: 700px) {
+  .tier-container {
+    grid-template-columns: repeat(auto-fit, minmax(90px, 1fr));
+    max-height: 120px; /* 1 linha (90px) + 30px da segunda linha */
+    overflow: hidden;
+    position: relative;
+    transition: max-height 0.35s cubic-bezier(.4,1.4,.5,1.01);
+  }
+  .tier-container.expanded {
+    max-height: 2000px;
+    overflow: visible;
+  }
+  .tier-container:not(.expanded)::after {
+    content: "";
+    pointer-events: none;
+    position: absolute;
+    left: 0; right: 0;
+    bottom: 0;
+    height: 36px;
+    background: linear-gradient(to bottom, rgba(35,39,47,0.01) 0%, rgba(35,39,47,0.95) 100%);
+    z-index: 2;
+    transition: opacity 0.3s;
+    opacity: 1;
+  }
+  .tier-container.expanded::after {
+    opacity: 0;
+    pointer-events: none;
+  }
+  .card {
+    /* Remova min-height e max-height daqui! */
+    padding: 8px 4px 4px !important;
+  }
+  .card > img[alt] {
+    width: 48px !important;
+    height: 48px !important;
+    margin-bottom: 4px !important;
+  }
+  .hero-name, .hero-meta {
+    font-size: 0.92rem !important;
+    margin-top: 2px !important;
+    margin-bottom: 0 !important;
+  }
+}
 /* CARD DE HEROI */
 .card {
   border-radius: var(--radius-lg);
@@ -238,6 +289,9 @@ body[data-theme="dark"] .filters-row select {
   box-shadow: 0 2px 8px rgba(30,40,60,0.09);
   transition: box-shadow 0.17s, transform 0.13s, background-color 0.33s, color 0.33s;
   animation: fadeInCard 0.5s cubic-bezier(.4,1.4,.5,1.01);
+  width: 110px;
+  min-width: 0;
+  max-width: 100%;
 }
 @keyframes fadeInCard {
   from { opacity: 0; transform: translateY(30px);}
@@ -685,32 +739,33 @@ body[data-theme="dark"] .hero-modal-skills-title::before {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 16px;
-  height: 16px;
-  font-size: 11px;
+  width: 13px;
+  height: 13px;
+  font-size: 7px;
   font-weight: 700;
-  font-family: 'Nunito', 'Inter', system-ui, sans-serif;
+  font-family: 'Jost', 'Inter', system-ui, sans-serif;
   border-radius: 50%;
-  background: #6366f1;
-  color: #fff;
+  background: #bfc7fa;
+  color: #6366f1;
   cursor: pointer;
   position: relative;
-  margin-left: 2px;
-  transition: background 0.18s;
+  margin-left: -2px;
+  transition: background 0.18s, color 0.18s;
   user-select: none;
   box-shadow: 0 1px 4px #23272f22;
   outline: none;
+  letter-spacing: 0.5px;
+  border: none;
 }
 .criterio-info-icon:hover,
 .criterio-info-icon:focus {
-  background: #7e22ce;
+  background: #6366f1;
+  color: #fff;
 }
 
 .criterio-info-popover {
   display: none;
   position: absolute;
-  top: 22px;
-  right: 0;
   min-width: 210px;
   max-width: 90vw;
   background: #23272f;
@@ -720,35 +775,16 @@ body[data-theme="dark"] .hero-modal-skills-title::before {
   border-radius: 10px;
   box-shadow: 0 4px 18px #23272f33;
   padding: 10px 12px;
-  z-index: 100;
-  text-align: left;
-  line-height: 1.5;
-  pointer-events: none;
-  word-break: break-word;
-  overflow-wrap: break-word;
+  z-index: 1000;
 }
-.criterio-info-icon:hover .criterio-info-popover,
-.criterio-info-icon:focus .criterio-info-popover {
-  display: block;
-  pointer-events: auto;
+.tier-expand-btn:hover,
+.tier-expand-btn:focus {
+  background: #7e22ce;
+  color: #fff;
+  transform: scale(1.13) rotate(-6deg);
+  box-shadow: 0 4px 16px #6366f155;
 }
-
-/* Responsividade: impede que o balão ultrapasse a tela */
-@media (max-width: 500px) {
-  .criterio-info-popover {
-    left: 0;
-    right: auto;
-    min-width: 140px;
-    max-width: 98vw;
-    font-size: 0.89em;
-    padding: 8px 7px;
-  }
-}
-
-/* Cor azul para os nomes dos critérios no popover */
-.criterio-info-popover b {
-  color: #6366f1;
-  font-family: 'Nunito', 'Inter', system-ui, sans-serif;
-  font-weight: 800;
-  letter-spacing: 0.1px;
+.tier-expand-btn:active {
+  background: #6366f1;
+  transform: scale(0.98);
 }

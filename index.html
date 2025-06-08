@@ -82,18 +82,19 @@
       </div>
       <div class="filter-group">
         <label for="criterio" class="filter-title" style="position:relative;display:flex;align-items:center;gap:6px;">
-          Critério:
-          <span class="criterio-info-icon" tabindex="0">
-            i
-            <span class="criterio-info-popover">
-              <b>Probabilidade Bayesiana (BR):</b> Calcula o desempenho considerando o winrate, popularidade e média global, reduzindo distorções de poucos jogos.<br><br>
-              <b>Tierlist Normal (WR):</b> Usa apenas o winrate para classificar os heróis, sem ajuste por popularidade.
-            </span>
-          </span>
+          <span data-i18n="criterio_label">Critério:</span>
+          <span class="criterio-info-icon" id="criterioInfoBtn" tabindex="0" aria-label="Info">i</span>
+          <!-- Popover fora do fluxo, para ser posicionado via JS -->
+          <div class="criterio-info-popover" id="criterioInfoPopover" role="tooltip">
+            <b data-i18n="criterio_bayes_label">Probabilidade Bayesiana (BR):</b>
+            <span data-i18n="criterio_bayes_desc">Calcula o desempenho considerando o winrate, popularidade e média global, reduzindo distorções de poucos jogos.</span>
+            <b data-i18n="criterio_normal_label">Tierlist Normal (WR):</b>
+            <span data-i18n="criterio_normal_desc">Usa apenas o winrate para classificar os heróis, sem ajuste por popularidade.</span>
+          </div>
         </label>
         <select id="criterio">
-          <option value="bayes">Probabilidade Bayesiana</option>
-          <option value="normal" selected>Tierlist Normal</option>
+          <option value="bayes" data-i18n="criterio_bayes_option">Probabilidade Bayesiana</option>
+          <option value="normal" selected data-i18n="criterio_normal_option">Tierlist Normal</option>
         </select>
       </div>
     </div>
