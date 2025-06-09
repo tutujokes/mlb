@@ -238,7 +238,7 @@ body[data-theme="dark"] .filters-row select {
 @media (max-width: 700px) {
   .tier-container {
     grid-template-columns: repeat(auto-fit, minmax(90px, 1fr));
-    max-height: 120px; /* 1 linha (90px) + 30px da segunda linha */
+    max-height: 240px; /* 1 linha (90px) + 30px da segunda linha */
     overflow: hidden;
     position: relative;
     transition: max-height 0.35s cubic-bezier(.4,1.4,.5,1.01);
@@ -777,6 +777,25 @@ body[data-theme="dark"] .hero-modal-skills-title::before {
   padding: 10px 12px;
   z-index: 1000;
 }
+.tier-expand-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 12px auto 0 auto;
+  background: #6366f1;
+  color: #fff;
+  border: none;
+  border-radius: 18px;
+  width: 44px;
+  height: 44px;
+  font-size: 1.45rem;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 2px 8px #23272f22;
+  transition: background 0.18s, color 0.18s, transform 0.18s, box-shadow 0.18s;
+  z-index: 5;
+  position: static;
+}
 .tier-expand-btn:hover,
 .tier-expand-btn:focus {
   background: #7e22ce;
@@ -787,4 +806,28 @@ body[data-theme="dark"] .hero-modal-skills-title::before {
 .tier-expand-btn:active {
   background: #6366f1;
   transform: scale(0.98);
+}
+@media (max-width: 700px) {
+  .tier-expand-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%) translateY(-50%);
+    bottom: -22px; /* metade da altura do botão (44px/2) para sobrepor */
+    margin: 0;
+    background: #6366f1;
+    color: #fff;
+    border: none;
+    border-radius: 50%;
+    width: 44px;
+    height: 44px;
+    font-size: 1.45rem;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: 0 2px 8px #23272f22;
+    transition: background 0.18s, color 0.18s, transform 0.18s, box-shadow 0.18s;
+    z-index: 20;
+  }
 }
