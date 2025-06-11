@@ -1,3 +1,5 @@
+// Arquivo migrado para src/main.js (Vite/Vue). Este arquivo não é mais utilizado.
+
 const translations = {
   'pt-BR': {
     title: "Tier List - Mobile Legends",
