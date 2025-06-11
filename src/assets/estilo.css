@@ -1,5 +1,4 @@
-/* Copiado de css/estilo.css */
-@import '../../../css/estilo.css';
+/* Removido o @import para evitar problemas de build no Vercel. Todo o CSS necessário já está neste arquivo. */
 
 /* Copiado de css/estilo.css */
 :root {
