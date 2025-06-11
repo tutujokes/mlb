@@ -14,33 +14,71 @@
 </template>
 
 <script setup>
-import { computed, reactive } from 'vue'
-// Mock de dados de heróis
-const allHeroes = [
-  { id: 1, name: 'Layla', img: 'https://static.wikia.nocookie.net/mobile-legends/images/7/7e/Layla-MLBB.png', tier: 'S', role: 'marksman', lane: 'gold' },
-  { id: 2, name: 'Tigreal', img: 'https://static.wikia.nocookie.net/mobile-legends/images/2/2e/Tigreal-MLBB.png', tier: 'A', role: 'tank', lane: 'roam' },
-  { id: 3, name: 'Gusion', img: 'https://static.wikia.nocookie.net/mobile-legends/images/2/2e/Gusion-MLBB.png', tier: 'SS', role: 'assassin', lane: 'mid' },
-  // Adicione mais heróis conforme necessário
-]
-const tiers = [
+import { computed, reactive, ref, onMounted, watch } from 'vue'
+
+const props = defineProps({
+  filters: Object,
+  rank: String,
+  days: String,
+  criterio: String
+})
+
+const loading = ref(false)
+const error = ref(null)
+const allHeroes = ref([])
+const tiers = ref([
   { label: 'SS', heroes: [] },
   { label: 'S', heroes: [] },
   { label: 'A', heroes: [] },
   { label: 'B', heroes: [] },
   { label: 'C', heroes: [] }
-]
-// Exemplo de filtro simples (pode ser reativo e vir de props)
-const filters = reactive({ role: '', lane: '' })
-const filteredTiers = computed(() => {
+])
+
+async function fetchTierList() {
+  loading.value = true
+  error.value = null
+  try {
+    const url = `https://mlbb-proxy.vercel.app/api/hero-rank?source=rank&days=${props.days||7}&rank=${props.rank||'mythic'}&size=130&sort_field=win_rate&sort_order=desc`
+    const res = await fetch(url)
+    const json = await res.json()
+    const records = json.data.records || []
+    allHeroes.value = records.map(entry => {
+      const hero = entry.data.main_hero.data
+      return {
+        id: hero.hero_id || hero.id,
+        name: hero.name,
+        img: hero.head,
+        tier: entry.data.tier || entry.data.main_hero_tier || '',
+        role: entry.data.role || '',
+        lane: entry.data.lane || '',
+        winRate: entry.data.main_hero_win_rate,
+        ...entry.data
+      }
+    })
+    updateTiers()
+  } catch (e) {
+    error.value = 'Erro ao carregar heróis.'
+  } finally {
+    loading.value = false
+  }
+}
+
+function updateTiers() {
   // Limpa as listas
-  tiers.forEach(t => t.heroes = [])
-  allHeroes.forEach(hero => {
-    if ((filters.role === '' || hero.role === filters.role) && (filters.lane === '' || hero.lane === filters.lane)) {
-      const tier = tiers.find(t => t.label === hero.tier)
+  tiers.value.forEach(t => t.heroes = [])
+  allHeroes.value.forEach(hero => {
+    // Filtros: role, lane, outros
+    if ((props.filters.role === '' || hero.role === props.filters.role) &&
+        (props.filters.lane === '' || hero.lane === props.filters.lane)) {
+      const tier = tiers.value.find(t => t.label === (hero.tier || '').toUpperCase())
       if (tier) tier.heroes.push(hero)
     }
   })
-  return tiers
-})
+}
+
+const filteredTiers = computed(() => tiers.value)
 const hasHeroes = computed(() => filteredTiers.value.some(t => t.heroes.length > 0))
+
+onMounted(fetchTierList)
+watch(() => [props.filters.role, props.filters.lane, props.rank, props.days, props.criterio], fetchTierList)
 </script>
